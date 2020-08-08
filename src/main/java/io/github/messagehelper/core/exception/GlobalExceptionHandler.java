@@ -54,10 +54,10 @@ public class GlobalExceptionHandler {
     return new ResponseDto(e.getMessage());
   }
 
-  @ExceptionHandler(value = AuthFailureException.class)
+  @ExceptionHandler(value = InvalidTokenException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)
-  public ResponseDto handleAuthFailureException(AuthFailureException e) {
+  public ResponseDto handleAuthFailureException(InvalidTokenException e) {
     logException(e);
     return new ResponseDto(e.getMessage());
   }
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseDto handleRuntimeException(RuntimeException e) {
     logException(e);
-    return new ResponseDto(e.getMessage());
+    return new ResponseDto(e.toString());
   }
 
   private void logException(Exception e) {

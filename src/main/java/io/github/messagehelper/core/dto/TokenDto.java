@@ -1,6 +1,6 @@
 package io.github.messagehelper.core.dto;
 
-import io.github.messagehelper.core.exception.AuthFailureException;
+import io.github.messagehelper.core.exception.InvalidTokenException;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -18,7 +18,7 @@ public class TokenDto {
 
   public void authenticate(String token) {
     if (!this.token.equals(token)) {
-      throw new AuthFailureException("token: not valid");
+      throw new InvalidTokenException("token: not valid");
     }
   }
 }
