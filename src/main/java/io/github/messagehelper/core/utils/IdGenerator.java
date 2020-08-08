@@ -26,11 +26,11 @@ public class IdGenerator {
   }
 
   public long generate() {
-    String url = ConfigMapSingleton.getInstance().load("common.id-generator");
+    String url = ConfigMapSingleton.getInstance().load("core.id-generator");
     HttpRequest request;
     try {
       request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
-    } catch (URISyntaxException e) {
+    } catch (IllegalArgumentException | URISyntaxException e) {
       return generateNegative();
     }
     HttpResponse<String> response;

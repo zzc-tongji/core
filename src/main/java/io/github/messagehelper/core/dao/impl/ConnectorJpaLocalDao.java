@@ -105,7 +105,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     if (po == null) {
       logDao.insert(
           new LogPo(
-              configDao.load("processor.instance"),
+              configDao.load("core.instance"),
               Constant.LOG_ERR,
               "process.dao.impl.config-jpa-dao.exception",
               ErrorJsonGenerator.getInstance()
@@ -137,7 +137,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     if (statusCode >= 400) {
       logDao.insert(
           new LogPo(
-              configDao.load("processor.instance"),
+              configDao.load("core.instance"),
               Constant.LOG_ERR,
               "process.dao.impl.config-jpa-dao.exception",
               ErrorJsonGenerator.getInstance()
@@ -153,7 +153,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   private void logException(Exception e) {
     logDao.insert(
         new LogPo(
-            configDao.load("processor.instance"),
+            configDao.load("core.instance"),
             Constant.LOG_ERR,
             "process.dao.impl.config-jpa-dao.exception",
             ErrorJsonGenerator.getInstance().generate(e)));

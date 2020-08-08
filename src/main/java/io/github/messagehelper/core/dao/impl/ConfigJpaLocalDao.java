@@ -118,7 +118,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   private void logException(Exception e) {
     logDao.insert(
         new LogPo(
-            load("processor.instance"),
+            load("core.instance"),
             Constant.LOG_ERR,
             "process.dao.impl.config-jpa-local-dao.exception",
             ErrorJsonGenerator.getInstance().generate(e)));
@@ -127,7 +127,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   private void logEmptyValue(String key) {
     logDao.insert(
         new LogPo(
-            load("processor.instance"),
+            load("core.instance"),
             Constant.LOG_ERR,
             "process.dao.impl.config-jpa-local-dao.empty-value",
             ErrorJsonGenerator.getInstance()

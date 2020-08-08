@@ -31,7 +31,7 @@ public class Controller {
   @PostMapping(value = "/rpc/log")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void postRpcLog(@RequestBody @Validated RequestDto dto) {
-    dto.authenticate(configDao.load("processor.token"));
+    dto.authenticate(configDao.load("core.processor.token"));
     Log log = new Log(dto);
     logDao.insert(dto);
     ruleDao.process(log);

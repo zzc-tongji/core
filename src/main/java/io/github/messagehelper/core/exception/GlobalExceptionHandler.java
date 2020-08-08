@@ -72,9 +72,9 @@ public class GlobalExceptionHandler {
   private void logException(Exception e) {
     logDao.insert(
         new LogPo(
-            configDao.load("processor.instance"),
+            configDao.load("core.instance"),
             Constant.LOG_ERR,
-            "processor.exception.global-exception-handler",
+            "core.exception.global-exception-handler",
             ErrorJsonGenerator.getInstance().generate(e)));
   }
 }
