@@ -3,7 +3,7 @@ package io.github.messagehelper.core.controller;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dao.RuleDao;
-import io.github.messagehelper.core.dto.PostRpcLogRequestDto;
+import io.github.messagehelper.core.dto.rpc.log.post.RequestDto;
 import io.github.messagehelper.core.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,7 +30,7 @@ public class Controller {
 
   @PostMapping(value = "/rpc/log")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public void postRpcLog(@RequestBody @Validated PostRpcLogRequestDto dto) {
+  public void postRpcLog(@RequestBody @Validated RequestDto dto) {
     dto.authenticate(configDao.load("processor.token"));
     Log log = new Log(dto);
     logDao.insert(dto);

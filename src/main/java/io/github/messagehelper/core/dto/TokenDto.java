@@ -4,7 +4,7 @@ import io.github.messagehelper.core.exception.AuthFailureException;
 
 import javax.validation.constraints.NotEmpty;
 
-public class AuthDto {
+public class TokenDto {
   @NotEmpty(message = "token: required, non-empty string")
   private String token;
 

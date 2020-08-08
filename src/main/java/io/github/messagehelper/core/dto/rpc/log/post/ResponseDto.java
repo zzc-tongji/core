@@ -1,9 +1,9 @@
-package io.github.messagehelper.core.dto;
+package io.github.messagehelper.core.dto.rpc.log.post;
 
-public class PostRpcLogResponseDto {
+public class ResponseDto {
   private String reason;
 
-  public PostRpcLogResponseDto(String reason) {
+  public ResponseDto(String reason) {
     this.reason = reason;
   }
 

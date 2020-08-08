@@ -2,7 +2,7 @@ package io.github.messagehelper.core.exception;
 
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.LogDao;
-import io.github.messagehelper.core.dto.PostRpcLogResponseDto;
+import io.github.messagehelper.core.dto.rpc.log.post.ResponseDto;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.utils.ErrorJsonGenerator;
@@ -32,43 +32,41 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(value = HttpMessageNotReadableException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public PostRpcLogResponseDto handleHttpMessageNotReadableException(
-      HttpMessageNotReadableException e) {
+  public ResponseDto handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
     logException(e);
-    return new PostRpcLogResponseDto(e.getMessage());
+    return new ResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = MethodArgumentNotValidException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public PostRpcLogResponseDto handleMethodArgumentNotValidException(
-      MethodArgumentNotValidException e) {
+  public ResponseDto handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
     logException(e);
-    return new PostRpcLogResponseDto(
+    return new ResponseDto(
         Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
   }
 
   @ExceptionHandler(value = InvalidContentException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public PostRpcLogResponseDto handleInvalidContentException(InvalidContentException e) {
+  public ResponseDto handleInvalidContentException(InvalidContentException e) {
     logException(e);
-    return new PostRpcLogResponseDto(e.getMessage());
+    return new ResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = AuthFailureException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)
-  public PostRpcLogResponseDto handleAuthFailureException(AuthFailureException e) {
+  public ResponseDto handleAuthFailureException(AuthFailureException e) {
     logException(e);
-    return new PostRpcLogResponseDto(e.getMessage());
+    return new ResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = RuntimeException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public PostRpcLogResponseDto handleRuntimeException(RuntimeException e) {
+  public ResponseDto handleRuntimeException(RuntimeException e) {
     logException(e);
-    return new PostRpcLogResponseDto(e.getMessage());
+    return new ResponseDto(e.getMessage());
   }
 
   private void logException(Exception e) {

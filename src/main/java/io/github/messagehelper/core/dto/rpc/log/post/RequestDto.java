@@ -1,12 +1,13 @@
-package io.github.messagehelper.core.dto;
+package io.github.messagehelper.core.dto.rpc.log.post;
 
+import io.github.messagehelper.core.dto.TokenDto;
 import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class PostRpcLogRequestDto extends AuthDto {
+public class RequestDto extends TokenDto {
   private static final String LEVEL_REGEXP =
       "^("
           + Constant.LOG_ERR

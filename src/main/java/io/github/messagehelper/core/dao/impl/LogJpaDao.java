@@ -1,7 +1,7 @@
 package io.github.messagehelper.core.dao.impl;
 
 import io.github.messagehelper.core.dao.LogDao;
-import io.github.messagehelper.core.dto.PostRpcLogRequestDto;
+import io.github.messagehelper.core.dto.rpc.log.post.RequestDto;
 import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.repository.LogJpaRepository;
 import io.github.messagehelper.core.utils.IdGenerator;
@@ -19,19 +19,18 @@ public class LogJpaDao implements LogDao {
 
   @Override
   public void insert(LogPo po) {
-    boolean existent = repository.existsById(po.getId());
-    if (existent) {
-      long id;
+    Long id = po.getId();
+    if (id < 0 && repository.existsById(id)) {
       do {
         id = IdGenerator.getInstance().generate();
-      } while (repository.existsById(id));
+      } while (id < 0 && repository.existsById(id));
       po.setId(id);
     }
     repository.save(po);
   }
 
   @Override
-  public void insert(PostRpcLogRequestDto dto) {
+  public void insert(RequestDto dto) {
     LogPo po = new LogPo(dto);
     insert(po);
   }
