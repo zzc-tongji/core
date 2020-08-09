@@ -3,10 +3,6 @@ package io.github.messagehelper.core.controller;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
 import io.github.messagehelper.core.dto.TokenRequestDto;
-import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
-import io.github.messagehelper.core.dto.api.connectors.PostPutDeleteResponseDto;
-import io.github.messagehelper.core.dto.api.connectors.PostPutRequestDto;
-import io.github.messagehelper.core.dto.api.deliveries.PostRequestDto;
 import io.github.messagehelper.core.exception.TokenInvalidException;
 import io.github.messagehelper.core.utils.DisableCacheHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +26,8 @@ public class ApiController {
   //  PREFIX + "/deliveries"
 
   @PostMapping(value = PREFIX + "/deliveries")
-  public ResponseEntity<String> deliveriesPost(@RequestBody @Validated PostRequestDto dto) {
+  public ResponseEntity<String> deliveriesPost(
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.deliveries.PostRequestDto dto) {
     dto.authenticate(configDao.load("core.backend.token"));
     return connectorDao.execute(dto.getPayload());
   }
@@ -38,7 +35,8 @@ public class ApiController {
   //  PREFIX + "/connectors"
 
   @GetMapping(value = PREFIX + "/connectors")
-  public ResponseEntity<GetAllResponseDto> connectorsGetAll(@RequestHeader("token") String token) {
+  public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto>
+      connectorsGetAll(@RequestHeader("token") String token) {
     if (!configDao.load("core.backend.token").equals(token)) {
       throw new TokenInvalidException("token: not valid");
     }
@@ -48,7 +46,7 @@ public class ApiController {
   }
 
   @GetMapping(value = PREFIX + "/connectors/{idOrInstance}")
-  public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetResponseDto>
+  public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto>
       connectorsGet(
           @PathVariable("idOrInstance") String idOrInstance, @RequestHeader("token") String token) {
     if (!configDao.load("core.backend.token").equals(token)) {
@@ -65,22 +63,26 @@ public class ApiController {
     }
   }
 
-  @PostMapping(value = PREFIX + "/connectors")
-  public PostPutDeleteResponseDto connectorsPost(@RequestBody @Validated PostPutRequestDto dto) {
-    dto.authenticate(configDao.load("core.backend.token"));
-    return connectorDao.create(dto);
-  }
-
   @PutMapping(value = PREFIX + "/connectors/{id}")
-  public PostPutDeleteResponseDto connectorsPut(
-      @PathVariable("id") Long id, @RequestBody @Validated PostPutRequestDto dto) {
+  public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPut(
+      @PathVariable("id") Long id,
+      @RequestBody @Validated
+          io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
     dto.authenticate(configDao.load("core.backend.token"));
     return connectorDao.update(id, dto);
   }
 
+  @PostMapping(value = PREFIX + "/connectors")
+  public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPost(
+      @RequestBody @Validated
+          io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
+    dto.authenticate(configDao.load("core.backend.token"));
+    return connectorDao.create(dto);
+  }
+
   @DeleteMapping(value = PREFIX + "/connectors/{id}")
-  public PostPutDeleteResponseDto connectorsDelete(
-      @PathVariable("id") Long id, @RequestBody @Validated TokenRequestDto dto) {
+  public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
+      connectorsDelete(@PathVariable("id") Long id, @RequestBody @Validated TokenRequestDto dto) {
     dto.authenticate(configDao.load("core.backend.token"));
     return connectorDao.delete(id);
   }

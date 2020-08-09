@@ -2,7 +2,7 @@ package io.github.messagehelper.core.dto.api.connectors;
 
 import io.github.messagehelper.core.mysql.po.ConnectorPo;
 
-public class PostPutDeleteResponseDto {
+public class GetPutPostDeleteResponseDto {
   private ConnectorPo data;
 
   public ConnectorPo getData() {
@@ -13,7 +13,7 @@ public class PostPutDeleteResponseDto {
     this.data = data;
   }
 
-  public PostPutDeleteResponseDto(ConnectorPo data) {
+  public GetPutPostDeleteResponseDto(ConnectorPo data) {
     setData(data);
   }
 }

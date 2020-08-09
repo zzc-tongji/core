@@ -1,6 +1,6 @@
 package io.github.messagehelper.core.mysql.po;
 
-import io.github.messagehelper.core.dto.api.connectors.PostPutRequestDto;
+import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.utils.IdGenerator;
 
@@ -69,17 +69,17 @@ public class ConnectorPo implements Serializable {
 
   public ConnectorPo() {}
 
-  public ConnectorPo(PostPutRequestDto dto) {
+  public ConnectorPo(PutPostRequestDto dto) {
     setId(IdGenerator.getInstance().generate());
     constructorHelper(dto);
   }
 
-  public ConnectorPo(PostPutRequestDto dto, Long id) {
+  public ConnectorPo(PutPostRequestDto dto, Long id) {
     setId(id);
     constructorHelper(dto);
   }
 
-  private void constructorHelper(PostPutRequestDto dto) {
+  private void constructorHelper(PutPostRequestDto dto) {
     setInstance(dto.getInstance());
     setCategory(dto.getCategory());
     setUrl(dto.getUrl());

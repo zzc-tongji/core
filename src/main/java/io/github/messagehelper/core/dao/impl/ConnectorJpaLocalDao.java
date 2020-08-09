@@ -4,9 +4,8 @@ import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
 import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
-import io.github.messagehelper.core.dto.api.connectors.GetResponseDto;
-import io.github.messagehelper.core.dto.api.connectors.PostPutDeleteResponseDto;
-import io.github.messagehelper.core.dto.api.connectors.PostPutRequestDto;
+import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
+import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.exception.ConnectorAlreadyExistentException;
 import io.github.messagehelper.core.exception.ConnectorNotFoundException;
 import io.github.messagehelper.core.log.Log;
@@ -83,7 +82,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
-  public PostPutDeleteResponseDto create(PostPutRequestDto dto) {
+  public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
     if (find(dto.getInstance()) != null) {
       throw new ConnectorAlreadyExistentException(
           String.format("connector with instance [%s]: already existent", dto.getInstance()));
@@ -91,18 +90,18 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     ConnectorPo po = new ConnectorPo(dto);
     repository.save(po);
     refreshCache();
-    return new PostPutDeleteResponseDto(po);
+    return new GetPutPostDeleteResponseDto(po);
   }
 
   @Override
-  public PostPutDeleteResponseDto delete(Long id) {
+  public GetPutPostDeleteResponseDto delete(Long id) {
     ConnectorPo po = find(id);
     if (po == null) {
       throw new ConnectorNotFoundException(String.format("connector with id [%d]: not found", id));
     }
     repository.deleteById(id);
     refreshCache();
-    return new PostPutDeleteResponseDto(po);
+    return new GetPutPostDeleteResponseDto(po);
   }
 
   @Override
@@ -116,22 +115,22 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
-  public GetResponseDto readById(Long id) {
+  public GetPutPostDeleteResponseDto readById(Long id) {
     ConnectorPo po = find(id);
     if (po == null) {
       throw new ConnectorNotFoundException(String.format("connector with id [%d]: not found", id));
     }
-    return new GetResponseDto(po);
+    return new GetPutPostDeleteResponseDto(po);
   }
 
   @Override
-  public GetResponseDto readByInstance(String instance) {
+  public GetPutPostDeleteResponseDto readByInstance(String instance) {
     ConnectorPo po = find(instance);
     if (po == null) {
       throw new ConnectorNotFoundException(
           String.format("connector with instance [%s]: not found", instance));
     }
-    return new GetResponseDto(po);
+    return new GetPutPostDeleteResponseDto(po);
   }
 
   @Override
@@ -140,7 +139,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
-  public PostPutDeleteResponseDto update(Long id, PostPutRequestDto dto) {
+  public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
     ConnectorPo po = find(id);
     if (po == null) {
       throw new ConnectorNotFoundException(String.format("connector with id [%d]: not found", id));
@@ -155,7 +154,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     ConnectorPo updatedPo = new ConnectorPo(dto, id);
     repository.save(updatedPo);
     refreshCache();
-    return new PostPutDeleteResponseDto(updatedPo);
+    return new GetPutPostDeleteResponseDto(updatedPo);
   }
 
   private ConnectorPo find(Long id) {

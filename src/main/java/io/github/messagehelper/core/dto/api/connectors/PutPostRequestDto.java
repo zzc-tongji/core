@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
-public class PostPutRequestDto extends TokenRequestDto {
+public class PutPostRequestDto extends TokenRequestDto {
   @Length(
       min = 1,
       max = Constant.CONNECTOR_LENGTH,
