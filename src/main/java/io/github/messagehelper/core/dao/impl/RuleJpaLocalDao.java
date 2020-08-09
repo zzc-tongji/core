@@ -12,8 +12,9 @@ import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
 import io.github.messagehelper.core.rule.Rule;
-import io.github.messagehelper.core.utils.ErrorJsonGenerator;
 import io.github.messagehelper.core.utils.Lock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ import java.util.List;
 
 @Service
 public class RuleJpaLocalDao implements RuleDao {
+  private final Logger logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);
+
   private RuleJpaRepository repository;
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
@@ -55,8 +58,7 @@ public class RuleJpaLocalDao implements RuleDao {
         try {
           Thread.sleep(100);
         } catch (InterruptedException e) {
-          logException(e);
-          return;
+          throw new RuntimeException(e);
         }
       }
       // LOCK
@@ -68,7 +70,7 @@ public class RuleJpaLocalDao implements RuleDao {
         try {
           ruleList.add(new Rule(item));
         } catch (InvalidRuleIfException | InvalidRuleThenException e) {
-          logException(e);
+          logger.error(String.format("rule with name [%s]: %s", item.getName(), e.toString()));
         }
       }
       Collections.sort(ruleList);
@@ -84,8 +86,7 @@ public class RuleJpaLocalDao implements RuleDao {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        logException(e);
-        return;
+        throw new RuntimeException(e);
       }
     }
     // LOCK
@@ -110,14 +111,5 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     // UNLOCK
     lock.readDecrease();
-  }
-
-  private void logException(Exception e) {
-    logDao.insert(
-        new LogPo(
-            configDao.load("core.instance"),
-            Constant.LOG_ERR,
-            "core.dao.impl.rule-jpa-local-dao.exception",
-            ErrorJsonGenerator.getInstance().generate(e)));
   }
 }

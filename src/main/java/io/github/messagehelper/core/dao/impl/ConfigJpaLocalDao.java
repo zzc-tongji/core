@@ -2,6 +2,11 @@ package io.github.messagehelper.core.dao.impl;
 
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.LogDao;
+import io.github.messagehelper.core.dto.api.configs.GetAllResponseDto;
+import io.github.messagehelper.core.dto.api.configs.GetPutResponseDto;
+import io.github.messagehelper.core.dto.api.configs.PutRequestDto;
+import io.github.messagehelper.core.exception.ConfigHiddenException;
+import io.github.messagehelper.core.exception.ConfigNotFoundException;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.ConfigPo;
 import io.github.messagehelper.core.mysql.po.LogPo;
@@ -13,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +52,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
         try {
           Thread.sleep(100);
         } catch (InterruptedException e) {
-          logException(e);
-          return;
+          throw new RuntimeException(e);
         }
       }
       // LOCK
@@ -66,63 +71,82 @@ public class ConfigJpaLocalDao implements ConfigDao {
 
   @Override
   public String load(String key) {
-    // CHECK
-    while (lock.isWriteLocked()) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        logException(e);
-        logEmptyValue(key);
-        return "";
-      }
-    }
-    // LOCK
-    lock.readIncrease();
-    // DO
-    String value = configMap.get(key).getValue();
-    // UNLOCK
-    lock.readDecrease();
-    //
-    if (value == null) {
-      value = "";
-    }
-    if (value.length() == 0) {
+    String value = find(key).getValue();
+    if (value == null || value.length() <= 0) {
       logEmptyValue(key);
     }
     return value;
   }
 
   @Override
-  public void save(String key, String value) {
-    // CHECK
-    synchronized (lock) {
-      // CHECK
-      while (lock.isReadLocked()) {
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          logException(e);
-          return;
-        }
-      }
-      // LOCK
-      lock.writeIncrease();
-      // DO
-      ConfigPo po = new ConfigPo(key, value);
-      configMap.put(key, po);
-      repository.save(po);
-      // UNLOCK
-      lock.writeDecrease();
+  public GetPutResponseDto read(String key) {
+    if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
+      throw new ConfigHiddenException(String.format("key `%s`: hidden", key));
     }
+    return new GetPutResponseDto(find(key));
   }
 
-  private void logException(Exception e) {
-    logDao.insert(
-        new LogPo(
-            load("core.instance"),
-            Constant.LOG_ERR,
-            "core.dao.impl.config-jpa-local-dao.exception",
-            ErrorJsonGenerator.getInstance().generate(e)));
+  @Override
+  public GetAllResponseDto readAll() {
+    // CHECK
+    while (lock.isWriteLocked()) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // LOCK
+    lock.readIncrease();
+    // DO
+    List<ConfigPo> poList = new ArrayList<>();
+    for (ConfigPo po : configMap.values()) {
+      if (po.getKey().equals("core.backend.password")) {
+        continue;
+      }
+      if (po.getKey().equals("core.backend.salt")) {
+        continue;
+      }
+      poList.add(po);
+    }
+    // UNLOCK
+    lock.readDecrease();
+    //
+    return new GetAllResponseDto(poList);
+  }
+
+  @Override
+  public GetPutResponseDto update(String key, PutRequestDto dto) {
+    if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
+      throw new ConfigHiddenException(String.format("key `%s`: hidden", key));
+    }
+    ConfigPo po = configMap.get(key);
+    if (po == null) {
+      throw new ConfigNotFoundException(String.format("key `%s`: not found", key));
+    }
+    po.setValue(dto.getValue());
+    repository.save(po);
+    refreshCache();
+    return new GetPutResponseDto(po);
+  }
+
+  private ConfigPo find(String key) {
+    // CHECK
+    while (lock.isWriteLocked()) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // LOCK
+    lock.readIncrease();
+    // DO
+    ConfigPo po = configMap.get(key);
+    // UNLOCK
+    lock.readDecrease();
+    //
+    return po;
   }
 
   private void logEmptyValue(String key) {

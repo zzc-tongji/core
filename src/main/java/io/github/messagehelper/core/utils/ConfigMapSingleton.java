@@ -33,7 +33,7 @@ public class ConfigMapSingleton {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        return "";
+        throw new RuntimeException(e);
       }
     }
     // LOCK

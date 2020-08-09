@@ -3,6 +3,7 @@ package io.github.messagehelper.core.dto.api.connectors;
 import io.github.messagehelper.core.dto.TokenRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,9 +27,14 @@ public class PutPostRequestDto extends TokenRequestDto {
   @Length(
       min = 1,
       max = Constant.CONNECTOR_URL_LENGTH,
-      message = "url: required, string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
+      message =
+          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
   @NotNull(
-      message = "url: required, string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
+      message =
+          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
+  @URL(
+      message =
+          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
   private String url;
 
   @Length(

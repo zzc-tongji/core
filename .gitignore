@@ -177,5 +177,5 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-.idea/**/dataSources.xml
 **/src/main/resources/application.properties
+.idea/**/dataSources.xml

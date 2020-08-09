@@ -4,8 +4,8 @@ import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
 import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
-import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
+import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
 import io.github.messagehelper.core.exception.ConnectorAlreadyExistentException;
 import io.github.messagehelper.core.exception.ConnectorNotFoundException;
 import io.github.messagehelper.core.log.Log;
@@ -18,6 +18,8 @@ import io.github.messagehelper.core.rule.then.RuleThen;
 import io.github.messagehelper.core.utils.ErrorJsonGenerator;
 import io.github.messagehelper.core.utils.HttpClientSingleton;
 import io.github.messagehelper.core.utils.Lock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,8 @@ import java.util.Map;
 
 @Service
 public class ConnectorJpaLocalDao implements ConnectorDao {
+  private final Logger logger = LoggerFactory.getLogger(ConnectorJpaLocalDao.class);
+
   private ConnectorJpaRepository repository;
   private ConfigDao configDao;
   private LogDao logDao;
@@ -63,8 +67,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
         try {
           Thread.sleep(100);
         } catch (InterruptedException e) {
-          logException(e);
-          return;
+          throw new RuntimeException(e);
         }
       }
       // LOCK
@@ -163,8 +166,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        logException(e);
-        return null;
+        throw new RuntimeException(e);
       }
     }
     // LOCK
@@ -189,8 +191,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        logException(e);
-        return null;
+        throw new RuntimeException(e);
       }
     }
     // LOCK
@@ -209,8 +210,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        logException(e);
-        return null;
+        throw new RuntimeException(e);
       }
     }
     // LOCK
@@ -230,7 +230,6 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        logException(e);
         throw new RuntimeException(e);
       }
     }
@@ -264,7 +263,6 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .POST(HttpRequest.BodyPublishers.ofString(requestBodyWithToken))
               .build();
     } catch (URISyntaxException e) {
-      logException(e);
       throw new RuntimeException(e);
     }
     HttpResponse<String> response;
@@ -272,14 +270,13 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       response =
           HttpClientSingleton.getInstance().send(request, HttpResponse.BodyHandlers.ofString());
     } catch (IOException e) {
-      logException(e);
       String errorMessage =
-          String.format("connector with instance [%s]: fail to connect", instance);
+          String.format(
+              "connector with instance [%s] and url [%s]: fail to connect", instance, url);
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
-          .body(String.format("{\"information\":%s}", errorMessage));
+          .body(String.format("{\"error\":%s}", errorMessage));
     } catch (InterruptedException e) {
-      logException(e);
       throw new RuntimeException(e);
     }
     int statusCode = response.statusCode();

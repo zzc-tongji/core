@@ -1,5 +1,30 @@
 # core
 
+### Prerequisite
+
+- A database of **MySQL 5.7+** is required.
+- Initialize database.
+  - Review file [example.initialize.sql](./prerequisite/example.initialize.sql).
+  - Customize and replace content between `<...>`.
+  - Connect to the database and execute it.
+- Create application properties.
+  - Review file [example.application.properties](./prerequisite/example.application.properties).
+  - Customize and replace content between  `<...>`.
+  - Place the file under the path `./target/config/`.
+
+### Run
+
+``` bash
+./mvnw clean && ./mvnw package -Dmaven.test.skip=true # macOS and Linux only
+./mvnw.cmd clean && ./mvnw.cmd package -Dmaven.test.skip=true # Windows only
+
+java -jar ./target/id.jar
+```
+
+### Docker
+
+See [Docker.md](./Docker.md) for details.
+
 ### Develop
 
 Execute following commands.

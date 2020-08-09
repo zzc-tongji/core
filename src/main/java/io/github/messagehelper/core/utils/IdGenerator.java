@@ -1,8 +1,6 @@
 package io.github.messagehelper.core.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -19,7 +17,6 @@ public class IdGenerator {
 
   private IdGenerator() {
     random = new Random();
-    WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
   }
 
   public long generate() {
