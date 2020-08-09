@@ -15,8 +15,8 @@
 ### Run
 
 ``` bash
-./mvnw clean && ./mvnw package -Dmaven.test.skip=true # macOS and Linux only
-./mvnw.cmd clean && ./mvnw.cmd package -Dmaven.test.skip=true # Windows only
+./mvnw clean && ./mvnw package # macOS and Linux only
+.\mvnw.cmd clean && .\mvnw.cmd package # Windows only
 
 java -jar ./target/id.jar
 ```
