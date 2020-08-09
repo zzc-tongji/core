@@ -15,6 +15,8 @@
 ### Run
 
 ``` bash
+git clean -xfd
+
 ./mvnw clean && ./mvnw package # macOS and Linux only
 .\mvnw.cmd clean && .\mvnw.cmd package # Windows only
 
