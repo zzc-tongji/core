@@ -2,7 +2,7 @@ package io.github.messagehelper.core.log.content.wechatconnector.requestor.wecha
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.messagehelper.core.exception.InvalidContentException;
+import io.github.messagehelper.core.exception.LogContentInvalidException;
 import io.github.messagehelper.core.log.content.Content;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
@@ -67,43 +67,43 @@ public class Forward extends Content {
     try {
       jsonNode = ObjectMapperSingleton.getInstance().readTree(json);
     } catch (JsonProcessingException e) {
-      throw new InvalidContentException(e);
+      throw new LogContentInvalidException(e);
     }
     JsonNode temp = jsonNode.get("messageId");
     if (temp != null && temp.isTextual()) {
       messageId = temp.asText();
     } else {
-      throw new InvalidContentException("content.messageId: required, string");
+      throw new LogContentInvalidException("content.messageId: required, string");
     }
     temp = jsonNode.get("messageType");
     if (temp != null && temp.isTextual()) {
       messageType = temp.asText();
     } else {
-      throw new InvalidContentException("content.messageType: required, string");
+      throw new LogContentInvalidException("content.messageType: required, string");
     }
     temp = jsonNode.get("messageText");
     if (temp != null && temp.isTextual()) {
       messageText = temp.asText();
     } else {
-      throw new InvalidContentException("content.messageText: required, string");
+      throw new LogContentInvalidException("content.messageText: required, string");
     }
     temp = jsonNode.get("receiverId");
     if (temp != null && temp.isTextual()) {
       receiverId = temp.asText();
     } else {
-      throw new InvalidContentException("content.receiverId: required, string");
+      throw new LogContentInvalidException("content.receiverId: required, string");
     }
     temp = jsonNode.get("receiverType");
     if (temp != null && temp.isTextual()) {
       receiverType = temp.asText();
     } else {
-      throw new InvalidContentException("content.receiverType: required, string");
+      throw new LogContentInvalidException("content.receiverType: required, string");
     }
     temp = jsonNode.get("receiverName");
     if (temp != null && temp.isTextual()) {
       receiverName = temp.asText();
     } else {
-      throw new InvalidContentException("content.receiverName: required, string");
+      throw new LogContentInvalidException("content.receiverName: required, string");
     }
   }
 }

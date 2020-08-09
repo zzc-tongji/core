@@ -6,6 +6,8 @@ public class Constant {
   public static final String LOG_INFO = "INFO";
   public static final String LOG_VERB = "VERB";
   public static final String LOG_SILL = "SILL";
+  public static final int CONNECTOR_LENGTH = 64;
+  public static final int CONNECTOR_URL_LENGTH = 2048;
   public static final int LOG_INSTANCE_LENGTH = 64;
   public static final int LOG_LEVEL_LENGTH = 4;
   public static final int LOG_CATEGORY_LENGTH = 256;

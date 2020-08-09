@@ -1,7 +1,7 @@
 package io.github.messagehelper.core.dao.impl;
 
 import io.github.messagehelper.core.dao.LogDao;
-import io.github.messagehelper.core.dto.rpc.log.post.RequestDto;
+import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.repository.LogJpaRepository;
 import io.github.messagehelper.core.utils.IdGenerator;
@@ -30,7 +30,7 @@ public class LogJpaDao implements LogDao {
   }
 
   @Override
-  public void insert(RequestDto dto) {
+  public void insert(PostRequestDto dto) {
     LogPo po = new LogPo(dto);
     insert(po);
   }

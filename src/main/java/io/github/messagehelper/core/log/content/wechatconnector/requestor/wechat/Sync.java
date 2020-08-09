@@ -2,7 +2,7 @@ package io.github.messagehelper.core.log.content.wechatconnector.requestor.wecha
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.messagehelper.core.exception.InvalidContentException;
+import io.github.messagehelper.core.exception.LogContentInvalidException;
 import io.github.messagehelper.core.log.content.Content;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
@@ -31,19 +31,19 @@ public class Sync extends Content {
     try {
       jsonNode = ObjectMapperSingleton.getInstance().readTree(json);
     } catch (JsonProcessingException e) {
-      throw new InvalidContentException(e);
+      throw new LogContentInvalidException(e);
     }
     JsonNode temp = jsonNode.get("objectType");
     if (temp != null && temp.isTextual()) {
       objectType = temp.asText();
     } else {
-      throw new InvalidContentException("content.objectType: required, string");
+      throw new LogContentInvalidException("content.objectType: required, string");
     }
     temp = jsonNode.get("objectName");
     if (temp != null && temp.isTextual()) {
       objectName = temp.asText();
     } else {
-      throw new InvalidContentException("content.objectName: required, string");
+      throw new LogContentInvalidException("content.objectName: required, string");
     }
   }
 }

@@ -3,7 +3,7 @@ package io.github.messagehelper.core.controller;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dao.RuleDao;
-import io.github.messagehelper.core.dto.rpc.log.post.RequestDto;
+import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,22 +15,24 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class Controller {
+public class RpcController {
+  private static final String PREFIX = "/rpc";
+
   private ConfigDao configDao;
   private LogDao logDao;
   private RuleDao ruleDao;
 
   @Autowired
-  public Controller(
+  public RpcController(
       ConfigDao configDao, @Qualifier("LogJpaAsyncDao") LogDao logDao, RuleDao ruleDao) {
     this.configDao = configDao;
     this.logDao = logDao;
     this.ruleDao = ruleDao;
   }
 
-  @PostMapping(value = "/rpc/log")
+  @PostMapping(value = PREFIX + "/log")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public void postRpcLog(@RequestBody @Validated RequestDto dto) {
+  public void logPost(@RequestBody @Validated PostRequestDto dto) {
     dto.authenticate(configDao.load("core.processor.token"));
     Log log = new Log(dto);
     logDao.insert(dto);

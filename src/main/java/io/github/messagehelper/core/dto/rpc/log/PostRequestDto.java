@@ -1,13 +1,13 @@
-package io.github.messagehelper.core.dto.rpc.log.post;
+package io.github.messagehelper.core.dto.rpc.log;
 
-import io.github.messagehelper.core.dto.TokenDto;
+import io.github.messagehelper.core.dto.TokenRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class RequestDto extends TokenDto {
+public class PostRequestDto extends TokenRequestDto {
   private static final String LEVEL_REGEXP =
       "^("
           + Constant.LOG_ERR
@@ -57,7 +57,7 @@ public class RequestDto extends TokenDto {
           "category: required, string with length in [1, " + Constant.LOG_CATEGORY_LENGTH + "]")
   @NotNull(
       message =
-          "content: required, string with length in [1, " + Constant.LOG_CATEGORY_LENGTH + "]")
+          "category: required, string with length in [1, " + Constant.LOG_CATEGORY_LENGTH + "]")
   private String category;
 
   @NotNull(message = "timestampMs: required, long")

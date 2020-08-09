@@ -100,7 +100,7 @@ public class RuleJpaLocalDao implements RuleDao {
             new LogPo(
                 configDao.load("core.instance"),
                 Constant.LOG_INFO,
-                "process.dao.impl.rule-jpa-local-dao.process.hit",
+                "core.dao.impl.rule-jpa-local-dao.process.hit",
                 String.format("{\"ruleName\":\"%s\",\"logId\":%d}", rule.getName(), log.getId())));
         connectorDao.execute(rule.getRuleThen(), log);
         if (rule.getTerminate()) {
@@ -117,7 +117,7 @@ public class RuleJpaLocalDao implements RuleDao {
         new LogPo(
             configDao.load("core.instance"),
             Constant.LOG_ERR,
-            "process.dao.impl.rule-jpa-local-dao.exception",
+            "core.dao.impl.rule-jpa-local-dao.exception",
             ErrorJsonGenerator.getInstance().generate(e)));
   }
 }

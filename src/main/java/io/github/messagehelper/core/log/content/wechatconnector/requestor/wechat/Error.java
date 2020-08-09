@@ -2,7 +2,7 @@ package io.github.messagehelper.core.log.content.wechatconnector.requestor.wecha
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.messagehelper.core.exception.InvalidContentException;
+import io.github.messagehelper.core.exception.LogContentInvalidException;
 import io.github.messagehelper.core.log.content.Content;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
@@ -40,25 +40,25 @@ public class Error extends Content {
     try {
       jsonNode = ObjectMapperSingleton.getInstance().readTree(json);
     } catch (JsonProcessingException e) {
-      throw new InvalidContentException(e);
+      throw new LogContentInvalidException(e);
     }
     JsonNode temp = jsonNode.get("reason");
     if (temp != null && temp.isTextual()) {
       reason = temp.asText();
     } else {
-      throw new InvalidContentException("content.reason: required, string");
+      throw new LogContentInvalidException("content.reason: required, string");
     }
     temp = jsonNode.get("contextType");
     if (temp != null && temp.isTextual()) {
       contextType = temp.asText();
     } else {
-      throw new InvalidContentException("content.contextType: required, string");
+      throw new LogContentInvalidException("content.contextType: required, string");
     }
     temp = jsonNode.get("contextRequest");
     if (temp != null && temp.isTextual()) {
       contextRequest = temp.asText();
     } else {
-      throw new InvalidContentException("content.contextRequest: required, string");
+      throw new LogContentInvalidException("content.contextRequest: required, string");
     }
   }
 }

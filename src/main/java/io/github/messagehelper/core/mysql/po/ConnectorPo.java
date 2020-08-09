@@ -1,5 +1,9 @@
 package io.github.messagehelper.core.mysql.po;
 
+import io.github.messagehelper.core.dto.api.connectors.PostPutRequestDto;
+import io.github.messagehelper.core.mysql.Constant;
+import io.github.messagehelper.core.utils.IdGenerator;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,21 +13,18 @@ import java.io.Serializable;
 @Entity
 @Table(name = "connector")
 public class ConnectorPo implements Serializable {
-  private static final int LENGTH = 64;
-  private static final int URL_LENGTH = 2048;
-
   @Id private Long id;
 
-  @Column(length = LENGTH, nullable = false, unique = true)
+  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false, unique = true)
   private String instance;
 
-  @Column(length = LENGTH, nullable = false)
+  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false)
   private String category;
 
-  @Column(length = URL_LENGTH, nullable = false)
+  @Column(length = Constant.CONNECTOR_URL_LENGTH, nullable = false)
   private String url;
 
-  @Column(length = LENGTH, nullable = false)
+  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false)
   private String token;
 
   public Long getId() {
@@ -64,5 +65,24 @@ public class ConnectorPo implements Serializable {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  public ConnectorPo() {}
+
+  public ConnectorPo(PostPutRequestDto dto) {
+    setId(IdGenerator.getInstance().generate());
+    constructorHelper(dto);
+  }
+
+  public ConnectorPo(PostPutRequestDto dto, Long id) {
+    setId(id);
+    constructorHelper(dto);
+  }
+
+  private void constructorHelper(PostPutRequestDto dto) {
+    setInstance(dto.getInstance());
+    setCategory(dto.getCategory());
+    setUrl(dto.getUrl());
+    setToken(dto.getToken());
   }
 }

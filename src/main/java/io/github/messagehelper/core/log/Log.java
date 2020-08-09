@@ -1,6 +1,6 @@
 package io.github.messagehelper.core.log;
 
-import io.github.messagehelper.core.dto.rpc.log.post.RequestDto;
+import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.log.content.Content;
 
 public class Log {
@@ -59,7 +59,7 @@ public class Log {
     this.content = content;
   }
 
-  public Log(RequestDto dto) {
+  public Log(PostRequestDto dto) {
     id = dto.getId();
     instance = dto.getInstance();
     level = dto.getLevel();

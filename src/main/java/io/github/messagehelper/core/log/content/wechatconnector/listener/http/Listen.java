@@ -2,7 +2,7 @@ package io.github.messagehelper.core.log.content.wechatconnector.listener.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.messagehelper.core.exception.InvalidContentException;
+import io.github.messagehelper.core.exception.LogContentInvalidException;
 import io.github.messagehelper.core.log.content.Content;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
@@ -22,13 +22,13 @@ public class Listen extends Content {
     try {
       jsonNode = ObjectMapperSingleton.getInstance().readTree(json);
     } catch (JsonProcessingException e) {
-      throw new InvalidContentException(e);
+      throw new LogContentInvalidException(e);
     }
     JsonNode temp = jsonNode.get("port");
     if (temp != null && temp.isIntegralNumber() && temp.canConvertToInt()) {
       port = temp.asInt();
     } else {
-      throw new InvalidContentException("content.port: required, int");
+      throw new LogContentInvalidException("content.port: required, int");
     }
   }
 }

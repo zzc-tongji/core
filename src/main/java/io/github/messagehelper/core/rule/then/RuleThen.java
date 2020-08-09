@@ -1,13 +1,22 @@
 package io.github.messagehelper.core.rule.then;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.messagehelper.core.exception.InvalidRuleThenException;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
+import javax.validation.constraints.NotNull;
+
 public class RuleThen {
+  @NotNull(message = "payload.instance: required, string")
   private String instance;
+
+  @NotNull(message = "payload.path: required, string")
   private String path;
+
+  @JsonProperty("body")
+  @NotNull(message = "payload.bodyTemplate: required, string")
   private String bodyTemplate;
 
   public String getInstance() {

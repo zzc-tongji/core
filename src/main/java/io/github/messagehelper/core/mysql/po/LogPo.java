@@ -1,6 +1,6 @@
 package io.github.messagehelper.core.mysql.po;
 
-import io.github.messagehelper.core.dto.rpc.log.post.RequestDto;
+import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.utils.IdGenerator;
 
@@ -41,7 +41,7 @@ public class LogPo implements Serializable {
     this.content = content;
   }
 
-  public LogPo(RequestDto logDto) {
+  public LogPo(PostRequestDto logDto) {
     this.id = logDto.getId();
     this.instance = logDto.getInstance();
     this.level = logDto.getLevel();
