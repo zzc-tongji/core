@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 public class ConfigJpaLocalDao implements ConfigDao {
   private ConfigJpaRepository repository;
-  private Map<String, String> configMap;
+  private Map<String, ConfigPo> configMap;
   private LogDao logDao;
   private final Lock lock;
 
@@ -55,8 +55,8 @@ public class ConfigJpaLocalDao implements ConfigDao {
       // DO
       configMap.clear();
       List<ConfigPo> data = repository.findAll();
-      for (ConfigPo item : data) {
-        configMap.put(item.getKey(), item.getValue());
+      for (ConfigPo po : data) {
+        configMap.put(po.getKey(), po);
       }
       // UNLOCK
       lock.writeDecrease();
@@ -79,7 +79,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     // LOCK
     lock.readIncrease();
     // DO
-    String value = configMap.get(key);
+    String value = configMap.get(key).getValue();
     // UNLOCK
     lock.readDecrease();
     //
@@ -108,8 +108,9 @@ public class ConfigJpaLocalDao implements ConfigDao {
       // LOCK
       lock.writeIncrease();
       // DO
-      configMap.put(key, value);
-      repository.save(new ConfigPo(key, value));
+      ConfigPo po = new ConfigPo(key, value);
+      configMap.put(key, po);
+      repository.save(po);
       // UNLOCK
       lock.writeDecrease();
     }

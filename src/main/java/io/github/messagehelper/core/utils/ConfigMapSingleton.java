@@ -1,11 +1,13 @@
 package io.github.messagehelper.core.utils;
 
+import io.github.messagehelper.core.mysql.po.ConfigPo;
+
 import java.util.Map;
 
 public class ConfigMapSingleton {
   private static ConfigMapSingleton instance = new ConfigMapSingleton();
 
-  private Map<String, String> configMap;
+  private Map<String, ConfigPo> configMap;
   private Lock lock;
 
   public static ConfigMapSingleton getInstance() {
@@ -14,7 +16,7 @@ public class ConfigMapSingleton {
 
   private ConfigMapSingleton() {}
 
-  public void setConfigMap(Map<String, String> configMap) {
+  public void setConfigMap(Map<String, ConfigPo> configMap) {
     this.configMap = configMap;
   }
 
@@ -37,7 +39,7 @@ public class ConfigMapSingleton {
     // LOCK
     lock.readIncrease();
     // DO
-    String value = configMap.get(key);
+    String value = configMap.get(key).getValue();
     // UNLOCK
     lock.readDecrease();
     //
