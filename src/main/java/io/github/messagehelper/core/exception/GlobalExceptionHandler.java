@@ -86,6 +86,30 @@ public class GlobalExceptionHandler {
     return new ExceptionResponseDto(e.toString());
   }
 
+  @ExceptionHandler(value = PasswordAlreadySetException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+  public ExceptionResponseDto handle(PasswordAlreadySetException e) {
+    logger.error(e.toString());
+    return new ExceptionResponseDto(e.toString());
+  }
+
+  @ExceptionHandler(value = PasswordInvalidException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ExceptionResponseDto handle(PasswordInvalidException e) {
+    logger.error(e.toString());
+    return new ExceptionResponseDto(e.toString());
+  }
+
+  @ExceptionHandler(value = PasswordNotSetException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+  public ExceptionResponseDto handle(PasswordNotSetException e) {
+    logger.error(e.toString());
+    return new ExceptionResponseDto(e.toString());
+  }
+
   @ExceptionHandler(value = TokenInvalidException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)

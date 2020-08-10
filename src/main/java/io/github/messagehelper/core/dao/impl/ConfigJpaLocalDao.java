@@ -7,12 +7,9 @@ import io.github.messagehelper.core.dto.api.configs.GetPutResponseDto;
 import io.github.messagehelper.core.dto.api.configs.PutRequestDto;
 import io.github.messagehelper.core.exception.ConfigHiddenException;
 import io.github.messagehelper.core.exception.ConfigNotFoundException;
-import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.ConfigPo;
-import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.repository.ConfigJpaRepository;
 import io.github.messagehelper.core.utils.ConfigMapSingleton;
-import io.github.messagehelper.core.utils.ErrorJsonGenerator;
 import io.github.messagehelper.core.utils.Lock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -71,19 +68,27 @@ public class ConfigJpaLocalDao implements ConfigDao {
 
   @Override
   public String load(String key) {
-    String value = find(key).getValue();
+    ConfigPo po = find(key);
+    if (po == null) {
+      return "";
+    }
+    String value = po.getValue();
     if (value == null || value.length() <= 0) {
-      logEmptyValue(key);
+      return "";
     }
     return value;
   }
 
   @Override
+  public void save(String key, String value) {
+    repository.save(new ConfigPo(key, value));
+    refreshCache();
+  }
+
+  @Override
   public GetPutResponseDto read(String key) {
-    if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
-      throw new ConfigHiddenException(String.format("key `%s`: hidden", key));
-    }
-    return new GetPutResponseDto(find(key));
+    ConfigPo po = readUpdateHelper(key);
+    return new GetPutResponseDto(po);
   }
 
   @Override
@@ -117,17 +122,22 @@ public class ConfigJpaLocalDao implements ConfigDao {
 
   @Override
   public GetPutResponseDto update(String key, PutRequestDto dto) {
-    if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
-      throw new ConfigHiddenException(String.format("key `%s`: hidden", key));
-    }
-    ConfigPo po = configMap.get(key);
-    if (po == null) {
-      throw new ConfigNotFoundException(String.format("key `%s`: not found", key));
-    }
+    ConfigPo po = readUpdateHelper(key);
     po.setValue(dto.getValue());
     repository.save(po);
     refreshCache();
     return new GetPutResponseDto(po);
+  }
+
+  private ConfigPo readUpdateHelper(String key) {
+    if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
+      throw new ConfigHiddenException(String.format("key `%s`: hidden", key));
+    }
+    ConfigPo po = find(key);
+    if (po == null) {
+      throw new ConfigNotFoundException(String.format("key `%s`: not found", key));
+    }
+    return po;
   }
 
   private ConfigPo find(String key) {
@@ -147,15 +157,5 @@ public class ConfigJpaLocalDao implements ConfigDao {
     lock.readDecrease();
     //
     return po;
-  }
-
-  private void logEmptyValue(String key) {
-    logDao.insert(
-        new LogPo(
-            load("core.instance"),
-            Constant.LOG_ERR,
-            "core.dao.impl.config-jpa-local-dao.empty-value",
-            ErrorJsonGenerator.getInstance()
-                .generate(String.format("key \"%s\": empty value (\"\")", key), "", "")));
   }
 }

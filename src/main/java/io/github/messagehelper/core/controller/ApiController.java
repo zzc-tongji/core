@@ -2,11 +2,12 @@ package io.github.messagehelper.core.controller;
 
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
+import io.github.messagehelper.core.dao.TokenDao;
 import io.github.messagehelper.core.dto.TokenRequestDto;
 import io.github.messagehelper.core.dto.api.configs.PutRequestDto;
-import io.github.messagehelper.core.exception.TokenInvalidException;
 import io.github.messagehelper.core.utils.DisableCacheHeader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +18,13 @@ public class ApiController {
 
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
+  private TokenDao tokenDao;
 
   @Autowired
-  public ApiController(ConfigDao configDao, ConnectorDao connectorDao) {
+  public ApiController(ConfigDao configDao, ConnectorDao connectorDao, TokenDao tokenDao) {
     this.configDao = configDao;
     this.connectorDao = connectorDao;
+    this.tokenDao = tokenDao;
   }
 
   // PREFIX + "/configs"
@@ -29,9 +32,7 @@ public class ApiController {
   @GetMapping(value = PREFIX + "/configs")
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetAllResponseDto>
       configsGetALL(@RequestHeader("token") String token) {
-    if (!configDao.load("core.backend.token").equals(token)) {
-      throw new TokenInvalidException("token: not valid");
-    }
+    tokenDao.authenticate(token);
     return ResponseEntity.status(200)
         .headers(DisableCacheHeader.getInstance())
         .body(configDao.readAll());
@@ -40,9 +41,7 @@ public class ApiController {
   @GetMapping(value = PREFIX + "/configs/{key}")
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetPutResponseDto> configsGet(
       @PathVariable("key") String key, @RequestHeader("token") String token) {
-    if (!configDao.load("core.backend.token").equals(token)) {
-      throw new TokenInvalidException("token: not valid");
-    }
+    tokenDao.authenticate(token);
     return ResponseEntity.status(200)
         .headers(DisableCacheHeader.getInstance())
         .body(configDao.read(key));
@@ -51,18 +50,16 @@ public class ApiController {
   @PutMapping(value = PREFIX + "/configs/{key}")
   public io.github.messagehelper.core.dto.api.configs.GetPutResponseDto configsPut(
       @PathVariable("key") String key, @RequestBody @Validated PutRequestDto dto) {
-    dto.authenticate(configDao.load("core.backend.token"));
+    tokenDao.authenticate(dto.getToken());
     return configDao.update(key, dto);
   }
 
-  //  PREFIX + "/connectors"
+  // PREFIX + "/connectors"
 
   @GetMapping(value = PREFIX + "/connectors")
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto>
       connectorsGetAll(@RequestHeader("token") String token) {
-    if (!configDao.load("core.backend.token").equals(token)) {
-      throw new TokenInvalidException("token: not valid");
-    }
+    tokenDao.authenticate(token);
     return ResponseEntity.status(200)
         .headers(DisableCacheHeader.getInstance())
         .body(connectorDao.readAll());
@@ -72,9 +69,7 @@ public class ApiController {
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto>
       connectorsGet(
           @PathVariable("idOrInstance") String idOrInstance, @RequestHeader("token") String token) {
-    if (!configDao.load("core.backend.token").equals(token)) {
-      throw new TokenInvalidException("token: not valid");
-    }
+    tokenDao.authenticate(token);
     try {
       return ResponseEntity.status(200)
           .headers(DisableCacheHeader.getInstance())
@@ -91,7 +86,7 @@ public class ApiController {
       @PathVariable("id") Long id,
       @RequestBody @Validated
           io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
-    dto.authenticate(configDao.load("core.backend.token"));
+    tokenDao.authenticate(dto.getToken());
     return connectorDao.update(id, dto);
   }
 
@@ -99,23 +94,40 @@ public class ApiController {
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPost(
       @RequestBody @Validated
           io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
-    dto.authenticate(configDao.load("core.backend.token"));
+    tokenDao.authenticate(dto.getToken());
     return connectorDao.create(dto);
   }
 
   @DeleteMapping(value = PREFIX + "/connectors/{id}")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
       connectorsDelete(@PathVariable("id") Long id, @RequestBody @Validated TokenRequestDto dto) {
-    dto.authenticate(configDao.load("core.backend.token"));
+    tokenDao.authenticate(dto.getToken());
     return connectorDao.delete(id);
   }
 
-  //  PREFIX + "/deliveries"
+  // PREFIX + "/deliveries"
 
   @PostMapping(value = PREFIX + "/deliveries")
   public ResponseEntity<String> deliveriesPost(
       @RequestBody @Validated io.github.messagehelper.core.dto.api.deliveries.PostRequestDto dto) {
-    dto.authenticate(configDao.load("core.backend.token"));
+    tokenDao.authenticate(dto.getToken());
     return connectorDao.execute(dto.getPayload());
+  }
+
+  // PREFIX + "/login"
+
+  @PostMapping(value = PREFIX + "/login")
+  public io.github.messagehelper.core.dto.api.login.PostResponseDto loginPost(
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.login.PostRequestDto dto) {
+    return tokenDao.login(dto);
+  }
+
+  // PREFIX + "/register"
+
+  @PostMapping(value = PREFIX + "/register")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void registerPost(
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.register.PostRequestDto dto) {
+    tokenDao.register(dto);
   }
 }

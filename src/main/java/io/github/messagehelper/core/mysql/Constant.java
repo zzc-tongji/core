@@ -16,4 +16,5 @@ public class Constant {
   public static final int LOG_CONTENT_LENGTH = 8192;
   public static final int RULE_NAME_LENGTH = 256;
   public static final int RULE_CONTENT_LENGTH = 1024;
+  public static final int TOKEN_LENGTH = 32;
 }

@@ -41,7 +41,7 @@ public class IdGenerator {
     }
   }
 
-  private long generateNegative() {
+  public long generateNegative() {
     long result;
     do {
       result = random.nextLong();

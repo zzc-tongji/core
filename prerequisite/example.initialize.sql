@@ -83,3 +83,13 @@ CREATE TABLE `rule`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
+
+-- [token] column
+CREATE TABLE `token`
+(
+    `token`                char(32)   NOT NULL,
+    `expired_timestamp_ms` bigint(20) NOT NULL,
+    PRIMARY KEY (`token`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;

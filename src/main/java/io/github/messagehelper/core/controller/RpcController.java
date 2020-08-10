@@ -4,6 +4,7 @@ import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dao.RuleDao;
 import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
+import io.github.messagehelper.core.exception.TokenInvalidException;
 import io.github.messagehelper.core.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +34,9 @@ public class RpcController {
   @PostMapping(value = PREFIX + "/log")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void logPost(@RequestBody @Validated PostRequestDto dto) {
-    dto.authenticate(configDao.load("core.rpc.token"));
+    if (!configDao.load("core.rpc.token").equals(dto.getToken())) {
+      throw new TokenInvalidException("token: not valid");
+    }
     Log log = new Log(dto);
     logDao.insert(dto);
     ruleDao.process(log);
