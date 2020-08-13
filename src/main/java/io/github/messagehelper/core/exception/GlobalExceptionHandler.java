@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(HttpMessageNotReadableException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   // JSON format not correct (based on different requests)
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(MissingRequestHeaderException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = ConfigHiddenException.class)
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(ConfigHiddenException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = ConfigNotFoundException.class)
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(ConfigNotFoundException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = ConnectorAlreadyExistentException.class)
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(ConnectorAlreadyExistentException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = ConnectorNotFoundException.class)
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(ConnectorNotFoundException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = LogContentInvalidException.class)
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(LogContentInvalidException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = PasswordAlreadySetException.class)
@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
   public ExceptionResponseDto handle(PasswordAlreadySetException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = PasswordInvalidException.class)
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public ExceptionResponseDto handle(PasswordInvalidException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = PasswordNotSetException.class)
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
   public ExceptionResponseDto handle(PasswordNotSetException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = TokenInvalidException.class)
@@ -115,7 +115,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public ExceptionResponseDto handle(TokenInvalidException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 
   @ExceptionHandler(value = RuntimeException.class)
@@ -123,6 +123,6 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ExceptionResponseDto handle(RuntimeException e) {
     logger.error(e.toString());
-    return new ExceptionResponseDto(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
   }
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +43,71 @@ public class TokenJpaLocalDao implements TokenDao {
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     }
-    //
-    cache();
+    // cache
+    refreshCache();
+    // clear expired token periodically
+    (new Thread(
+            () -> {
+              List<TokenPo> expiredList = new ArrayList<>();
+              while (true) {
+                // execute periodically
+                try {
+                  Thread.sleep(lifetimeMs);
+                } catch (InterruptedException e) {
+                  throw new RuntimeException(e);
+                }
+                // get all expired tokens
+                expiredList.clear();
+                long expiredTimestampMs;
+                long delta;
+                for (TokenPo po : tokenMap.values()) {
+                  expiredTimestampMs = po.getExpiredTimestampMs();
+                  if (expiredTimestampMs <= 0) {
+                    // permanent token
+                    // => skip
+                    continue;
+                  }
+                  delta = expiredTimestampMs - System.currentTimeMillis();
+                  if (delta < 0) {
+                    // expired
+                    // => add
+                    expiredList.add(po);
+                  }
+                }
+                // remove them
+                if (!expiredList.isEmpty()) {
+                  repository.deleteAll(expiredList);
+                  refreshCache();
+                }
+              }
+            }))
+        .start();
+  }
+
+  @Override
+  public void refreshCache() {
+    // CHECK
+    synchronized (lock) {
+      // CHECK
+      while (lock.isReadLocked()) {
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+      // LOCK
+      lock.writeIncrease();
+      // DO
+      tokenMap.clear();
+      List<TokenPo> data = repository.findAll();
+      for (TokenPo po : data) {
+        tokenMap.put(po.getToken(), po);
+      }
+      // UNLOCK
+      lock.writeDecrease();
+      //
+    }
   }
 
   @Override
@@ -54,37 +118,22 @@ public class TokenJpaLocalDao implements TokenDao {
     }
     long expiredTimestampMs = po.getExpiredTimestampMs();
     if (expiredTimestampMs <= 0) {
-      // never expired (permanent token)
+      // permanent token
+      // => succeed
       return;
     }
     long delta = expiredTimestampMs - System.currentTimeMillis();
     if (delta < 0) {
       // expired now
-      tokenMap.remove(token);
-      repository.deleteById(token);
+      // => fail
       throw new TokenInvalidException("token: expired");
     }
     if (delta < (lifetimeMs >> 4)) {
       // expired in 1.5 hours
+      // => extend, succeed
       expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;
-      // CHECK
-      synchronized (lock) {
-        // CHECK
-        while (lock.isReadLocked()) {
-          try {
-            Thread.sleep(100);
-          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-          }
-        }
-        // LOCK
-        lock.writeIncrease();
-        // DO
-        po.setExpiredTimestampMs(expiredTimestampMs);
-        // UNLOCK
-        lock.writeDecrease();
-      }
-      repository.save(po);
+      repository.save(new TokenPo(token, expiredTimestampMs));
+      refreshCache();
     }
   }
 
@@ -100,26 +149,8 @@ public class TokenJpaLocalDao implements TokenDao {
     }
     String token = String.format("token%d", IdGenerator.getInstance().generateNegative());
     Long expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;
-    // CHECK
-    TokenPo po;
-    synchronized (lock) {
-      // CHECK
-      while (lock.isReadLocked()) {
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-      }
-      // LOCK
-      lock.writeIncrease();
-      // DO
-      po = new TokenPo(token, expiredTimestampMs);
-      tokenMap.put(token, po);
-      // UNLOCK
-      lock.writeDecrease();
-    }
-    repository.save(po);
+    repository.save(new TokenPo(token, expiredTimestampMs));
+    refreshCache();
     return new PostResponseDto(token, expiredTimestampMs);
   }
 
@@ -132,30 +163,6 @@ public class TokenJpaLocalDao implements TokenDao {
     String salt = String.format("salt%d", IdGenerator.getInstance().generateNegative());
     configDao.save("core.backend.password", cipher(dto.getPassword(), salt));
     configDao.save("core.backend.salt", salt);
-  }
-
-  private void cache() {
-    // CHECK
-    synchronized (lock) {
-      // CHECK
-      while (lock.isReadLocked()) {
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-      }
-      // LOCK
-      lock.writeIncrease();
-      // DO
-      List<TokenPo> data = repository.findAll();
-      for (TokenPo po : data) {
-        tokenMap.put(po.getToken(), po);
-      }
-      // UNLOCK
-      lock.writeDecrease();
-      //
-    }
   }
 
   private TokenPo find(String key) {
@@ -181,7 +188,7 @@ public class TokenJpaLocalDao implements TokenDao {
     byte[] array = messageDigest.digest(String.format("%s%s", password, salt).getBytes());
     StringBuilder builder = new StringBuilder();
     for (byte b : array) {
-      builder.append(String.format("%02X", b));
+      builder.append(String.format("%02x", b));
     }
     return builder.toString();
   }

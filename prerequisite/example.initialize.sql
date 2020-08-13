@@ -29,11 +29,11 @@ VALUES ('core.frontend.config', '{}');
 INSERT INTO config (item_key, item_value)
 VALUES ('core.id-generator', '<id-generator-url>');
 
--- [config] name
+-- [config] instance
 --
 -- instance name shown in log
 INSERT INTO config (item_key, item_value)
-VALUES ('core.instance', '<name>');
+VALUES ('core.instance', '<instance>');
 
 -- [config] RPC token
 --
