@@ -1,44 +1,36 @@
-package io.github.messagehelper.core.controller;
+package io.github.messagehelper.core.dao.implement;
 
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.LogDao;
+import io.github.messagehelper.core.dao.ProcessorDao;
 import io.github.messagehelper.core.dao.RuleDao;
 import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.exception.TokenInvalidException;
-import io.github.messagehelper.core.log.Log;
+import io.github.messagehelper.core.processor.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
-@RestController
-public class RpcController {
-  private static final String PREFIX = "/rpc";
-
+@Service
+public class ProcessorImplementDao implements ProcessorDao {
   private ConfigDao configDao;
   private LogDao logDao;
   private RuleDao ruleDao;
 
   @Autowired
-  public RpcController(
+  public ProcessorImplementDao(
       ConfigDao configDao, @Qualifier("LogJpaAsyncDao") LogDao logDao, RuleDao ruleDao) {
     this.configDao = configDao;
     this.logDao = logDao;
     this.ruleDao = ruleDao;
   }
 
-  @PostMapping(value = PREFIX + "/log")
-  @ResponseStatus(HttpStatus.ACCEPTED)
-  public void logPost(@RequestBody @Validated PostRequestDto dto) {
+  @Override
+  public void start(PostRequestDto dto) {
     if (!configDao.load("core.rpc.token").equals(dto.getToken())) {
       throw new TokenInvalidException("token: not valid");
     }
-    Log log = new Log(dto);
     logDao.insert(dto);
-    ruleDao.process(log);
+    ruleDao.process(Log.parse(dto));
   }
 }
