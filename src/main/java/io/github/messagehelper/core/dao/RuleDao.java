@@ -3,7 +3,7 @@ package io.github.messagehelper.core.dao;
 import io.github.messagehelper.core.dto.api.rules.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.rules.PutPostRequestDto;
-import io.github.messagehelper.core.log.Log;
+import io.github.messagehelper.core.processor.log.Log;
 
 public interface RuleDao {
   void refreshCache();

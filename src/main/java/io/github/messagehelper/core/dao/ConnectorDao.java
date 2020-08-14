@@ -4,8 +4,8 @@ import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
 import io.github.messagehelper.core.dto.api.delegate.PostRequestDto;
-import io.github.messagehelper.core.log.Log;
-import io.github.messagehelper.core.rule.then.RuleThen;
+import io.github.messagehelper.core.processor.log.Log;
+import io.github.messagehelper.core.processor.rule.then.RuleThen;
 import org.springframework.http.ResponseEntity;
 
 public interface ConnectorDao {
