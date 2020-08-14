@@ -14,7 +14,6 @@ import io.github.messagehelper.core.exception.RuleAlreadyExistentException;
 import io.github.messagehelper.core.exception.RuleNotFoundException;
 import io.github.messagehelper.core.log.Log;
 import io.github.messagehelper.core.mysql.Constant;
-import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
 import io.github.messagehelper.core.rule.Rule;
@@ -35,14 +34,13 @@ import java.util.List;
 
 @Service
 public class RuleJpaLocalDao implements RuleDao {
-  private final Logger logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);
-
   private RuleJpaRepository repository;
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
   private LogDao logDao;
   private List<Rule> ruleList;
   private final Lock lock;
+  private final Logger logger;
 
   public RuleJpaLocalDao(
       @Autowired RuleJpaRepository repository,
@@ -55,6 +53,7 @@ public class RuleJpaLocalDao implements RuleDao {
     this.logDao = logDao;
     ruleList = new ArrayList<>();
     lock = new Lock();
+    logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);
     //
     refreshCache();
   }
@@ -106,14 +105,17 @@ public class RuleJpaLocalDao implements RuleDao {
       if (rule.getPriority() <= 0) {
         continue;
       }
+      // match rule
       if (rule.getRuleIf().satisfy(log)) {
+        // log
         logDao.insert(
-            new LogPo(
-                configDao.load("core.instance"),
-                Constant.LOG_INFO,
-                "core.dao.impl.rule-jpa-local-dao.process.hit",
-                String.format("{\"ruleName\":\"%s\",\"logId\":%d}", rule.getName(), log.getId())));
+            configDao.load("core.instance"),
+            Constant.LOG_INFO,
+            "core.dao.impl.rule-jpa-local-dao.process.hit",
+            String.format("{\"ruleName\":\"%s\",\"logId\":%d}", rule.getName(), log.getId()));
+        // execute rule
         connectorDao.execute(rule.getRuleThen(), log);
+        // terminate or not
         if (rule.getTerminate()) {
           break;
         }
@@ -125,6 +127,12 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
+    // cache
+    Rule rule = find(dto.getName());
+    if (rule != null) {
+      throw new RuleAlreadyExistentException(
+          String.format("rule with instance [%s]: already existent", dto.getName()));
+    }
     // database
     RulePo po = new RulePo();
     requestDtoToPo(IdGenerator.getInstance().generate(), dto, po);
@@ -149,6 +157,7 @@ public class RuleJpaLocalDao implements RuleDao {
     // database
     repository.deleteById(id);
     refreshCache();
+    //
     return responseDto;
   }
 

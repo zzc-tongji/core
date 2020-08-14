@@ -1,28 +1,10 @@
-package io.github.messagehelper.core.mysql.po;
+package io.github.messagehelper.core.dto.api.connectors;
 
-import io.github.messagehelper.core.mysql.Constant;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
-
-@Entity
-@Table(name = "connector")
-public class ConnectorPo implements Serializable {
-  @Id private Long id;
-
-  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false, unique = true)
+public class Item {
+  private Long id;
   private String instance;
-
-  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false)
   private String category;
-
-  @Column(length = Constant.CONNECTOR_URL_LENGTH, nullable = false)
   private String url;
-
-  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false)
   private String token;
 
   public Long getId() {

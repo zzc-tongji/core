@@ -2,7 +2,6 @@ package io.github.messagehelper.core.dao.impl;
 
 import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
-import io.github.messagehelper.core.mysql.po.LogPo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
@@ -19,8 +18,8 @@ public class LogJpaAsyncDao implements LogDao {
   }
 
   @Override
-  public void insert(LogPo po) {
-    sync.insert(po);
+  public void insert(String instance, String level, String category, String content) {
+    sync.insert(instance, level, category, content);
   }
 
   @Override

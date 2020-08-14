@@ -1,21 +1,16 @@
 package io.github.messagehelper.core.dto.api.configs;
 
-import io.github.messagehelper.core.mysql.po.ConfigPo;
-
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class GetAllResponseDto {
-  private List<ConfigPo> data;
+  private Collection<Item> data;
 
-  public List<ConfigPo> getData() {
+  public Collection<Item> getData() {
     return data;
   }
 
-  public void setData(List<ConfigPo> data) {
-    this.data = data;
-  }
-
-  public GetAllResponseDto(List<ConfigPo> data) {
-    setData(data);
+  public GetAllResponseDto() {
+    this.data = new ArrayList<>();
   }
 }

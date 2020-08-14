@@ -1,19 +1,13 @@
 package io.github.messagehelper.core.dto.api.connectors;
 
-import io.github.messagehelper.core.mysql.po.ConnectorPo;
-
 public class GetPutPostDeleteResponseDto {
-  private ConnectorPo data;
+  private Item data;
 
-  public ConnectorPo getData() {
+  public Item getData() {
     return data;
   }
 
-  public void setData(ConnectorPo data) {
-    this.data = data;
-  }
-
-  public GetPutPostDeleteResponseDto(ConnectorPo data) {
-    setData(data);
+  public GetPutPostDeleteResponseDto() {
+    this.data = new Item();
   }
 }

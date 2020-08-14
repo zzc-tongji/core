@@ -1,8 +1,6 @@
 package io.github.messagehelper.core.mysql.po;
 
-import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
-import io.github.messagehelper.core.utils.IdGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,26 +27,6 @@ public class LogPo implements Serializable {
 
   @Column(length = Constant.LOG_CONTENT_LENGTH, nullable = false)
   private String content;
-
-  public LogPo() {}
-
-  public LogPo(String instance, String level, String category, String content) {
-    this.id = IdGenerator.getInstance().generate();
-    this.instance = instance;
-    this.level = level;
-    this.category = category;
-    this.timestampMs = System.currentTimeMillis();
-    this.content = content;
-  }
-
-  public LogPo(PostRequestDto logDto) {
-    this.id = logDto.getId();
-    this.instance = logDto.getInstance();
-    this.level = logDto.getLevel();
-    this.category = logDto.getCategory();
-    this.timestampMs = logDto.getTimestampMs();
-    this.content = logDto.getContent();
-  }
 
   public Long getId() {
     return id;

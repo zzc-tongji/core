@@ -18,20 +18,28 @@ public class LogJpaDao implements LogDao {
   }
 
   @Override
-  public void insert(LogPo po) {
-    Long id = po.getId();
-    if (id < 0 && repository.existsById(id)) {
-      do {
-        id = IdGenerator.getInstance().generate();
-      } while (id < 0 && repository.existsById(id));
-      po.setId(id);
-    }
+  public void insert(String instance, String level, String category, String content) {
+    // database
+    LogPo po = new LogPo();
+    po.setId(IdGenerator.getInstance().generate());
+    po.setInstance(instance);
+    po.setLevel(level);
+    po.setCategory(category);
+    po.setTimestampMs(System.currentTimeMillis());
+    po.setContent(content);
     repository.save(po);
   }
 
   @Override
   public void insert(PostRequestDto dto) {
-    LogPo po = new LogPo(dto);
-    insert(po);
+    // database
+    LogPo po = new LogPo();
+    po.setId(dto.getId());
+    po.setInstance(dto.getInstance());
+    po.setLevel(dto.getLevel());
+    po.setCategory(dto.getCategory());
+    po.setTimestampMs(dto.getTimestampMs());
+    po.setContent(dto.getContent());
+    repository.save(po);
   }
 }

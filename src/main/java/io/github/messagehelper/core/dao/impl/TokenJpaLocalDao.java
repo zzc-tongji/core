@@ -2,6 +2,7 @@ package io.github.messagehelper.core.dao.impl;
 
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.TokenDao;
+import io.github.messagehelper.core.dto.api.login.Item;
 import io.github.messagehelper.core.dto.api.login.PostRequestDto;
 import io.github.messagehelper.core.dto.api.login.PostResponseDto;
 import io.github.messagehelper.core.exception.PasswordAlreadySetException;
@@ -112,6 +113,7 @@ public class TokenJpaLocalDao implements TokenDao {
 
   @Override
   public void authenticate(String token) {
+    // cache
     TokenPo po = find(token);
     if (po == null) {
       throw new TokenInvalidException("token: not valid");
@@ -132,13 +134,18 @@ public class TokenJpaLocalDao implements TokenDao {
       // expired in 1.5 hours
       // => extend, succeed
       expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;
-      repository.save(new TokenPo(token, expiredTimestampMs));
+      // database
+      TokenPo updatedPo = new TokenPo();
+      updatedPo.setToken(token);
+      updatedPo.setExpiredTimestampMs(expiredTimestampMs);
+      repository.save(updatedPo);
       refreshCache();
     }
   }
 
   @Override
   public PostResponseDto login(PostRequestDto dto) {
+    // cache
     if (configDao.load("core.backend.password").length() <= 0
         || configDao.load("core.backend.salt").length() <= 0) {
       throw new PasswordNotSetException("not registered, please register first");
@@ -149,17 +156,28 @@ public class TokenJpaLocalDao implements TokenDao {
     }
     String token = String.format("token%d", IdGenerator.getInstance().generateNegative());
     Long expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;
-    repository.save(new TokenPo(token, expiredTimestampMs));
+    // database
+    TokenPo po = new TokenPo();
+    po.setToken(token);
+    po.setExpiredTimestampMs(expiredTimestampMs);
+    repository.save(po);
     refreshCache();
-    return new PostResponseDto(token, expiredTimestampMs);
+    // response
+    PostResponseDto responseDto = new PostResponseDto();
+    Item data = responseDto.getData();
+    data.setToken(token);
+    data.setExpiredTimestampMs(expiredTimestampMs);
+    return responseDto;
   }
 
   @Override
   public void register(io.github.messagehelper.core.dto.api.register.PostRequestDto dto) {
+    // cache
     if (configDao.load("core.backend.password").length() > 0
         && configDao.load("core.backend.salt").length() > 0) {
       throw new PasswordAlreadySetException("already registered, please login instead");
     }
+    // database
     String salt = String.format("salt%d", IdGenerator.getInstance().generateNegative());
     configDao.save("core.backend.password", cipher(dto.getPassword(), salt));
     configDao.save("core.backend.salt", salt);

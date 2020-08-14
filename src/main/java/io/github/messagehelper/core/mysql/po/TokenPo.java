@@ -33,11 +33,4 @@ public class TokenPo implements Serializable {
   public void setExpiredTimestampMs(Long expiredTimestampMs) {
     this.expiredTimestampMs = expiredTimestampMs;
   }
-
-  public TokenPo() {}
-
-  public TokenPo(String token, Long expiredTimestampMs) {
-    setToken(token);
-    setExpiredTimestampMs(expiredTimestampMs);
-  }
 }

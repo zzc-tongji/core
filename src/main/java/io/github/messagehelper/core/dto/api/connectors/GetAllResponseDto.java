@@ -1,21 +1,16 @@
 package io.github.messagehelper.core.dto.api.connectors;
 
-import io.github.messagehelper.core.mysql.po.ConnectorPo;
-
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class GetAllResponseDto {
-  private Collection<ConnectorPo> data;
+  private Collection<Item> data;
 
-  public Collection<ConnectorPo> getData() {
+  public Collection<Item> getData() {
     return data;
   }
 
-  public void setData(Collection<ConnectorPo> data) {
-    this.data = data;
-  }
-
-  public GetAllResponseDto(Collection<ConnectorPo> data) {
-    setData(data);
+  public GetAllResponseDto() {
+    this.data = new ArrayList<>();
   }
 }

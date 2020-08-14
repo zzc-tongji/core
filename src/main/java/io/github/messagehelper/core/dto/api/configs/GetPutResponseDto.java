@@ -1,19 +1,13 @@
 package io.github.messagehelper.core.dto.api.configs;
 
-import io.github.messagehelper.core.mysql.po.ConfigPo;
-
 public class GetPutResponseDto {
-  private ConfigPo data;
+  private Item data;
 
-  public ConfigPo getData() {
+  public Item getData() {
     return data;
   }
 
-  public void setData(ConfigPo data) {
-    this.data = data;
-  }
-
-  public GetPutResponseDto(ConfigPo data) {
-    setData(data);
+  public GetPutResponseDto() {
+    this.data = new Item();
   }
 }
