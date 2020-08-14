@@ -2,9 +2,11 @@ package io.github.messagehelper.core.controller;
 
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
+import io.github.messagehelper.core.dao.RuleDao;
 import io.github.messagehelper.core.dao.TokenDao;
 import io.github.messagehelper.core.dto.TokenRequestDto;
 import io.github.messagehelper.core.dto.api.configs.PutRequestDto;
+import io.github.messagehelper.core.exception.IdNotNumericalException;
 import io.github.messagehelper.core.utils.DisableCacheHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,12 +20,15 @@ public class ApiController {
 
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
+  private RuleDao ruleDao;
   private TokenDao tokenDao;
 
   @Autowired
-  public ApiController(ConfigDao configDao, ConnectorDao connectorDao, TokenDao tokenDao) {
+  public ApiController(
+      ConfigDao configDao, ConnectorDao connectorDao, RuleDao ruleDao, TokenDao tokenDao) {
     this.configDao = configDao;
     this.connectorDao = connectorDao;
+    this.ruleDao = ruleDao;
     this.tokenDao = tokenDao;
   }
 
@@ -83,11 +88,15 @@ public class ApiController {
 
   @PutMapping(value = PREFIX + "/connectors/{id}")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPut(
-      @PathVariable("id") Long id,
+      @PathVariable("id") String id,
       @RequestBody @Validated
           io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
     tokenDao.authenticate(dto.getToken());
-    return connectorDao.update(id, dto);
+    try {
+      return connectorDao.update(Long.parseLong(id), dto);
+    } catch (NumberFormatException e) {
+      throw new IdNotNumericalException("path {id}: required, long");
+    }
   }
 
   @PostMapping(value = PREFIX + "/connectors")
@@ -100,18 +109,22 @@ public class ApiController {
 
   @DeleteMapping(value = PREFIX + "/connectors/{id}")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
-      connectorsDelete(@PathVariable("id") Long id, @RequestBody @Validated TokenRequestDto dto) {
+      connectorsDelete(@PathVariable("id") String id, @RequestBody @Validated TokenRequestDto dto) {
     tokenDao.authenticate(dto.getToken());
-    return connectorDao.delete(id);
+    try {
+      return connectorDao.delete(Long.parseLong(id));
+    } catch (NumberFormatException e) {
+      throw new IdNotNumericalException("path {id}: required, long");
+    }
   }
 
-  // PREFIX + "/deliveries"
+  // PREFIX + "/delegate"
 
-  @PostMapping(value = PREFIX + "/deliveries")
-  public ResponseEntity<String> deliveriesPost(
-      @RequestBody @Validated io.github.messagehelper.core.dto.api.deliveries.PostRequestDto dto) {
+  @PostMapping(value = PREFIX + "/delegate")
+  public ResponseEntity<String> delegatePost(
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.delegate.PostRequestDto dto) {
     tokenDao.authenticate(dto.getToken());
-    return connectorDao.execute(dto.getPayload());
+    return connectorDao.execute(dto);
   }
 
   // PREFIX + "/login"
@@ -129,5 +142,61 @@ public class ApiController {
   public void registerPost(
       @RequestBody @Validated io.github.messagehelper.core.dto.api.register.PostRequestDto dto) {
     tokenDao.register(dto);
+  }
+
+  // PREFIX + "/rules"
+
+  @GetMapping(value = PREFIX + "/rules")
+  public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetAllResponseDto> rulesGetAll(
+      @RequestHeader("token") String token) {
+    tokenDao.authenticate(token);
+    return ResponseEntity.status(200)
+        .headers(DisableCacheHeader.getInstance())
+        .body(ruleDao.readAll());
+  }
+
+  @GetMapping(value = PREFIX + "/rules/{idOrName}")
+  public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto>
+      rulesGet(@PathVariable("idOrName") String idOrName, @RequestHeader("token") String token) {
+    tokenDao.authenticate(token);
+    try {
+      return ResponseEntity.status(200)
+          .headers(DisableCacheHeader.getInstance())
+          .body(ruleDao.readById(Long.parseLong(idOrName)));
+    } catch (NumberFormatException e) {
+      return ResponseEntity.status(200)
+          .headers(DisableCacheHeader.getInstance())
+          .body(ruleDao.readByName(idOrName));
+    }
+  }
+
+  @PutMapping(value = PREFIX + "/rules/{id}")
+  public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto rulePut(
+      @PathVariable("id") String id,
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
+    tokenDao.authenticate(dto.getToken());
+    try {
+      return ruleDao.update(Long.parseLong(id), dto);
+    } catch (NumberFormatException e) {
+      throw new IdNotNumericalException("path {id}: required, long");
+    }
+  }
+
+  @PostMapping(value = PREFIX + "/rules")
+  public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto rulePost(
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
+    tokenDao.authenticate(dto.getToken());
+    return ruleDao.create(dto);
+  }
+
+  @DeleteMapping(value = PREFIX + "/rules/{id}")
+  public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto ruleDelete(
+      @PathVariable("id") String id, @RequestBody @Validated TokenRequestDto dto) {
+    tokenDao.authenticate(dto.getToken());
+    try {
+      return ruleDao.delete(Long.parseLong(id));
+    } catch (NumberFormatException e) {
+      throw new IdNotNumericalException("path {id}: required, long");
+    }
   }
 }

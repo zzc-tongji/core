@@ -11,6 +11,22 @@ public class RuleIf {
   private String instance;
   private String category;
 
+  public String getInstance() {
+    return instance;
+  }
+
+  public void setInstance(String instance) {
+    this.instance = instance;
+  }
+
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
   public static RuleIf parse(String json) {
     // general
     if (json.contains("\"wechat-connector.listener.wechat.message\"")) {
@@ -30,20 +46,13 @@ public class RuleIf {
     }
   }
 
-  public String getInstance() {
-    return instance;
-  }
-
-  public void setInstance(String instance) {
-    this.instance = instance;
-  }
-
-  public String getCategory() {
-    return category;
-  }
-
-  public void setCategory(String category) {
-    this.category = category;
+  @Override
+  public String toString() {
+    try {
+      return ObjectMapperSingleton.getInstance().writeValueAsString(this);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException();
+    }
   }
 
   public RuleIf(String json) {
@@ -57,13 +66,13 @@ public class RuleIf {
     if (temp != null && temp.isTextual()) {
       instance = temp.asText();
     } else {
-      throw new InvalidRuleIfException("instance: required, string");
+      throw new InvalidRuleIfException("ifContent.instance: required, string");
     }
     temp = jsonNode.get("category");
     if (temp != null && temp.isTextual()) {
       category = temp.asText();
     } else {
-      throw new InvalidRuleIfException("category: required, string");
+      throw new InvalidRuleIfException("ifContent.category: required, string");
     }
   }
 

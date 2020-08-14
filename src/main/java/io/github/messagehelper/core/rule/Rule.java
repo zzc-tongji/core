@@ -41,7 +41,7 @@ public class Rule implements Comparable<Rule> {
   }
 
   public void setRuleThen(String json) {
-    ruleThen = new RuleThen(json);
+    ruleThen = RuleThen.parse(json);
   }
 
   public Integer getPriority() {

@@ -4,14 +4,23 @@ import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
 import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dao.RuleDao;
+import io.github.messagehelper.core.dto.api.rules.GetAllResponseDto;
+import io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto;
+import io.github.messagehelper.core.dto.api.rules.Item;
+import io.github.messagehelper.core.dto.api.rules.PutPostRequestDto;
 import io.github.messagehelper.core.exception.InvalidRuleIfException;
 import io.github.messagehelper.core.exception.InvalidRuleThenException;
+import io.github.messagehelper.core.exception.RuleAlreadyExistentException;
+import io.github.messagehelper.core.exception.RuleNotFoundException;
 import io.github.messagehelper.core.log.Log;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
 import io.github.messagehelper.core.rule.Rule;
+import io.github.messagehelper.core.rule._if.RuleIf;
+import io.github.messagehelper.core.rule.then.RuleThen;
+import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,5 +121,206 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     // UNLOCK
     lock.readDecrease();
+  }
+
+  @Override
+  public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
+    // database
+    RulePo po = new RulePo();
+    requestDtoToPo(IdGenerator.getInstance().generate(), dto, po);
+    repository.save(po);
+    refreshCache();
+    // response
+    GetPutPostDeleteResponseDto responseDto = new GetPutPostDeleteResponseDto();
+    poToResponseDto(po, responseDto);
+    return responseDto;
+  }
+
+  @Override
+  public GetPutPostDeleteResponseDto delete(Long id) {
+    // cache
+    Rule rule = find(id);
+    if (rule == null) {
+      throw new RuleNotFoundException(String.format("rule with id [%d]: not found", id));
+    }
+    // response
+    GetPutPostDeleteResponseDto responseDto = new GetPutPostDeleteResponseDto();
+    ruleToResponseDto(rule, responseDto);
+    // database
+    repository.deleteById(id);
+    refreshCache();
+    return responseDto;
+  }
+
+  @Override
+  public GetPutPostDeleteResponseDto readById(Long id) {
+    // cache
+    Rule rule = find(id);
+    if (rule == null) {
+      throw new RuleNotFoundException(String.format("rule with id [%d]: not found", id));
+    }
+    // response
+    GetPutPostDeleteResponseDto responseDto = new GetPutPostDeleteResponseDto();
+    ruleToResponseDto(rule, responseDto);
+    return responseDto;
+  }
+
+  @Override
+  public GetPutPostDeleteResponseDto readByName(String name) {
+    // cache
+    Rule rule = find(name);
+    if (rule == null) {
+      throw new RuleNotFoundException(String.format("rule with name [%s]: not found", name));
+    }
+    // response
+    GetPutPostDeleteResponseDto responseDto = new GetPutPostDeleteResponseDto();
+    ruleToResponseDto(rule, responseDto);
+    return responseDto;
+  }
+
+  @Override
+  public GetAllResponseDto readAll() {
+    // cache
+    List<Rule> list = findAll();
+    // response
+    GetAllResponseDto responseDto = new GetAllResponseDto();
+    Collection<Item> data = responseDto.getData();
+    Item item;
+    for (Rule rule : list) {
+      item = new Item();
+      item.setId(rule.getId());
+      item.setName(rule.getName());
+      item.setIfContent(rule.getRuleIf().toString());
+      item.setThenContent(rule.getRuleThen().toString());
+      item.setPriority(rule.getPriority());
+      item.setTerminate(rule.getTerminate());
+      data.add(item);
+    }
+    return responseDto;
+  }
+
+  @Override
+  public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
+    // cache
+    Rule rule = find(id);
+    if (rule == null) {
+      throw new RuleNotFoundException(String.format("rule with id [%d]: not found", id));
+    }
+    if (!rule.getName().equals(dto.getName())) {
+      rule = find(dto.getName());
+      if (rule != null) {
+        throw new RuleAlreadyExistentException(
+            String.format("rule with instance [%s]: already existent", dto.getName()));
+      }
+    }
+    // database
+    RulePo po = new RulePo();
+    requestDtoToPo(id, dto, po);
+    repository.save(po);
+    refreshCache();
+    // response
+    GetPutPostDeleteResponseDto responseDto = new GetPutPostDeleteResponseDto();
+    poToResponseDto(po, responseDto);
+    return responseDto;
+  }
+
+  private Rule find(Long id) {
+    // CHECK
+    while (lock.isWriteLocked()) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // LOCK
+    lock.readIncrease();
+    // DO
+    Rule rule = null;
+    for (Rule item : ruleList) {
+      if (item.getId().equals(id)) {
+        rule = item;
+        break;
+      }
+    }
+    // UNLOCK
+    lock.readDecrease();
+    //
+    return rule;
+  }
+
+  private Rule find(String name) {
+    // CHECK
+    while (lock.isWriteLocked()) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // LOCK
+    lock.readIncrease();
+    // DO
+    Rule rule = null;
+    for (Rule item : ruleList) {
+      if (item.getName().equals(name)) {
+        rule = item;
+        break;
+      }
+    }
+    // UNLOCK
+    lock.readDecrease();
+    //
+    return rule;
+  }
+
+  private List<Rule> findAll() {
+    // CHECK
+    while (lock.isWriteLocked()) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // LOCK
+    lock.readIncrease();
+    // DO
+    List<Rule> list = new ArrayList<>(ruleList);
+    // UNLOCK
+    lock.readDecrease();
+    //
+    return list;
+  }
+
+  private void poToResponseDto(RulePo po, GetPutPostDeleteResponseDto dto) {
+    Item data = dto.getData();
+    data.setId(po.getId());
+    data.setName(po.getName());
+    data.setIfContent(po.getIfContent());
+    data.setThenContent(po.getThenContent());
+    data.setPriority(po.getPriority());
+    data.setTerminate(po.getTerminate());
+  }
+
+  private void requestDtoToPo(Long id, PutPostRequestDto dto, RulePo po) {
+    po.setId(id);
+    po.setName(dto.getName());
+    RuleIf.parse(dto.getIfContent()); // validate
+    po.setIfContent(dto.getIfContent());
+    RuleThen.parse(dto.getThenContent()); // validate
+    po.setThenContent(dto.getThenContent());
+    po.setPriority(dto.getPriority());
+    po.setTerminate(dto.getTerminate());
+  }
+
+  private void ruleToResponseDto(Rule rule, GetPutPostDeleteResponseDto dto) {
+    Item data = dto.getData();
+    data.setId(rule.getId());
+    data.setName(rule.getName());
+    data.setIfContent(rule.getRuleIf().toString());
+    data.setThenContent(rule.getRuleThen().toString());
+    data.setPriority(rule.getPriority());
+    data.setTerminate(rule.getTerminate());
   }
 }

@@ -160,13 +160,13 @@ public class Message extends Content {
     if (temp != null && temp.isIntegralNumber() && temp.canConvertToLong()) {
       messageTimestampMs = temp.asLong();
     } else {
-      throw new LogContentInvalidException("content.messageTimestampMs: required, int");
+      throw new LogContentInvalidException("content.messageTimestampMs: required, long");
     }
     temp = jsonNode.get("messageAgeMs");
     if (temp != null && temp.isIntegralNumber() && temp.canConvertToLong()) {
       messageAgeMs = temp.asLong();
     } else {
-      throw new LogContentInvalidException("content.messageAgeMs: required, int");
+      throw new LogContentInvalidException("content.messageAgeMs: required, long");
     }
     temp = jsonNode.get("oneId");
     if (temp != null && temp.isTextual()) {

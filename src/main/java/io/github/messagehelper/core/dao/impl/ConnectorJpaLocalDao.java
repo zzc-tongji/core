@@ -6,6 +6,7 @@ import io.github.messagehelper.core.dao.LogDao;
 import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
+import io.github.messagehelper.core.dto.api.delegate.PostRequestDto;
 import io.github.messagehelper.core.exception.ConnectorAlreadyExistentException;
 import io.github.messagehelper.core.exception.ConnectorNotFoundException;
 import io.github.messagehelper.core.log.Log;
@@ -15,6 +16,7 @@ import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
 import io.github.messagehelper.core.rule.then.BodyTemplate;
 import io.github.messagehelper.core.rule.then.RuleThen;
+import io.github.messagehelper.core.utils.Delegate;
 import io.github.messagehelper.core.utils.ErrorJsonGenerator;
 import io.github.messagehelper.core.utils.HttpClientSingleton;
 import io.github.messagehelper.core.utils.Lock;
@@ -85,6 +87,16 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
+  public ResponseEntity<String> execute(PostRequestDto request) {
+    return executeHelper(request, request.getBody());
+  }
+
+  @Override
+  public void execute(RuleThen ruleThen, Log log) {
+    executeHelper(ruleThen, BodyTemplate.parse(ruleThen.getBodyTemplate(), log));
+  }
+
+  @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
     if (find(dto.getInstance()) != null) {
       throw new ConnectorAlreadyExistentException(
@@ -105,16 +117,6 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     repository.deleteById(id);
     refreshCache();
     return new GetPutPostDeleteResponseDto(po);
-  }
-
-  @Override
-  public ResponseEntity<String> execute(RuleThen ruleThen) {
-    return executeHelper(ruleThen, ruleThen.getBodyTemplate());
-  }
-
-  @Override
-  public void execute(RuleThen ruleThen, Log log) {
-    executeHelper(ruleThen, BodyTemplate.parse(ruleThen.getBodyTemplate(), log));
   }
 
   @Override
@@ -223,8 +225,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     return poCollection;
   }
 
-  private ResponseEntity<String> executeHelper(RuleThen ruleThen, String requestBody) {
-    String instance = ruleThen.getInstance();
+  private ResponseEntity<String> executeHelper(Delegate delegate, String requestBody) {
+    String instance = delegate.getInstance();
     // CHECK
     while (lock.isWriteLocked()) {
       try {
@@ -253,7 +255,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           .body(String.format("{\"information\":%s}", errorMessage));
     }
     HttpRequest request;
-    String url = po.getUrl() + ruleThen.getPath();
+    String url = po.getUrl() + delegate.getPath();
     String requestBodyWithToken = insertToken(requestBody, po.getToken());
     try {
       request =
@@ -315,14 +317,5 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     StringBuilder builder = new StringBuilder(requestBody);
     builder.insert(builder.length() - 1, String.format(",\"token\":\"%s\"", token));
     return builder.toString();
-  }
-
-  private void logException(Exception e) {
-    logDao.insert(
-        new LogPo(
-            configDao.load("core.instance"),
-            Constant.LOG_ERR,
-            "core.dao.impl.config-jpa-dao.exception",
-            ErrorJsonGenerator.getInstance().generate(e)));
   }
 }
