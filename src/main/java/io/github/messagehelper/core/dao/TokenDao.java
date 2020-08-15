@@ -5,7 +5,7 @@ import io.github.messagehelper.core.dto.api.login.PostResponseDto;
 public interface TokenDao {
   void refreshCache();
 
-  void authenticate(String token);
+  void authenticate(String[] tokenList);
 
   //
 

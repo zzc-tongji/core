@@ -112,35 +112,13 @@ public class TokenJpaLocalDao implements TokenDao {
   }
 
   @Override
-  public void authenticate(String token) {
-    // cache
-    TokenPo po = find(token);
-    if (po == null) {
-      throw new TokenInvalidException("token: not valid");
+  public void authenticate(String[] tokenList) {
+    for (String token : tokenList) {
+      if (authenticateHelper(token)) {
+        return;
+      }
     }
-    long expiredTimestampMs = po.getExpiredTimestampMs();
-    if (expiredTimestampMs <= 0) {
-      // permanent token
-      // => succeed
-      return;
-    }
-    long delta = expiredTimestampMs - System.currentTimeMillis();
-    if (delta < 0) {
-      // expired now
-      // => fail
-      throw new TokenInvalidException("token: expired");
-    }
-    if (delta < (lifetimeMs >> 4)) {
-      // expired in 1.5 hours
-      // => extend, succeed
-      expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;
-      // database
-      TokenPo updatedPo = new TokenPo();
-      updatedPo.setToken(token);
-      updatedPo.setExpiredTimestampMs(expiredTimestampMs);
-      repository.save(updatedPo);
-      refreshCache();
-    }
+    throw new TokenInvalidException("token: not invalid");
   }
 
   @Override
@@ -200,6 +178,38 @@ public class TokenJpaLocalDao implements TokenDao {
     lock.readDecrease();
     //
     return po;
+  }
+
+  private boolean authenticateHelper(String token) {
+    // cache
+    TokenPo po = find(token);
+    if (po == null) {
+      return false;
+    }
+    long expiredTimestampMs = po.getExpiredTimestampMs();
+    if (expiredTimestampMs <= 0) {
+      // permanent token
+      // => succeed
+      return true;
+    }
+    long delta = expiredTimestampMs - System.currentTimeMillis();
+    if (delta < 0) {
+      // expired now
+      // => fail
+      return false;
+    }
+    if (delta < (lifetimeMs >> 4)) {
+      // expired in 1.5 hours
+      // => extend, succeed
+      expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;
+      // database
+      TokenPo updatedPo = new TokenPo();
+      updatedPo.setToken(token);
+      updatedPo.setExpiredTimestampMs(expiredTimestampMs);
+      repository.save(updatedPo);
+      refreshCache();
+    }
+    return true;
   }
 
   private String cipher(String password, String salt) {
