@@ -102,7 +102,7 @@ public class RuleJpaLocalDao implements RuleDao {
     lock.readIncrease();
     // DO
     for (Rule rule : ruleList) {
-      if (rule.getPriority() <= 0) {
+      if (!rule.getEnable()) {
         continue;
       }
       // match rule
@@ -310,6 +310,7 @@ public class RuleJpaLocalDao implements RuleDao {
     data.setThenContent(po.getThenContent());
     data.setPriority(po.getPriority());
     data.setTerminate(po.getTerminate());
+    data.setEnable(po.getEnable());
   }
 
   private void requestDtoToPo(Long id, PutPostRequestDto dto, RulePo po) {
@@ -321,6 +322,7 @@ public class RuleJpaLocalDao implements RuleDao {
     po.setThenContent(dto.getThenContent());
     po.setPriority(dto.getPriority());
     po.setTerminate(dto.getTerminate());
+    po.setEnable(dto.getEnable());
   }
 
   private void ruleToResponseDto(Rule rule, GetPutPostDeleteResponseDto dto) {
@@ -331,5 +333,6 @@ public class RuleJpaLocalDao implements RuleDao {
     data.setThenContent(rule.getRuleThen().toString());
     data.setPriority(rule.getPriority());
     data.setTerminate(rule.getTerminate());
+    data.setEnable(rule.getEnable());
   }
 }

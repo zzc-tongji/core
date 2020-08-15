@@ -2,7 +2,6 @@ package io.github.messagehelper.core.dto.api.configs;
 
 public class Item {
   private String key;
-
   private String value;
 
   public String getKey() {

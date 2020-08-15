@@ -22,6 +22,7 @@ public class Rule implements Comparable<Rule> {
   private RuleThen ruleThen;
   private Integer priority;
   private Boolean terminate;
+  private Boolean enable;
 
   public Long getId() {
     return id;
@@ -71,17 +72,12 @@ public class Rule implements Comparable<Rule> {
     this.terminate = terminate;
   }
 
-  @Override
-  public int hashCode() {
-    return id.hashCode();
+  public Boolean getEnable() {
+    return enable;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (!(obj instanceof Rule)) {
-      return false;
-    }
-    return obj.hashCode() == this.hashCode();
+  public void setEnable(Boolean enable) {
+    this.enable = enable;
   }
 
   @Override

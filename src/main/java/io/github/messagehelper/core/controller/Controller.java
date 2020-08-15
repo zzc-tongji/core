@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class Controller {
-  private static final String PREFIX = "/api";
+  private static final String API = "/api";
 
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
@@ -36,7 +36,7 @@ public class Controller {
 
   // PREFIX + "/configs"
 
-  @GetMapping(value = PREFIX + "/configs")
+  @GetMapping(value = API + "/configs")
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetAllResponseDto>
       configsGetALL(@RequestHeader("token") String token) {
     tokenDao.authenticate(token);
@@ -45,7 +45,7 @@ public class Controller {
         .body(configDao.readAll());
   }
 
-  @GetMapping(value = PREFIX + "/configs/{key}")
+  @GetMapping(value = API + "/configs/{key}")
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetPutResponseDto> configsGet(
       @PathVariable("key") String key, @RequestHeader("token") String token) {
     tokenDao.authenticate(token);
@@ -54,7 +54,7 @@ public class Controller {
         .body(configDao.read(key));
   }
 
-  @PutMapping(value = PREFIX + "/configs/{key}")
+  @PutMapping(value = API + "/configs/{key}")
   public io.github.messagehelper.core.dto.api.configs.GetPutResponseDto configsPut(
       @PathVariable("key") String key,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.configs.PutRequestDto dto) {
@@ -64,7 +64,7 @@ public class Controller {
 
   // PREFIX + "/connectors"
 
-  @GetMapping(value = PREFIX + "/connectors")
+  @GetMapping(value = API + "/connectors")
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto>
       connectorsGetAll(@RequestHeader("token") String token) {
     tokenDao.authenticate(token);
@@ -73,7 +73,7 @@ public class Controller {
         .body(connectorDao.readAll());
   }
 
-  @GetMapping(value = PREFIX + "/connectors/{idOrInstance}")
+  @GetMapping(value = API + "/connectors/{idOrInstance}")
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto>
       connectorsGet(
           @PathVariable("idOrInstance") String idOrInstance, @RequestHeader("token") String token) {
@@ -89,7 +89,7 @@ public class Controller {
     }
   }
 
-  @PutMapping(value = PREFIX + "/connectors/{id}")
+  @PutMapping(value = API + "/connectors/{id}")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPut(
       @PathVariable("id") String id,
       @RequestBody @Validated
@@ -102,7 +102,7 @@ public class Controller {
     }
   }
 
-  @PostMapping(value = PREFIX + "/connectors")
+  @PostMapping(value = API + "/connectors")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPost(
       @RequestBody @Validated
           io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
@@ -110,7 +110,7 @@ public class Controller {
     return connectorDao.create(dto);
   }
 
-  @DeleteMapping(value = PREFIX + "/connectors/{id}")
+  @DeleteMapping(value = API + "/connectors/{id}")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
       connectorsDelete(@PathVariable("id") String id, @RequestBody @Validated TokenRequestDto dto) {
     tokenDao.authenticate(dto.getToken());
@@ -123,7 +123,7 @@ public class Controller {
 
   // PREFIX + "/delegate"
 
-  @PostMapping(value = PREFIX + "/delegate")
+  @PostMapping(value = API + "/delegate")
   public ResponseEntity<String> delegatePost(
       @RequestBody @Validated io.github.messagehelper.core.dto.api.delegate.PostRequestDto dto) {
     tokenDao.authenticate(dto.getToken());
@@ -132,7 +132,7 @@ public class Controller {
 
   // PREFIX + "/login"
 
-  @PostMapping(value = PREFIX + "/login")
+  @PostMapping(value = API + "/login")
   public io.github.messagehelper.core.dto.api.login.PostResponseDto loginPost(
       @RequestBody @Validated io.github.messagehelper.core.dto.api.login.PostRequestDto dto) {
     return tokenDao.login(dto);
@@ -140,7 +140,7 @@ public class Controller {
 
   // PREFIX + "/register"
 
-  @PostMapping(value = PREFIX + "/register")
+  @PostMapping(value = API + "/register")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void registerPost(
       @RequestBody @Validated io.github.messagehelper.core.dto.api.register.PostRequestDto dto) {
@@ -149,7 +149,7 @@ public class Controller {
 
   // PREFIX + "/rules"
 
-  @GetMapping(value = PREFIX + "/rules")
+  @GetMapping(value = API + "/rules")
   public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetAllResponseDto> rulesGetAll(
       @RequestHeader("token") String token) {
     tokenDao.authenticate(token);
@@ -158,7 +158,7 @@ public class Controller {
         .body(ruleDao.readAll());
   }
 
-  @GetMapping(value = PREFIX + "/rules/{idOrName}")
+  @GetMapping(value = API + "/rules/{idOrName}")
   public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto>
       rulesGet(@PathVariable("idOrName") String idOrName, @RequestHeader("token") String token) {
     tokenDao.authenticate(token);
@@ -173,7 +173,7 @@ public class Controller {
     }
   }
 
-  @PutMapping(value = PREFIX + "/rules/{id}")
+  @PutMapping(value = API + "/rules/{id}")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto rulePut(
       @PathVariable("id") String id,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
@@ -185,14 +185,14 @@ public class Controller {
     }
   }
 
-  @PostMapping(value = PREFIX + "/rules")
+  @PostMapping(value = API + "/rules")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto rulePost(
       @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
     tokenDao.authenticate(dto.getToken());
     return ruleDao.create(dto);
   }
 
-  @DeleteMapping(value = PREFIX + "/rules/{id}")
+  @DeleteMapping(value = API + "/rules/{id}")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto ruleDelete(
       @PathVariable("id") String id, @RequestBody @Validated TokenRequestDto dto) {
     tokenDao.authenticate(dto.getToken());

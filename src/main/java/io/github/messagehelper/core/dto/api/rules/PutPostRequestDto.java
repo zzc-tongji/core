@@ -50,6 +50,9 @@ public class PutPostRequestDto extends TokenRequestDto {
   @NotNull(message = "terminate: required, boolean")
   private Boolean terminate;
 
+  @NotNull(message = "enable: required, boolean")
+  private Boolean enable;
+
   public String getName() {
     return name;
   }
@@ -88,5 +91,13 @@ public class PutPostRequestDto extends TokenRequestDto {
 
   public void setTerminate(Boolean terminate) {
     this.terminate = terminate;
+  }
+
+  public Boolean getEnable() {
+    return enable;
+  }
+
+  public void setEnable(Boolean enable) {
+    this.enable = enable;
   }
 }

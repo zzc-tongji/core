@@ -28,6 +28,9 @@ public class RulePo implements Serializable {
   @Column(nullable = false)
   private Boolean terminate;
 
+  @Column(nullable = false)
+  private Boolean enable;
+
   public Long getId() {
     return id;
   }
@@ -74,5 +77,13 @@ public class RulePo implements Serializable {
 
   public void setTerminate(Boolean terminate) {
     this.terminate = terminate;
+  }
+
+  public Boolean getEnable() {
+    return enable;
+  }
+
+  public void setEnable(Boolean enable) {
+    this.enable = enable;
   }
 }

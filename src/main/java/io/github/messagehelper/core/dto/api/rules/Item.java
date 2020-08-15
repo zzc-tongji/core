@@ -2,16 +2,12 @@ package io.github.messagehelper.core.dto.api.rules;
 
 public class Item {
   private Long id;
-
   private String name;
-
   private String ifContent;
-
   private String thenContent;
-
   private Integer priority;
-
   private Boolean terminate;
+  private Boolean enable;
 
   public Long getId() {
     return id;
@@ -59,5 +55,13 @@ public class Item {
 
   public void setTerminate(Boolean terminate) {
     this.terminate = terminate;
+  }
+
+  public Boolean getEnable() {
+    return enable;
+  }
+
+  public void setEnable(Boolean enable) {
+    this.enable = enable;
   }
 }
