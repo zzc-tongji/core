@@ -73,11 +73,12 @@ CREATE TABLE `log`
 CREATE TABLE `rule`
 (
     `id`        bigint(20)    NOT NULL,
-    `rule_if`   varchar(1024) NOT NULL,
     `name`      varchar(256)  NOT NULL,
+    `rule_if`   varchar(2048) NOT NULL,
+    `rule_then` varchar(2048) NOT NULL,
     `priority`  int(11)       NOT NULL,
     `terminate` bit(1)        NOT NULL,
-    `rule_then` varchar(1024) NOT NULL,
+    `enable`    bit(1)        NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `UK_g0aibm7vybna15mqfxis5nnf1` (`name`)
 ) ENGINE = InnoDB

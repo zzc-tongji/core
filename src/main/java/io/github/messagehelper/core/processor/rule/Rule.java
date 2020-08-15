@@ -13,6 +13,7 @@ public class Rule implements Comparable<Rule> {
     rule.setRuleThen(po.getThenContent());
     rule.setPriority(po.getPriority());
     rule.setTerminate(po.getTerminate());
+    rule.setEnable(po.getEnable());
     return rule;
   }
 
