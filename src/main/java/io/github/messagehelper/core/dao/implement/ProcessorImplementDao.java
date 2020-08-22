@@ -27,8 +27,8 @@ public class ProcessorImplementDao implements ProcessorDao {
 
   @Override
   public void start(PostRequestDto dto) {
-    if (!configDao.load("core.rpc.token").equals(dto.getToken())) {
-      throw new TokenInvalidException("token: not valid");
+    if (!configDao.load("core.rpc.token").equals(dto.getRpcToken())) {
+      throw new TokenInvalidException("rpc token: not valid");
     }
     logDao.insert(dto);
     ruleDao.process(Log.parse(dto));

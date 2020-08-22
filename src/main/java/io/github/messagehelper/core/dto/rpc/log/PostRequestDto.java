@@ -1,13 +1,12 @@
 package io.github.messagehelper.core.dto.rpc.log;
 
-import io.github.messagehelper.core.dto.TokenRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class PostRequestDto extends TokenRequestDto {
+public class PostRequestDto {
   private static final String LEVEL_REGEXP =
       "^("
           + Constant.LOG_ERR
@@ -71,6 +70,16 @@ public class PostRequestDto extends TokenRequestDto {
       message = "content: required, string with length in [1, " + Constant.LOG_CONTENT_LENGTH + "]")
   private String content;
 
+  @Length(
+      min = 1,
+      max = Constant.CONFIG_VALUE_LENGTH,
+      message =
+          "rpcToken: required, string with length in [1, " + Constant.CONFIG_VALUE_LENGTH + "]")
+  @NotNull(
+      message =
+          "rpcToken: required, string with length in [1, " + Constant.CONFIG_VALUE_LENGTH + "]")
+  private String rpcToken;
+
   public Long getId() {
     return id;
   }
@@ -117,5 +126,13 @@ public class PostRequestDto extends TokenRequestDto {
 
   public void setContent(String content) {
     this.content = content;
+  }
+
+  public String getRpcToken() {
+    return rpcToken;
+  }
+
+  public void setRpcToken(String rpcToken) {
+    this.rpcToken = rpcToken;
   }
 }

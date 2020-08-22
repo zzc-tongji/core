@@ -1,13 +1,13 @@
 package io.github.messagehelper.core.dto.api.rules;
 
-import io.github.messagehelper.core.dto.TokenRequestDto;
+import io.github.messagehelper.core.dto.api.ApiTokenRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-public class PutPostRequestDto extends TokenRequestDto {
+public class PutPostRequestDto extends ApiTokenRequestDto {
   @Length(
       min = 1,
       max = Constant.RULE_NAME_LENGTH,

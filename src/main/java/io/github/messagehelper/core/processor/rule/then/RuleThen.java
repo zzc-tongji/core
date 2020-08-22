@@ -3,15 +3,14 @@ package io.github.messagehelper.core.processor.rule.then;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.messagehelper.core.exception.InvalidRuleThenException;
-import io.github.messagehelper.core.utils.Delegate;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
-public class RuleThen implements Delegate {
+public class RuleThen {
   private String instance;
+  private String method;
   private String path;
   private String bodyTemplate;
 
-  @Override
   public String getInstance() {
     return instance;
   }
@@ -20,7 +19,14 @@ public class RuleThen implements Delegate {
     this.instance = instance;
   }
 
-  @Override
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
   public String getPath() {
     return path;
   }
@@ -50,6 +56,21 @@ public class RuleThen implements Delegate {
       ruleThen.setInstance(temp.asText());
     } else {
       throw new InvalidRuleThenException("thenContent.instance: required, string");
+    }
+    temp = jsonNode.get("method");
+    if (temp != null && temp.isTextual()) {
+      switch (temp.asText().toUpperCase()) {
+        case "GET":
+          ruleThen.setMethod("GET");
+          break;
+        case "POST":
+          ruleThen.setMethod("POST");
+          break;
+        default:
+          throw new InvalidRuleThenException("thenContent.method: required, \"GET\" or \"POST\"");
+      }
+    } else {
+      throw new InvalidRuleThenException("thenContent.method: required, \"GET\" or \"POST\"");
     }
     temp = jsonNode.get("path");
     if (temp != null && temp.isTextual()) {

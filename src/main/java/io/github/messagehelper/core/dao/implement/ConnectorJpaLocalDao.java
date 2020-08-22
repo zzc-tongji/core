@@ -1,5 +1,6 @@
 package io.github.messagehelper.core.dao.implement;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
 import io.github.messagehelper.core.dao.LogDao;
@@ -7,7 +8,6 @@ import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.Item;
 import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
-import io.github.messagehelper.core.dto.api.delegate.PostRequestDto;
 import io.github.messagehelper.core.exception.ConnectorAlreadyExistentException;
 import io.github.messagehelper.core.exception.ConnectorNotFoundException;
 import io.github.messagehelper.core.mysql.Constant;
@@ -16,7 +16,10 @@ import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.then.BodyTemplate;
 import io.github.messagehelper.core.processor.rule.then.RuleThen;
-import io.github.messagehelper.core.utils.*;
+import io.github.messagehelper.core.utils.HttpClientSingleton;
+import io.github.messagehelper.core.utils.IdGenerator;
+import io.github.messagehelper.core.utils.Lock;
+import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -80,13 +83,57 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
-  public ResponseEntity<String> execute(PostRequestDto request) {
-    return executeHelper(request, request.getBody());
+  public void executeRule(RuleThen ruleThen, Log log) {
+    executeDelegate(
+        ruleThen.getInstance(),
+        ruleThen.getMethod(),
+        ruleThen.getPath(),
+        BodyTemplate.parse(ruleThen.getBodyTemplate(), log));
   }
 
   @Override
-  public void execute(RuleThen ruleThen, Log log) {
-    executeHelper(ruleThen, BodyTemplate.parse(ruleThen.getBodyTemplate(), log));
+  public ResponseEntity<String> executeDelegate(Long id, String method, String path, String body) {
+    ConnectorPo po = find(id);
+    if (po == null) {
+      String errorJson =
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("error", String.format("connector with id [%d]: not found", id))
+              .toString();
+      logDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_ERR,
+          "core.dao.connector-dao.exception",
+          errorJson);
+      return ResponseEntity.status(400)
+          .header("content-type", "application/json;charset=utf-8")
+          .body(errorJson);
+    }
+    return executeHelper(po, method, path, body);
+  }
+
+  @Override
+  public ResponseEntity<String> executeDelegate(
+      String instance, String method, String path, String body) {
+    ConnectorPo po = find(instance);
+    if (po == null) {
+      String errorJson =
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("error", String.format("connector with instance [%s]: not found", instance))
+              .toString();
+      logDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_ERR,
+          "core.dao.connector-dao.exception",
+          errorJson);
+      return ResponseEntity.status(400)
+          .header("content-type", "application/json;charset=utf-8")
+          .body(errorJson);
+    }
+    return executeHelper(po, method, path, body);
   }
 
   @Override
@@ -165,7 +212,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       item.setInstance(po.getInstance());
       item.setCategory(po.getCategory());
       item.setUrl(po.getUrl());
-      item.setToken(po.getToken());
+      item.setToken(po.getRpcToken());
       data.add(item);
     }
     return responseDto;
@@ -259,43 +306,18 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     return poCollection;
   }
 
-  private ResponseEntity<String> executeHelper(Delegate delegate, String requestBody) {
-    String instance = delegate.getInstance();
-    // CHECK
-    while (lock.isWriteLocked()) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    // LOCK
-    lock.readIncrease();
-    // DO
-    ConnectorPo po = connectorMap.get(instance);
-    // UNLOCK
-    lock.readDecrease();
-    //
-    if (po == null) {
-      String errorMessage = String.format("connector with instance [%s]: not found", instance);
-      logDao.insert(
-          configDao.load("core.instance"),
-          Constant.LOG_ERR,
-          "core.dao.impl.config-jpa-dao.exception",
-          ErrorJsonGenerator.getInstance().generate(errorMessage, "", ""));
-      return ResponseEntity.status(400)
-          .header("content-type", "application/json;charset=utf-8")
-          .body(String.format("{\"information\":%s}", errorMessage));
-    }
+  private ResponseEntity<String> executeHelper(
+      ConnectorPo po, String method, String path, String body) {
     HttpRequest request;
-    String url = po.getUrl() + delegate.getPath();
-    String requestBodyWithToken = insertToken(requestBody, po.getToken());
+    String url = po.getUrl() + path;
+    String requestMethod = method.equals("GET") ? "GET" : "POST";
+    String requestBodyWithToken = insertToken(body, po.getRpcToken());
     try {
       request =
           HttpRequest.newBuilder()
               .uri(new URI(url))
               .headers("content-type", "application/json;charset=utf-8")
-              .POST(HttpRequest.BodyPublishers.ofString(requestBodyWithToken))
+              .method(requestMethod, HttpRequest.BodyPublishers.ofString(requestBodyWithToken))
               .build();
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
@@ -307,7 +329,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     } catch (IOException e) {
       String errorMessage =
           String.format(
-              "connector with instance [%s] and url [%s]: fail to connect", instance, url);
+              "connector with instance [%s] and url [%s]: fail to connect", po.getInstance(), url);
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
           .body(String.format("{\"error\":%s}", errorMessage));
@@ -316,22 +338,32 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     }
     int statusCode = response.statusCode();
     if (statusCode <= 199 || statusCode >= 300) {
+      ObjectNode objectNode =
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("instance", po.getInstance())
+              .put("category", po.getCategory())
+              .put("url", url)
+              .put("requestMethod", requestMethod)
+              .put("requestBody", requestBodyWithToken)
+              .put("responseStatus", statusCode)
+              .put("responseBody", response.body())
+              .put("url", url);
+      String content = objectNode.toString();
+      if (content.length() > Constant.LOG_CONTENT_LENGTH) {
+        objectNode.put("requestBody", "...");
+        content = objectNode.toString();
+      }
+      if (content.length() > Constant.LOG_CONTENT_LENGTH) {
+        objectNode.put("responseBody", "...");
+        content = objectNode.toString();
+      }
       logDao.insert(
           configDao.load("core.instance"),
           Constant.LOG_ERR,
-          "core.dao.impl.config-jpa-dao.exception",
-          ErrorJsonGenerator.getInstance()
-              .generate(
-                  String.format(
-                      "fetch: [%s] || connector: instance [%s] as category [%s] || response: [%d] => [%s] || request: [%s]",
-                      url,
-                      instance,
-                      po.getCategory(),
-                      statusCode,
-                      response.body(),
-                      requestBodyWithToken),
-                  "",
-                  ""));
+          "core.dao.connector-dao.exception",
+          content);
     }
     String responseBody = response.body();
     if (responseBody.length() <= 0) {
@@ -343,11 +375,11 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private String insertToken(String requestBody, String token) {
-    if (requestBody.contains("\"token\"")) {
+    if (requestBody.contains("\"rpcToken\"")) {
       return requestBody;
     }
     StringBuilder builder = new StringBuilder(requestBody);
-    builder.insert(builder.length() - 1, String.format(",\"token\":\"%s\"", token));
+    builder.insert(builder.length() - 1, String.format(",\"rpcToken\":\"%s\"", token));
     return builder.toString();
   }
 
@@ -357,7 +389,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     item.setInstance(po.getInstance());
     item.setCategory(po.getCategory());
     item.setUrl(po.getUrl());
-    item.setToken(po.getToken());
+    item.setToken(po.getRpcToken());
   }
 
   private void requestDtoToPo(Long id, PutPostRequestDto dto, ConnectorPo po) {
@@ -369,6 +401,6 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     po.setInstance(dto.getInstance());
     po.setCategory(dto.getCategory());
     po.setUrl(dto.getUrl());
-    po.setToken(dto.getToken());
+    po.setRpcToken(dto.getApiToken());
   }
 }

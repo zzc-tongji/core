@@ -111,10 +111,10 @@ public class RuleJpaLocalDao implements RuleDao {
         logDao.insert(
             configDao.load("core.instance"),
             Constant.LOG_INFO,
-            "core.dao.impl.rule-jpa-local-dao.process.hit",
+            "core.dao.rule-dao.process.hit",
             String.format("{\"ruleName\":\"%s\",\"logId\":%d}", rule.getName(), log.getId()));
         // execute rule
-        connectorDao.execute(rule.getRuleThen(), log);
+        connectorDao.executeRule(rule.getRuleThen(), log);
         // terminate or not
         if (rule.getTerminate()) {
           break;

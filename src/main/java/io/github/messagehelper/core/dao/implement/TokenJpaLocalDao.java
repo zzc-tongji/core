@@ -118,7 +118,7 @@ public class TokenJpaLocalDao implements TokenDao {
         return;
       }
     }
-    throw new TokenInvalidException("token: not invalid");
+    throw new TokenInvalidException("api token: not valid");
   }
 
   @Override

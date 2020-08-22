@@ -22,8 +22,8 @@ public class ConnectorPo implements Serializable {
   @Column(length = Constant.CONNECTOR_URL_LENGTH, nullable = false)
   private String url;
 
-  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false)
-  private String token;
+  @Column(length = Constant.CONNECTOR_LENGTH, name = "rpc_token", nullable = false)
+  private String rpcToken;
 
   public Long getId() {
     return id;
@@ -57,11 +57,11 @@ public class ConnectorPo implements Serializable {
     this.url = url;
   }
 
-  public String getToken() {
-    return token;
+  public String getRpcToken() {
+    return rpcToken;
   }
 
-  public void setToken(String token) {
-    this.token = token;
+  public void setRpcToken(String token) {
+    this.rpcToken = token;
   }
 }
