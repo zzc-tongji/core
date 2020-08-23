@@ -122,30 +122,21 @@ public class TokenJpaLocalDao implements TokenDao {
   }
 
   @Override
+  public void revoke(String token) {
+    if (find(token) != null) {
+      repository.deleteById(token);
+      refreshCache();
+    }
+  }
+
+  @Override
   public PostResponseDto login(PostRequestDto dto) {
-    // cache
-    if (configDao.load("core.backend.password").length() <= 0
-        || configDao.load("core.backend.salt").length() <= 0) {
-      throw new PasswordNotSetException("not registered, please register first");
-    }
-    if (!cipher(dto.getPassword(), configDao.load("core.backend.salt"))
-        .equals(configDao.load("core.backend.password"))) {
-      throw new PasswordInvalidException("password: not valid");
-    }
-    String token = String.format("token%d", IdGenerator.getInstance().generateNegative());
-    Long expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;
-    // database
-    TokenPo po = new TokenPo();
-    po.setToken(token);
-    po.setExpiredTimestampMs(expiredTimestampMs);
-    repository.save(po);
-    refreshCache();
-    // response
-    PostResponseDto responseDto = new PostResponseDto();
-    Item data = responseDto.getData();
-    data.setToken(token);
-    data.setExpiredTimestampMs(expiredTimestampMs);
-    return responseDto;
+    return loginHelper(dto, false);
+  }
+
+  @Override
+  public PostResponseDto loginPermanent(PostRequestDto dto) {
+    return loginHelper(dto, true);
   }
 
   @Override
@@ -210,6 +201,32 @@ public class TokenJpaLocalDao implements TokenDao {
       refreshCache();
     }
     return true;
+  }
+
+  public PostResponseDto loginHelper(PostRequestDto dto, boolean permanent) {
+    // cache
+    if (configDao.load("core.backend.password").length() <= 0
+        || configDao.load("core.backend.salt").length() <= 0) {
+      throw new PasswordNotSetException("not registered, please register first");
+    }
+    if (!cipher(dto.getPassword(), configDao.load("core.backend.salt"))
+        .equals(configDao.load("core.backend.password"))) {
+      throw new PasswordInvalidException("password: not valid");
+    }
+    String token = String.format("token%d", IdGenerator.getInstance().generateNegative());
+    Long expiredTimestampMs = permanent ? 0 : System.currentTimeMillis() + lifetimeMs;
+    // database
+    TokenPo po = new TokenPo();
+    po.setToken(token);
+    po.setExpiredTimestampMs(expiredTimestampMs);
+    repository.save(po);
+    refreshCache();
+    // response
+    PostResponseDto responseDto = new PostResponseDto();
+    Item data = responseDto.getData();
+    data.setToken(token);
+    data.setExpiredTimestampMs(expiredTimestampMs);
+    return responseDto;
   }
 
   private String cipher(String password, String salt) {

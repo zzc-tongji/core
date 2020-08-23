@@ -7,9 +7,13 @@ public interface TokenDao {
 
   void authenticate(String[] tokenList);
 
+  void revoke(String token);
+
   //
 
   PostResponseDto login(io.github.messagehelper.core.dto.api.login.PostRequestDto dto);
+
+  PostResponseDto loginPermanent(io.github.messagehelper.core.dto.api.login.PostRequestDto dto);
 
   void register(io.github.messagehelper.core.dto.api.register.PostRequestDto dto);
 }

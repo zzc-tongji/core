@@ -175,6 +175,22 @@ public class Controller {
     return tokenDao.login(dto);
   }
 
+  @PostMapping(value = API + "/login/permanent")
+  public io.github.messagehelper.core.dto.api.login.PostResponseDto loginPermanentPost(
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.login.PostRequestDto dto) {
+    return tokenDao.loginPermanent(dto);
+  }
+
+  // PREFIX + "/logout"
+
+  @DeleteMapping(value = API + "/logout")
+  public ResponseEntity<String> logoutPost(
+      @RequestHeader(name = "api-token", required = false, defaultValue = "")
+          String headerApiToken) {
+    tokenDao.revoke(headerApiToken);
+    return ResponseEntity.status(204).body("");
+  }
+
   // PREFIX + "/register"
 
   @PostMapping(value = API + "/register")
