@@ -4,7 +4,7 @@
 
 ``` sh
 git clean -xfd
-docker build -t zzcgwu/github_message-helper_core .
+docker build -t messagehelper/core .
 ```
 
 ### Run
@@ -14,7 +14,7 @@ docker build -t zzcgwu/github_message-helper_core .
 #### Script
 
 ``` sh
-docker run -d --restart on-failure --name core -v ./config/:/home/app/config/ -p 8003:8003 zzcgwu/github_message-helper_core
+docker run -d --restart on-failure --name core -v ./config/:/home/app/config/ -p 8003:8003 messagehelper/core
 ```
 
 #### Compose
@@ -29,7 +29,7 @@ services:
       - './config/:/home/app/config/'
     ports:
       - '8003:8003'
-    image: zzcgwu/github_message-helper_core
+    image: messagehelper/core
 ```
 
 ``` sh
