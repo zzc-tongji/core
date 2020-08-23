@@ -5,8 +5,9 @@
 - A database of **MySQL 5.7+** is required.
 - Initialize database.
   - Review file [example.initialize.sql](./prerequisite/example.initialize.sql).
-  - Customize and replace content between `<...>`.
-  - Connect to the database and execute it.
+  - Customize and replace content between `<...>`, then adjust comments to enable them.
+  - For daily usage, comment or remove the last SQL statement for safety.
+  - Connect to the database and execute.
 - Create application properties.
   - Review file [example.application.properties](./prerequisite/example.application.properties).
   - Customize and replace content between  `<...>`.

@@ -5,7 +5,7 @@ public class Item {
   private String instance;
   private String category;
   private String url;
-  private String token;
+  private String rpcToken;
 
   public Long getId() {
     return id;
@@ -39,11 +39,11 @@ public class Item {
     this.url = url;
   }
 
-  public String getToken() {
-    return token;
+  public String getRpcToken() {
+    return rpcToken;
   }
 
-  public void setToken(String token) {
-    this.token = token;
+  public void setRpcToken(String rpcToken) {
+    this.rpcToken = rpcToken;
   }
 }

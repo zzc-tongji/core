@@ -212,7 +212,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       item.setInstance(po.getInstance());
       item.setCategory(po.getCategory());
       item.setUrl(po.getUrl());
-      item.setToken(po.getRpcToken());
+      item.setRpcToken(po.getRpcToken());
       data.add(item);
     }
     return responseDto;
@@ -327,12 +327,24 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       response =
           HttpClientSingleton.getInstance().send(request, HttpResponse.BodyHandlers.ofString());
     } catch (IOException e) {
-      String errorMessage =
-          String.format(
-              "connector with instance [%s] and url [%s]: fail to connect", po.getInstance(), url);
+      ObjectNode objectNode =
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put(
+                  "error",
+                  String.format(
+                      "connector with instance [%s] and url [%s]: fail to connect",
+                      po.getInstance(), url));
+      String jsonString = objectNode.toString();
+      logDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_ERR,
+          "core.dao.connector-dao.exception",
+          jsonString);
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
-          .body(String.format("{\"error\":%s}", errorMessage));
+          .body(jsonString);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -350,20 +362,21 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .put("responseStatus", statusCode)
               .put("responseBody", response.body())
               .put("url", url);
-      String content = objectNode.toString();
-      if (content.length() > Constant.LOG_CONTENT_LENGTH) {
+      String jsonString = objectNode.toString();
+      System.out.println(jsonString);
+      if (jsonString.length() > Constant.LOG_CONTENT_LENGTH) {
         objectNode.put("requestBody", "...");
-        content = objectNode.toString();
+        jsonString = objectNode.toString();
       }
-      if (content.length() > Constant.LOG_CONTENT_LENGTH) {
+      if (jsonString.length() > Constant.LOG_CONTENT_LENGTH) {
         objectNode.put("responseBody", "...");
-        content = objectNode.toString();
+        jsonString = objectNode.toString();
       }
       logDao.insert(
           configDao.load("core.instance"),
           Constant.LOG_ERR,
           "core.dao.connector-dao.exception",
-          content);
+          jsonString);
     }
     String responseBody = response.body();
     if (responseBody.length() <= 0) {
@@ -375,6 +388,13 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private String insertToken(String requestBody, String token) {
+    if (requestBody.length() <= 0
+        || requestBody.equals("{}")
+        || requestBody.equals("[]")
+        || requestBody.equals("null")
+        || requestBody.equals("undefined")) {
+      return String.format("{\"rpcToken\":\"%s\"}", token);
+    }
     if (requestBody.contains("\"rpcToken\"")) {
       return requestBody;
     }
@@ -389,7 +409,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     item.setInstance(po.getInstance());
     item.setCategory(po.getCategory());
     item.setUrl(po.getUrl());
-    item.setToken(po.getRpcToken());
+    item.setRpcToken(po.getRpcToken());
   }
 
   private void requestDtoToPo(Long id, PutPostRequestDto dto, ConnectorPo po) {
@@ -401,6 +421,6 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     po.setInstance(dto.getInstance());
     po.setCategory(dto.getCategory());
     po.setUrl(dto.getUrl());
-    po.setRpcToken(dto.getApiToken());
+    po.setRpcToken(dto.getRpcToken());
   }
 }

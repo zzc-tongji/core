@@ -130,7 +130,7 @@ public class TokenJpaLocalDao implements TokenDao {
     }
     if (!cipher(dto.getPassword(), configDao.load("core.backend.salt"))
         .equals(configDao.load("core.backend.password"))) {
-      throw new PasswordInvalidException("password: invalid");
+      throw new PasswordInvalidException("password: not valid");
     }
     String token = String.format("token%d", IdGenerator.getInstance().generateNegative());
     Long expiredTimestampMs = System.currentTimeMillis() + lifetimeMs;

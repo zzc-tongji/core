@@ -40,12 +40,10 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   @Length(
       min = 1,
       max = Constant.CONNECTOR_LENGTH,
-      message =
-          "connectorToken: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
+      message = "rpcToken: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
   @NotNull(
-      message =
-          "connectorToken: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
-  private String connectorToken;
+      message = "rpcToken: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
+  private String rpcToken;
 
   public String getInstance() {
     return instance;
@@ -71,11 +69,11 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
     this.url = url;
   }
 
-  public String getConnectorToken() {
-    return connectorToken;
+  public String getRpcToken() {
+    return rpcToken;
   }
 
-  public void setConnectorToken(String connectorToken) {
-    this.connectorToken = connectorToken;
+  public void setRpcToken(String rpcToken) {
+    this.rpcToken = rpcToken;
   }
 }

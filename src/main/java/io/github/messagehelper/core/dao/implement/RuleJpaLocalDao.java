@@ -131,7 +131,7 @@ public class RuleJpaLocalDao implements RuleDao {
     Rule rule = find(dto.getName());
     if (rule != null) {
       throw new RuleAlreadyExistentException(
-          String.format("rule with instance [%s]: already existent", dto.getName()));
+          String.format("rule with name [%s]: already existent", dto.getName()));
     }
     // database
     RulePo po = new RulePo();
@@ -197,12 +197,7 @@ public class RuleJpaLocalDao implements RuleDao {
     Item item;
     for (Rule rule : list) {
       item = new Item();
-      item.setId(rule.getId());
-      item.setName(rule.getName());
-      item.setIfContent(rule.getRuleIf().toString());
-      item.setThenContent(rule.getRuleThen().toString());
-      item.setPriority(rule.getPriority());
-      item.setTerminate(rule.getTerminate());
+      ruleToResponseDtoItem(rule, item);
       data.add(item);
     }
     return responseDto;
@@ -219,7 +214,7 @@ public class RuleJpaLocalDao implements RuleDao {
       rule = find(dto.getName());
       if (rule != null) {
         throw new RuleAlreadyExistentException(
-            String.format("rule with instance [%s]: already existent", dto.getName()));
+            String.format("rule with name [%s]: already existent", dto.getName()));
       }
     }
     // database
@@ -327,12 +322,16 @@ public class RuleJpaLocalDao implements RuleDao {
 
   private void ruleToResponseDto(Rule rule, GetPutPostDeleteResponseDto dto) {
     Item data = dto.getData();
-    data.setId(rule.getId());
-    data.setName(rule.getName());
-    data.setIfContent(rule.getRuleIf().toString());
-    data.setThenContent(rule.getRuleThen().toString());
-    data.setPriority(rule.getPriority());
-    data.setTerminate(rule.getTerminate());
-    data.setEnable(rule.getEnable());
+    ruleToResponseDtoItem(rule, data);
+  }
+
+  private void ruleToResponseDtoItem(Rule rule, Item item) {
+    item.setId(rule.getId());
+    item.setName(rule.getName());
+    item.setIfContent(rule.getRuleIf().toString());
+    item.setThenContent(rule.getRuleThen().toString());
+    item.setPriority(rule.getPriority());
+    item.setTerminate(rule.getTerminate());
+    item.setEnable(rule.getEnable());
   }
 }

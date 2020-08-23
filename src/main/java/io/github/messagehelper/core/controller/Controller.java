@@ -155,7 +155,10 @@ public class Controller {
       @PathVariable("idOrInstance") String idOrInstance,
       @RequestParam(name = "path", required = false, defaultValue = "") String path,
       @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
-      @RequestBody String request) {
+      @RequestBody(required = false) String request) {
+    if (request == null) {
+      request = "";
+    }
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
       return connectorDao.executeDelegate(Long.parseLong(idOrInstance), "POST", path, request);

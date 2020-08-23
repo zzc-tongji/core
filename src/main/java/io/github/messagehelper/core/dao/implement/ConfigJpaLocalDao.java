@@ -103,9 +103,14 @@ public class ConfigJpaLocalDao implements ConfigDao {
     GetAllResponseDto responseDto = new GetAllResponseDto();
     Collection<Item> data = responseDto.getData();
     Item item;
+    String key;
     for (ConfigPo po : collection) {
       item = new Item();
-      item.setKey(po.getKey());
+      key = po.getKey();
+      if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
+        continue;
+      }
+      item.setKey(key);
       item.setValue(po.getValue());
       data.add(item);
     }
@@ -118,7 +123,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     readUpdateHelper(key);
     // database
     ConfigPo po = new ConfigPo();
-    po.setValue(key);
+    po.setKey(key);
     po.setValue(dto.getValue());
     repository.save(po);
     refreshCache();
