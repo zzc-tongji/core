@@ -8,10 +8,7 @@ import io.github.messagehelper.core.dto.api.rules.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.rules.Item;
 import io.github.messagehelper.core.dto.api.rules.PutPostRequestDto;
-import io.github.messagehelper.core.exception.InvalidRuleIfException;
-import io.github.messagehelper.core.exception.InvalidRuleThenException;
-import io.github.messagehelper.core.exception.RuleAlreadyExistentException;
-import io.github.messagehelper.core.exception.RuleNotFoundException;
+import io.github.messagehelper.core.exception.*;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
@@ -127,6 +124,7 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
+    validateName(dto.getName());
     // cache
     Rule rule = find(dto.getName());
     if (rule != null) {
@@ -205,6 +203,7 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @Override
   public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
+    validateName(dto.getName());
     // cache
     Rule rule = find(id);
     if (rule == null) {
@@ -333,5 +332,16 @@ public class RuleJpaLocalDao implements RuleDao {
     item.setPriority(rule.getPriority());
     item.setTerminate(rule.getTerminate());
     item.setEnable(rule.getEnable());
+  }
+
+  public void validateName(String name) {
+    try {
+      Long.parseLong(name);
+      throw new RuleNameNumericalException(
+          "name: required, string with length in [1, "
+              + Constant.RULE_NAME_LENGTH
+              + "] which cannot be converted to long");
+    } catch (NumberFormatException ignored) {
+    }
   }
 }

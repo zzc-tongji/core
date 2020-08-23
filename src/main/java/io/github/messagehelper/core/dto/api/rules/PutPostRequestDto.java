@@ -11,8 +11,15 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   @Length(
       min = 1,
       max = Constant.RULE_NAME_LENGTH,
-      message = "name: required, string with length in [1, " + Constant.RULE_NAME_LENGTH + "]")
-  @NotNull(message = "name: required, string with length in [1, " + Constant.RULE_NAME_LENGTH + "]")
+      message =
+          "name: required, string with length in [1, "
+              + Constant.RULE_NAME_LENGTH
+              + "] which cannot be converted to long")
+  @NotNull(
+      message =
+          "name: required, string with length in [1, "
+              + Constant.RULE_NAME_LENGTH
+              + "] which cannot be converted to long")
   private String name;
 
   @Length(

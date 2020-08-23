@@ -10,6 +10,7 @@ import io.github.messagehelper.core.dto.api.connectors.Item;
 import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
 import io.github.messagehelper.core.exception.ConnectorAlreadyExistentException;
 import io.github.messagehelper.core.exception.ConnectorNotFoundException;
+import io.github.messagehelper.core.exception.RuleNameNumericalException;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.ConnectorPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
@@ -138,6 +139,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
+    validateInstance(dto.getInstance());
     // cache
     if (find(dto.getInstance()) != null) {
       throw new ConnectorAlreadyExistentException(
@@ -220,6 +222,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   @Override
   public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
+    validateInstance(dto.getInstance());
     // cache
     ConnectorPo po = find(id);
     if (po == null) {
@@ -422,5 +425,16 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     po.setCategory(dto.getCategory());
     po.setUrl(dto.getUrl());
     po.setRpcToken(dto.getRpcToken());
+  }
+
+  public void validateInstance(String instance) {
+    try {
+      Long.parseLong(instance);
+      throw new RuleNameNumericalException(
+          "instance: required, string with length in [1, "
+              + Constant.CONNECTOR_LENGTH
+              + "] which cannot be converted to long");
+    } catch (NumberFormatException ignored) {
+    }
   }
 }

@@ -70,6 +70,14 @@ public class GlobalExceptionHandler {
     return new ExceptionResponseDto(e.getMessage());
   }
 
+  @ExceptionHandler(value = ConnectorInstanceNumericalException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ExceptionResponseDto handle(ConnectorInstanceNumericalException e) {
+    logger.info(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
+  }
+
   @ExceptionHandler(value = ConnectorNotFoundException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -138,6 +146,14 @@ public class GlobalExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ExceptionResponseDto handle(RuleAlreadyExistentException e) {
+    logger.info(e.toString());
+    return new ExceptionResponseDto(e.getMessage());
+  }
+
+  @ExceptionHandler(value = RuleNameNumericalException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ExceptionResponseDto handle(RuleNameNumericalException e) {
     logger.info(e.toString());
     return new ExceptionResponseDto(e.getMessage());
   }
