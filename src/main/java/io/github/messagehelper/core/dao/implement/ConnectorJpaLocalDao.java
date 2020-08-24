@@ -383,7 +383,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     }
     String responseBody = response.body();
     if (responseBody.length() <= 0) {
-      return ResponseEntity.status(200)
+      return ResponseEntity.status(204)
           .header("delegate-status", String.valueOf(statusCode))
           .body(responseBody);
     }
