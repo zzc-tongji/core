@@ -9,27 +9,27 @@ import javax.validation.constraints.Pattern;
 public class PostRequestDto {
   private static final String LEVEL_REGEXP =
       "^("
-          + Constant.LOG_ERR
+          + Constant.LOG_LEVEL_ERR
           + "|"
-          + Constant.LOG_WARN
+          + Constant.LOG_LEVEL_WARN
           + "|"
-          + Constant.LOG_INFO
+          + Constant.LOG_LEVEL_INFO
           + "|"
-          + Constant.LOG_VERB
+          + Constant.LOG_LEVEL_VERB
           + "|"
-          + Constant.LOG_SILL
+          + Constant.LOG_LEVEL_SILL
           + ")$";
   private static final String LEVEL_MESSAGE =
       "level: required, string in {\""
-          + Constant.LOG_ERR
+          + Constant.LOG_LEVEL_ERR
           + "\", \""
-          + Constant.LOG_WARN
+          + Constant.LOG_LEVEL_WARN
           + "\", \""
-          + Constant.LOG_INFO
+          + Constant.LOG_LEVEL_INFO
           + "\", \""
-          + Constant.LOG_VERB
+          + Constant.LOG_LEVEL_VERB
           + "\", \""
-          + Constant.LOG_SILL
+          + Constant.LOG_LEVEL_SILL
           + "\"}";
 
   @NotNull(message = "id: required, long")

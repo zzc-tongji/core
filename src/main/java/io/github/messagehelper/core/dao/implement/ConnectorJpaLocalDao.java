@@ -104,8 +104,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .toString();
       logDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_ERR,
-          "core.dao.connector-dao.exception",
+          Constant.LOG_LEVEL_ERR,
+          "core.dao.connector-dao.execute-delegate.connector-not-found.exception",
           errorJson);
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
@@ -127,8 +127,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .toString();
       logDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_ERR,
-          "core.dao.connector-dao.exception",
+          Constant.LOG_LEVEL_ERR,
+          "core.dao.connector-dao.execute-delegate.connector-not.exception",
           errorJson);
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
@@ -342,8 +342,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       String jsonString = objectNode.toString();
       logDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_ERR,
-          "core.dao.connector-dao.exception",
+          Constant.LOG_LEVEL_ERR,
+          "core.dao.connector-dao.execute-helper.fail-to-connect.exception",
           jsonString);
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
@@ -377,16 +377,19 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       }
       logDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_ERR,
-          "core.dao.connector-dao.exception",
+          Constant.LOG_LEVEL_ERR,
+          "core.dao.connector-dao.execute-helper.fail-to-fetch.fetch.exception",
           jsonString);
     }
     String responseBody = response.body();
     if (responseBody.length() <= 0) {
-      return ResponseEntity.status(statusCode).body(responseBody);
+      return ResponseEntity.status(200)
+          .header("delegate-status", String.valueOf(statusCode))
+          .body(responseBody);
     }
-    return ResponseEntity.status(statusCode)
+    return ResponseEntity.status(200)
         .header("content-type", response.headers().allValues("content-type").get(0))
+        .header("delegate-status", String.valueOf(statusCode))
         .body(response.body());
   }
 
