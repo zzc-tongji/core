@@ -66,14 +66,14 @@ git config --local core.autocrlf input
 git config --local core.safecrlf true
 ```
 
-### Database Review
+### Data Review
 
 ``` mysql
-SELECT * from dev.config;
-SELECT * from dev.connector;
-SELECT * from dev.rule;
-SELECT * from dev.token;
-SELECT * from dev.log ORDER BY timestamp_ms DESC LIMIT 100;
+SELECT * from config;
+SELECT * from connector;
+SELECT * from rule;
+SELECT * from token;
+SELECT * from log ORDER BY timestamp_ms DESC LIMIT 100;
 ```
 
 ### Others
