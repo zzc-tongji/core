@@ -66,13 +66,13 @@ public class RuleIf {
     if (temp != null && temp.isTextual()) {
       instance = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ifContent.instance: required, string");
+      throw new InvalidRuleIfException("instance: required, string");
     }
     temp = jsonNode.get("category");
     if (temp != null && temp.isTextual()) {
       category = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ifContent.category: required, string");
+      throw new InvalidRuleIfException("category: required, string");
     }
   }
 

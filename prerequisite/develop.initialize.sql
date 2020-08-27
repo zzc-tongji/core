@@ -51,7 +51,7 @@ CREATE TABLE `rule`
     `name`               varchar(256)  NOT NULL,
     `rule_if`            varchar(2048) NOT NULL,
     `rule_then_instance` varchar(64)   NOT NULL,
-    `rule_then_method`   varchar(8)    NOT NULL,
+    `rule_then_method`   varchar(4)    NOT NULL,
     `rule_then_path`     varchar(64)   NOT NULL,
     `body_template`      varchar(4096) NOT NULL,
     `priority`           int(11)       NOT NULL,

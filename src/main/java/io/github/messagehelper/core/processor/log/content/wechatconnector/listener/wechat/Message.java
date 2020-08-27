@@ -136,79 +136,79 @@ public class Message extends Content {
     if (temp != null && temp.isTextual()) {
       messageType = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.messageType: required, string");
+      throw new LogContentInvalidException("messageType: required, string");
     }
     temp = jsonNode.get("messageText");
     if (temp != null && temp.isTextual()) {
       messageText = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.messageText: required, string");
+      throw new LogContentInvalidException("messageText: required, string");
     }
     temp = jsonNode.get("messageFile");
     if (temp != null && temp.isTextual()) {
       messageFile = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.messageFile: required, string");
+      throw new LogContentInvalidException("messageFile: required, string");
     }
     temp = jsonNode.get("messageFileName");
     if (temp != null && temp.isTextual()) {
       messageFileName = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.messageFileName: required, string");
+      throw new LogContentInvalidException("messageFileName: required, string");
     }
     temp = jsonNode.get("messageTimestampMs");
     if (temp != null && temp.isIntegralNumber() && temp.canConvertToLong()) {
       messageTimestampMs = temp.asLong();
     } else {
-      throw new LogContentInvalidException("content.messageTimestampMs: required, long");
+      throw new LogContentInvalidException("messageTimestampMs: required, long");
     }
     temp = jsonNode.get("messageAgeMs");
     if (temp != null && temp.isIntegralNumber() && temp.canConvertToLong()) {
       messageAgeMs = temp.asLong();
     } else {
-      throw new LogContentInvalidException("content.messageAgeMs: required, long");
+      throw new LogContentInvalidException("messageAgeMs: required, long");
     }
     temp = jsonNode.get("oneId");
     if (temp != null && temp.isTextual()) {
       oneId = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.oneId: required, string");
+      throw new LogContentInvalidException("oneId: required, string");
     }
     temp = jsonNode.get("oneName");
     if (temp != null && temp.isTextual()) {
       oneName = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.oneName: required, string");
+      throw new LogContentInvalidException("oneName: required, string");
     }
     temp = jsonNode.get("oneAlias");
     if (temp != null && temp.isTextual()) {
       oneAlias = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.oneAlias: required, string");
+      throw new LogContentInvalidException("oneAlias: required, string");
     }
     temp = jsonNode.get("oneAliasInGroup");
     if (temp != null && temp.isTextual()) {
       oneAliasInGroup = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.oneAliasInGroup: required, string");
+      throw new LogContentInvalidException("oneAliasInGroup: required, string");
     }
     temp = jsonNode.get("oneIsFriend");
     if (temp != null && temp.isBoolean()) {
       oneIsFriend = temp.asBoolean();
     } else {
-      throw new LogContentInvalidException("content.oneIsFriend: required, boolean");
+      throw new LogContentInvalidException("oneIsFriend: required, boolean");
     }
     temp = jsonNode.get("groupId");
     if (temp != null && temp.isTextual()) {
       groupId = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.groupId: required, string");
+      throw new LogContentInvalidException("groupId: required, string");
     }
     temp = jsonNode.get("groupName");
     if (temp != null && temp.isTextual()) {
       groupName = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.groupName: required, string");
+      throw new LogContentInvalidException("groupName: required, string");
     }
   }
 }

@@ -46,19 +46,19 @@ public class Friendship extends Content {
     if (temp != null && temp.isTextual()) {
       friendshipType = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.friendshipType: required, string");
+      throw new LogContentInvalidException("friendshipType: required, string");
     }
     temp = jsonNode.get("requestMessage");
     if (temp != null && temp.isTextual()) {
       requestMessage = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.requestMessage: required, string");
+      throw new LogContentInvalidException("requestMessage: required, string");
     }
     temp = jsonNode.get("requesterName");
     if (temp != null && temp.isTextual()) {
       requesterName = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.requesterName: required, string");
+      throw new LogContentInvalidException("requesterName: required, string");
     }
   }
 }

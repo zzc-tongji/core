@@ -10,40 +10,12 @@ import javax.validation.constraints.Positive;
 
 public class PutPostRequestDto extends ApiTokenRequestDto {
   private static final String METHOD_REGEXP =
-      "^("
-          + Constant.RULE_THEN_METHOD_GET
-          + "|"
-          + Constant.RULE_THEN_METHOD_HEAD
-          + "|"
-          + Constant.RULE_THEN_METHOD_POST
-          + "|"
-          + Constant.RULE_THEN_METHOD_DELETE
-          + "|"
-          + Constant.RULE_THEN_METHOD_CONNECT
-          + "|"
-          + Constant.RULE_THEN_METHOD_OPTIONS
-          + "|"
-          + Constant.RULE_THEN_METHOD_TRACE
-          + "|"
-          + Constant.RULE_THEN_METHOD_PATCH
-          + ")$";
+      "^(" + Constant.RULE_THEN_METHOD_GET + "|" + Constant.RULE_THEN_METHOD_POST + ")$";
   private static final String METHOD_MESSAGE =
       "ruleThenMethod: required, string in {\""
           + Constant.RULE_THEN_METHOD_GET
           + "\", \""
-          + Constant.RULE_THEN_METHOD_HEAD
-          + "\", \""
           + Constant.RULE_THEN_METHOD_POST
-          + "\", \""
-          + Constant.RULE_THEN_METHOD_DELETE
-          + "\", \""
-          + Constant.RULE_THEN_METHOD_CONNECT
-          + "\", \""
-          + Constant.RULE_THEN_METHOD_OPTIONS
-          + "\", \""
-          + Constant.RULE_THEN_METHOD_TRACE
-          + "\", \""
-          + Constant.RULE_THEN_METHOD_PATCH
           + "\"}";
 
   @Length(

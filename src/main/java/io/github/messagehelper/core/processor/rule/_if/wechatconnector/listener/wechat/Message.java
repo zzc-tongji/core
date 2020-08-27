@@ -84,6 +84,9 @@ public class Message extends RuleIf {
 
   @Override
   public boolean satisfy(Log log) {
+    if (!super.satisfy(log)) {
+      return false;
+    }
     Content content = log.getContent();
     if (!(content
         instanceof
@@ -135,49 +138,49 @@ public class Message extends RuleIf {
     if (temp != null && temp.isTextual()) {
       messageTypeRegex = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ruleIf.messageTypeRegex: required, string");
+      throw new InvalidRuleIfException("messageTypeRegex: required, string");
     }
     temp = jsonNode.get("messageTextRegex");
     if (temp != null && temp.isTextual()) {
       messageTextRegex = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ruleIf.messageTextRegex: required, string");
+      throw new InvalidRuleIfException("messageTextRegex: required, string");
     }
     temp = jsonNode.get("messageFileNameRegex");
     if (temp != null && temp.isTextual()) {
       messageFileNameRegex = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ruleIf.messageFileNameRegex: required, string");
+      throw new InvalidRuleIfException("messageFileNameRegex: required, string");
     }
     temp = jsonNode.get("oneNameRegex");
     if (temp != null && temp.isTextual()) {
       oneNameRegex = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ruleIf.oneNameRegex: required, string");
+      throw new InvalidRuleIfException("oneNameRegex: required, string");
     }
     temp = jsonNode.get("oneAliasRegex");
     if (temp != null && temp.isTextual()) {
       oneAliasRegex = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ruleIf.oneAliasRegex: required, string");
+      throw new InvalidRuleIfException("oneAliasRegex: required, string");
     }
     temp = jsonNode.get("oneAliasInGroupRegex");
     if (temp != null && temp.isTextual()) {
       oneAliasInGroupRegex = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ruleIf.oneAliasInGroupRegex: required, string");
+      throw new InvalidRuleIfException("oneAliasInGroupRegex: required, string");
     }
     temp = jsonNode.get("oneIsFriendJudge");
     if (temp != null && temp.isIntegralNumber() && temp.canConvertToInt()) {
       oneIsFriendJudge = temp.asInt();
     } else {
-      throw new InvalidRuleIfException("ruleIf.oneIsFriendJudge: required, int");
+      throw new InvalidRuleIfException("oneIsFriendJudge: required, int");
     }
     temp = jsonNode.get("groupNameRegex");
     if (temp != null && temp.isTextual()) {
       groupNameRegex = temp.asText();
     } else {
-      throw new InvalidRuleIfException("ruleIf.groupNameRegex: required, string");
+      throw new InvalidRuleIfException("groupNameRegex: required, string");
     }
   }
 }

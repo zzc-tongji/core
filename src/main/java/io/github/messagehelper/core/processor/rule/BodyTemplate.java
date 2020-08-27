@@ -1,5 +1,6 @@
 package io.github.messagehelper.core.processor.rule;
 
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.log.content.Content;
 
@@ -10,28 +11,16 @@ public class BodyTemplate {
   private static final String REGEX_PREFIX = "\\(\\(";
   private static final String REGEX_CONTENT = "content\\.";
   private static final String REGEX_POSTFIX = "\\)\\)?";
-  private static final boolean DEBUG = false;
 
   public static String fill(String input, Log log) {
     String output = input;
-    if (DEBUG) {
-      System.out.printf("output = \"%s\"\n", output);
-    }
     // log
     for (Field field : Log.class.getDeclaredFields()) {
       if (!field.getName().equals("content")) {
         field.setAccessible(true);
         try {
           output = output.replaceAll(generateLogRegex(field.getName()), field.get(log).toString());
-          if (DEBUG) {
-            System.out.printf(
-                "output.replaceAll(\"%s\", \"%s\")\n",
-                generateLogRegex(field.getName()), field.get(log).toString());
-          }
-        } catch (IllegalAccessException e) {
-          if (DEBUG) {
-            e.printStackTrace();
-          }
+        } catch (IllegalAccessException ignored) {
         } finally {
           field.setAccessible(false);
         }
@@ -43,23 +32,12 @@ public class BodyTemplate {
       field.setAccessible(true);
       try {
         output =
-            output.replaceAll(generateContentRegex(field.getName()), field.get(content).toString());
-        if (DEBUG) {
-          System.out.printf(
-              "output.replaceAll(\"%s\", \"%s\")\n",
-              generateContentRegex(field.getName()).replaceAll("\"", "\\\""),
-              field.get(content).toString().replaceAll("\"", "\\\""));
-        }
-      } catch (IllegalAccessException e) {
-        if (DEBUG) {
-          e.printStackTrace();
-        }
+            replaceHelper(
+                output, generateContentRegex(field.getName()), field.get(content).toString());
+      } catch (IllegalAccessException ignored) {
       } finally {
         field.setAccessible(false);
       }
-    }
-    if (DEBUG) {
-      System.out.printf("output = \"%s\"\n", output);
     }
     return output;
   }
@@ -77,5 +55,18 @@ public class BodyTemplate {
         .append(memberName)
         .append(REGEX_POSTFIX)
         .toString();
+  }
+
+  private static String escapeHelper(String text) {
+    StringBuilder e1 = new StringBuilder();
+    JsonStringEncoder.getInstance().quoteAsString(text, e1);
+    return e1.toString().replace("\\", "\\\\");
+  }
+
+  private static String replaceHelper(String input, String regex, String replacement) {
+    StringBuilder stringBuilder = new StringBuilder();
+    JsonStringEncoder.getInstance().quoteAsString(replacement, stringBuilder);
+    // https://www.cnblogs.com/iyangyuan/p/4809582.html
+    return input.replaceAll(regex, stringBuilder.toString().replace("\\", "\\\\"));
   }
 }

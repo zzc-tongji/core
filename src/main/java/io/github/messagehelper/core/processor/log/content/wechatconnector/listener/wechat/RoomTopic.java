@@ -37,13 +37,13 @@ public class RoomTopic extends Content {
     if (temp != null && temp.isTextual()) {
       oldGroupName = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.oldGroupName: required, string");
+      throw new LogContentInvalidException("oldGroupName: required, string");
     }
     temp = jsonNode.get("newGroupName");
     if (temp != null && temp.isTextual()) {
       newGroupName = temp.asText();
     } else {
-      throw new LogContentInvalidException("content.newGroupName: required, string");
+      throw new LogContentInvalidException("newGroupName: required, string");
     }
   }
 }

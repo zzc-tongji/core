@@ -22,15 +22,9 @@ public class Constant {
   // rule
   public static final int RULE_NAME_LENGTH = 256;
   public static final int RULE_IF_LENGTH = 2048;
-  public static final int RULE_THEN_METHOD_LENGTH = 8;
+  public static final int RULE_THEN_METHOD_LENGTH = 4;
   public static final String RULE_THEN_METHOD_GET = "GET";
-  public static final String RULE_THEN_METHOD_HEAD = "HEAD";
   public static final String RULE_THEN_METHOD_POST = "POST";
-  public static final String RULE_THEN_METHOD_DELETE = "DELETE";
-  public static final String RULE_THEN_METHOD_CONNECT = "CONNECT";
-  public static final String RULE_THEN_METHOD_OPTIONS = "OPTIONS";
-  public static final String RULE_THEN_METHOD_TRACE = "TRACE";
-  public static final String RULE_THEN_METHOD_PATCH = "PATCH";
   public static final int RULE_THEN_PATH_LENGTH = 64;
   public static final int RULE_BODY_TEMPLATE_LENGTH = 4096;
   // token
