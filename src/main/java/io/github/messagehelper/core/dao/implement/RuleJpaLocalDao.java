@@ -15,7 +15,6 @@ import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.Rule;
 import io.github.messagehelper.core.processor.rule._if.RuleIf;
-import io.github.messagehelper.core.processor.rule.then.RuleThen;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
 import org.slf4j.Logger;
@@ -111,7 +110,7 @@ public class RuleJpaLocalDao implements RuleDao {
             "core.dao.rule-dao.process.hit",
             String.format("{\"ruleName\":\"%s\",\"logId\":%d}", rule.getName(), log.getId()));
         // execute rule
-        connectorDao.executeRule(rule.getRuleThen(), log);
+        connectorDao.executeRule(rule, log);
         // terminate or not
         if (rule.getTerminate()) {
           break;
@@ -296,24 +295,31 @@ public class RuleJpaLocalDao implements RuleDao {
     return list;
   }
 
+  @SuppressWarnings("Duplicates")
   private void poToResponseDto(RulePo po, GetPutPostDeleteResponseDto dto) {
     Item data = dto.getData();
     data.setId(po.getId());
     data.setName(po.getName());
-    data.setIfContent(po.getIfContent());
-    data.setThenContent(po.getThenContent());
+    data.setRuleIf(po.getRuleIf());
+    data.setRuleThenInstance(po.getRuleThenInstance());
+    data.setRuleThenMethod(po.getRuleThenMethod());
+    data.setRuleThenPath(po.getRuleThenPath());
+    data.setBodyTemplate(po.getBodyTemplate());
     data.setPriority(po.getPriority());
     data.setTerminate(po.getTerminate());
     data.setEnable(po.getEnable());
   }
 
+  @SuppressWarnings("Duplicates")
   private void requestDtoToPo(Long id, PutPostRequestDto dto, RulePo po) {
     po.setId(id);
     po.setName(dto.getName());
-    RuleIf.parse(dto.getIfContent()); // validate
-    po.setIfContent(dto.getIfContent());
-    RuleThen.parse(dto.getThenContent()); // validate
-    po.setThenContent(dto.getThenContent());
+    RuleIf.parse(dto.getRuleIf()); // validate
+    po.setRuleIf(dto.getRuleIf());
+    po.setRuleThenInstance(dto.getRuleThenInstance());
+    po.setRuleThenMethod(dto.getRuleThenMethod());
+    po.setRuleThenPath(dto.getRuleThenPath());
+    po.setBodyTemplate(dto.getBodyTemplate());
     po.setPriority(dto.getPriority());
     po.setTerminate(dto.getTerminate());
     po.setEnable(dto.getEnable());
@@ -324,11 +330,15 @@ public class RuleJpaLocalDao implements RuleDao {
     ruleToResponseDtoItem(rule, data);
   }
 
+  @SuppressWarnings("Duplicates")
   private void ruleToResponseDtoItem(Rule rule, Item item) {
     item.setId(rule.getId());
     item.setName(rule.getName());
-    item.setIfContent(rule.getRuleIf().toString());
-    item.setThenContent(rule.getRuleThen().toString());
+    item.setRuleIf(rule.getRuleIf().toString());
+    item.setRuleThenInstance(rule.getRuleThenInstance());
+    item.setRuleThenMethod(rule.getRuleThenMethod());
+    item.setRuleThenPath(rule.getRuleThenPath());
+    item.setBodyTemplate(rule.getBodyTemplate());
     item.setPriority(rule.getPriority());
     item.setTerminate(rule.getTerminate());
     item.setEnable(rule.getEnable());

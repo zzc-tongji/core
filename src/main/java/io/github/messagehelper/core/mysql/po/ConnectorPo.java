@@ -13,16 +13,16 @@ import java.io.Serializable;
 public class ConnectorPo implements Serializable {
   @Id private Long id;
 
-  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false, unique = true)
+  @Column(length = Constant.INSTANCE_LENGTH, nullable = false, unique = true)
   private String instance;
 
-  @Column(length = Constant.CONNECTOR_LENGTH, nullable = false)
+  @Column(length = Constant.CATEGORY_LENGTH, nullable = false)
   private String category;
 
   @Column(length = Constant.CONNECTOR_URL_LENGTH, nullable = false)
   private String url;
 
-  @Column(length = Constant.CONNECTOR_LENGTH, name = "rpc_token", nullable = false)
+  @Column(length = Constant.CONNECTOR_RPC_TOKEN_LENGTH, name = "rpc_token", nullable = false)
   private String rpcToken;
 
   public Long getId() {

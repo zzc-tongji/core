@@ -4,13 +4,13 @@ import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
 import io.github.messagehelper.core.processor.log.Log;
-import io.github.messagehelper.core.processor.rule.then.RuleThen;
+import io.github.messagehelper.core.processor.rule.Rule;
 import org.springframework.http.ResponseEntity;
 
 public interface ConnectorDao {
   void refreshCache();
 
-  void executeRule(RuleThen ruleThen, Log log);
+  void executeRule(Rule rule, Log log);
 
   ResponseEntity<String> executeDelegate(Long id, String method, String path, String body);
 

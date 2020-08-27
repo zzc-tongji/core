@@ -13,13 +13,13 @@ import java.io.Serializable;
 public class LogPo implements Serializable {
   @Id private Long id;
 
-  @Column(length = Constant.LOG_INSTANCE_LENGTH, nullable = false)
+  @Column(length = Constant.INSTANCE_LENGTH, nullable = false)
   private String instance;
 
   @Column(columnDefinition = "char(" + Constant.LOG_LEVEL_LENGTH + ")", nullable = false)
   private String level;
 
-  @Column(length = Constant.LOG_CATEGORY_LENGTH, nullable = false)
+  @Column(length = Constant.CATEGORY_LENGTH, nullable = false)
   private String category;
 
   @Column(name = "timestamp_ms", nullable = false)

@@ -3,8 +3,11 @@ package io.github.messagehelper.core.dto.api.rules;
 public class Item {
   private Long id;
   private String name;
-  private String ifContent;
-  private String thenContent;
+  private String ruleIf;
+  private String ruleThenInstance;
+  private String ruleThenMethod;
+  private String ruleThenPath;
+  private String bodyTemplate;
   private Integer priority;
   private Boolean terminate;
   private Boolean enable;
@@ -25,20 +28,44 @@ public class Item {
     this.name = name;
   }
 
-  public String getIfContent() {
-    return ifContent;
+  public String getRuleIf() {
+    return ruleIf;
   }
 
-  public void setIfContent(String ifContent) {
-    this.ifContent = ifContent;
+  public void setRuleIf(String ruleIf) {
+    this.ruleIf = ruleIf;
   }
 
-  public String getThenContent() {
-    return thenContent;
+  public String getRuleThenInstance() {
+    return ruleThenInstance;
   }
 
-  public void setThenContent(String thenContent) {
-    this.thenContent = thenContent;
+  public void setRuleThenInstance(String ruleThenInstance) {
+    this.ruleThenInstance = ruleThenInstance;
+  }
+
+  public String getRuleThenMethod() {
+    return ruleThenMethod;
+  }
+
+  public void setRuleThenMethod(String ruleThenMethod) {
+    this.ruleThenMethod = ruleThenMethod;
+  }
+
+  public String getRuleThenPath() {
+    return ruleThenPath;
+  }
+
+  public void setRuleThenPath(String ruleThenPath) {
+    this.ruleThenPath = ruleThenPath;
+  }
+
+  public String getBodyTemplate() {
+    return bodyTemplate;
+  }
+
+  public void setBodyTemplate(String bodyTemplate) {
+    this.bodyTemplate = bodyTemplate;
   }
 
   public Integer getPriority() {

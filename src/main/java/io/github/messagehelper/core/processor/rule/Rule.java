@@ -2,15 +2,18 @@ package io.github.messagehelper.core.processor.rule;
 
 import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.processor.rule._if.RuleIf;
-import io.github.messagehelper.core.processor.rule.then.RuleThen;
 
 public class Rule implements Comparable<Rule> {
+  @SuppressWarnings("Duplicates")
   public static Rule parse(RulePo po) {
     Rule rule = new Rule();
     rule.setId(po.getId());
     rule.setName(po.getName());
-    rule.setRuleIf(po.getIfContent());
-    rule.setRuleThen(po.getThenContent());
+    rule.setRuleIf(po.getRuleIf());
+    rule.setRuleThenInstance(po.getRuleThenInstance());
+    rule.setRuleThenMethod(po.getRuleThenMethod());
+    rule.setRuleThenPath(po.getRuleThenPath());
+    rule.setBodyTemplate(po.getBodyTemplate());
     rule.setPriority(po.getPriority());
     rule.setTerminate(po.getTerminate());
     rule.setEnable(po.getEnable());
@@ -20,7 +23,10 @@ public class Rule implements Comparable<Rule> {
   private Long id;
   private String name;
   private RuleIf ruleIf;
-  private RuleThen ruleThen;
+  private String ruleThenInstance;
+  private String ruleThenMethod;
+  private String ruleThenPath;
+  private String bodyTemplate;
   private Integer priority;
   private Boolean terminate;
   private Boolean enable;
@@ -49,12 +55,36 @@ public class Rule implements Comparable<Rule> {
     ruleIf = RuleIf.parse(json);
   }
 
-  public RuleThen getRuleThen() {
-    return ruleThen;
+  public String getRuleThenInstance() {
+    return ruleThenInstance;
   }
 
-  public void setRuleThen(String json) {
-    ruleThen = RuleThen.parse(json);
+  public void setRuleThenInstance(String ruleThenInstance) {
+    this.ruleThenInstance = ruleThenInstance;
+  }
+
+  public String getRuleThenMethod() {
+    return ruleThenMethod;
+  }
+
+  public void setRuleThenMethod(String ruleThenMethod) {
+    this.ruleThenMethod = ruleThenMethod;
+  }
+
+  public String getRuleThenPath() {
+    return ruleThenPath;
+  }
+
+  public void setRuleThenPath(String ruleThenPath) {
+    this.ruleThenPath = ruleThenPath;
+  }
+
+  public String getBodyTemplate() {
+    return bodyTemplate;
+  }
+
+  public void setBodyTemplate(String bodyTemplate) {
+    this.bodyTemplate = bodyTemplate;
   }
 
   public Integer getPriority() {

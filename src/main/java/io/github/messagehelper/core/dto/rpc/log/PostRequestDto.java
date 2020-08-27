@@ -37,12 +37,10 @@ public class PostRequestDto {
 
   @Length(
       min = 1,
-      max = Constant.LOG_INSTANCE_LENGTH,
-      message =
-          "instance: required, string with length in [1, " + Constant.LOG_INSTANCE_LENGTH + "]")
+      max = Constant.INSTANCE_LENGTH,
+      message = "instance: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]")
   @NotNull(
-      message =
-          "instance: required, string with length in [1, " + Constant.LOG_INSTANCE_LENGTH + "]")
+      message = "instance: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]")
   private String instance;
 
   @Pattern(regexp = LEVEL_REGEXP, message = LEVEL_MESSAGE)
@@ -51,12 +49,10 @@ public class PostRequestDto {
 
   @Length(
       min = 1,
-      max = Constant.LOG_CATEGORY_LENGTH,
-      message =
-          "category: required, string with length in [1, " + Constant.LOG_CATEGORY_LENGTH + "]")
+      max = Constant.CATEGORY_LENGTH,
+      message = "category: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]")
   @NotNull(
-      message =
-          "category: required, string with length in [1, " + Constant.LOG_CATEGORY_LENGTH + "]")
+      message = "category: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]")
   private String category;
 
   @NotNull(message = "timestampMs: required, long")

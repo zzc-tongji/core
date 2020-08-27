@@ -15,8 +15,8 @@ import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.ConnectorPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
-import io.github.messagehelper.core.processor.rule.then.BodyTemplate;
-import io.github.messagehelper.core.processor.rule.then.RuleThen;
+import io.github.messagehelper.core.processor.rule.BodyTemplate;
+import io.github.messagehelper.core.processor.rule.Rule;
 import io.github.messagehelper.core.utils.HttpClientSingleton;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
@@ -84,12 +84,12 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
-  public void executeRule(RuleThen ruleThen, Log log) {
+  public void executeRule(Rule rule, Log log) {
     executeDelegate(
-        ruleThen.getInstance(),
-        ruleThen.getMethod(),
-        ruleThen.getPath(),
-        BodyTemplate.parse(ruleThen.getBodyTemplate(), log));
+        rule.getRuleThenInstance(),
+        rule.getRuleThenMethod(),
+        rule.getRuleThenPath(),
+        BodyTemplate.fill(rule.getBodyTemplate(), log));
   }
 
   @Override
@@ -435,7 +435,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       Long.parseLong(instance);
       throw new RuleNameNumericalException(
           "instance: required, string with length in [1, "
-              + Constant.CONNECTOR_LENGTH
+              + Constant.INSTANCE_LENGTH
               + "] which cannot be converted to long");
     } catch (NumberFormatException ignored) {
     }

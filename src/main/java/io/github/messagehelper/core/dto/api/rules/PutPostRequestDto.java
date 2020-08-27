@@ -5,9 +5,47 @@ import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
 public class PutPostRequestDto extends ApiTokenRequestDto {
+  private static final String METHOD_REGEXP =
+      "^("
+          + Constant.RULE_THEN_METHOD_GET
+          + "|"
+          + Constant.RULE_THEN_METHOD_HEAD
+          + "|"
+          + Constant.RULE_THEN_METHOD_POST
+          + "|"
+          + Constant.RULE_THEN_METHOD_DELETE
+          + "|"
+          + Constant.RULE_THEN_METHOD_CONNECT
+          + "|"
+          + Constant.RULE_THEN_METHOD_OPTIONS
+          + "|"
+          + Constant.RULE_THEN_METHOD_TRACE
+          + "|"
+          + Constant.RULE_THEN_METHOD_PATCH
+          + ")$";
+  private static final String METHOD_MESSAGE =
+      "ruleThenMethod: required, string in {\""
+          + Constant.RULE_THEN_METHOD_GET
+          + "\", \""
+          + Constant.RULE_THEN_METHOD_HEAD
+          + "\", \""
+          + Constant.RULE_THEN_METHOD_POST
+          + "\", \""
+          + Constant.RULE_THEN_METHOD_DELETE
+          + "\", \""
+          + Constant.RULE_THEN_METHOD_CONNECT
+          + "\", \""
+          + Constant.RULE_THEN_METHOD_OPTIONS
+          + "\", \""
+          + Constant.RULE_THEN_METHOD_TRACE
+          + "\", \""
+          + Constant.RULE_THEN_METHOD_PATCH
+          + "\"}";
+
   @Length(
       min = 1,
       max = Constant.RULE_NAME_LENGTH,
@@ -24,31 +62,57 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
 
   @Length(
       min = 1,
-      max = Constant.RULE_CONTENT_LENGTH,
-      message =
-          "ifContent: required, JSON string with length in [1, "
-              + Constant.RULE_CONTENT_LENGTH
-              + "]")
+      max = Constant.RULE_IF_LENGTH,
+      message = "ruleIf: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
   @NotNull(
-      message =
-          "ifContent: required, JSON string with length in [1, "
-              + Constant.RULE_CONTENT_LENGTH
-              + "]")
-  private String ifContent;
+      message = "ruleIf: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
+  private String ruleIf;
 
   @Length(
       min = 1,
-      max = Constant.RULE_CONTENT_LENGTH,
+      max = Constant.INSTANCE_LENGTH,
       message =
-          "thenContent: required, JSON string with length in [1, "
-              + Constant.RULE_CONTENT_LENGTH
+          "ruleThenInstance: required, JSON string with length in [1, "
+              + Constant.INSTANCE_LENGTH
               + "]")
   @NotNull(
       message =
-          "thenContent: required, JSON string with length in [1, "
-              + Constant.RULE_CONTENT_LENGTH
+          "ruleThenInstance: required, JSON string with length in [1, "
+              + Constant.INSTANCE_LENGTH
               + "]")
-  private String thenContent;
+  private String ruleThenInstance;
+
+  @Pattern(regexp = METHOD_REGEXP, message = METHOD_MESSAGE)
+  @NotNull(message = METHOD_MESSAGE)
+  private String ruleThenMethod;
+
+  @Length(
+      min = 1,
+      max = Constant.RULE_THEN_PATH_LENGTH,
+      message =
+          "ruleThenPath: required, JSON string with length in [1, "
+              + Constant.RULE_THEN_PATH_LENGTH
+              + "]")
+  @NotNull(
+      message =
+          "ruleThenPath: required, JSON string with length in [1, "
+              + Constant.RULE_THEN_PATH_LENGTH
+              + "]")
+  private String ruleThenPath;
+
+  @Length(
+      min = 1,
+      max = Constant.RULE_BODY_TEMPLATE_LENGTH,
+      message =
+          "bodyTemplate: required, JSON string with length in [1, "
+              + Constant.RULE_BODY_TEMPLATE_LENGTH
+              + "]")
+  @NotNull(
+      message =
+          "bodyTemplate: required, JSON string with length in [1, "
+              + Constant.RULE_BODY_TEMPLATE_LENGTH
+              + "]")
+  private String bodyTemplate;
 
   @Positive(message = "priority: required, positive integer")
   @NotNull(message = "priority: required, positive integer")
@@ -68,20 +132,44 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
     this.name = name;
   }
 
-  public String getIfContent() {
-    return ifContent;
+  public String getRuleIf() {
+    return ruleIf;
   }
 
-  public void setIfContent(String ifContent) {
-    this.ifContent = ifContent;
+  public void setRuleIf(String ruleIf) {
+    this.ruleIf = ruleIf;
   }
 
-  public String getThenContent() {
-    return thenContent;
+  public String getRuleThenInstance() {
+    return ruleThenInstance;
   }
 
-  public void setThenContent(String thenContent) {
-    this.thenContent = thenContent;
+  public void setRuleThenInstance(String ruleThenInstance) {
+    this.ruleThenInstance = ruleThenInstance;
+  }
+
+  public String getRuleThenMethod() {
+    return ruleThenMethod;
+  }
+
+  public void setRuleThenMethod(String ruleThenMethod) {
+    this.ruleThenMethod = ruleThenMethod;
+  }
+
+  public String getRuleThenPath() {
+    return ruleThenPath;
+  }
+
+  public void setRuleThenPath(String ruleThenPath) {
+    this.ruleThenPath = ruleThenPath;
+  }
+
+  public String getBodyTemplate() {
+    return bodyTemplate;
+  }
+
+  public void setBodyTemplate(String bodyTemplate) {
+    this.bodyTemplate = bodyTemplate;
   }
 
   public Integer getPriority() {

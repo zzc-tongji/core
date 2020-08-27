@@ -10,24 +10,24 @@ import javax.validation.constraints.NotNull;
 public class PutPostRequestDto extends ApiTokenRequestDto {
   @Length(
       min = 1,
-      max = Constant.CONNECTOR_LENGTH,
+      max = Constant.INSTANCE_LENGTH,
       message =
           "instance: required, string with length in [1, "
-              + Constant.CONNECTOR_LENGTH
+              + Constant.INSTANCE_LENGTH
               + "] which cannot be converted to long")
   @NotNull(
       message =
           "instance: required, string with length in [1, "
-              + Constant.CONNECTOR_LENGTH
+              + Constant.INSTANCE_LENGTH
               + "] which cannot be converted to long")
   private String instance;
 
   @Length(
       min = 1,
-      max = Constant.CONNECTOR_LENGTH,
-      message = "category: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
+      max = Constant.CATEGORY_LENGTH,
+      message = "category: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]")
   @NotNull(
-      message = "category: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
+      message = "category: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]")
   private String category;
 
   @Length(
@@ -45,10 +45,16 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
 
   @Length(
       min = 1,
-      max = Constant.CONNECTOR_LENGTH,
-      message = "rpcToken: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
+      max = Constant.CONNECTOR_RPC_TOKEN_LENGTH,
+      message =
+          "rpcToken: required, string with length in [1, "
+              + Constant.CONNECTOR_RPC_TOKEN_LENGTH
+              + "]")
   @NotNull(
-      message = "rpcToken: required, string with length in [1, " + Constant.CONNECTOR_LENGTH + "]")
+      message =
+          "rpcToken: required, string with length in [1, "
+              + Constant.CONNECTOR_RPC_TOKEN_LENGTH
+              + "]")
   private String rpcToken;
 
   public String getInstance() {

@@ -16,11 +16,23 @@ public class RulePo implements Serializable {
   @Column(length = Constant.RULE_NAME_LENGTH, nullable = false, unique = true)
   private String name;
 
-  @Column(name = "rule_if", length = Constant.RULE_CONTENT_LENGTH, nullable = false)
-  private String ifContent;
+  @Column(name = "rule_if", length = Constant.RULE_IF_LENGTH, nullable = false)
+  private String ruleIf;
 
-  @Column(name = "rule_then", length = Constant.RULE_CONTENT_LENGTH, nullable = false)
-  private String thenContent;
+  @Column(name = "rule_then_instance", length = Constant.INSTANCE_LENGTH, nullable = false)
+  private String ruleThenInstance;
+
+  @Column(
+      columnDefinition = "char(" + Constant.RULE_THEN_METHOD_LENGTH + ")",
+      name = "rule_then_method",
+      nullable = false)
+  private String ruleThenMethod;
+
+  @Column(name = "rule_then_path", length = Constant.RULE_THEN_PATH_LENGTH, nullable = false)
+  private String ruleThenPath;
+
+  @Column(name = "body_template", length = Constant.RULE_BODY_TEMPLATE_LENGTH, nullable = false)
+  private String bodyTemplate;
 
   @Column(nullable = false)
   private Integer priority;
@@ -47,20 +59,44 @@ public class RulePo implements Serializable {
     this.name = name;
   }
 
-  public String getIfContent() {
-    return ifContent;
+  public String getRuleIf() {
+    return ruleIf;
   }
 
-  public void setIfContent(String ifContent) {
-    this.ifContent = ifContent;
+  public void setRuleIf(String ruleIf) {
+    this.ruleIf = ruleIf;
   }
 
-  public String getThenContent() {
-    return thenContent;
+  public String getRuleThenInstance() {
+    return ruleThenInstance;
   }
 
-  public void setThenContent(String thenContent) {
-    this.thenContent = thenContent;
+  public void setRuleThenInstance(String ruleThenInstance) {
+    this.ruleThenInstance = ruleThenInstance;
+  }
+
+  public String getRuleThenMethod() {
+    return ruleThenMethod;
+  }
+
+  public void setRuleThenMethod(String ruleThenMethod) {
+    this.ruleThenMethod = ruleThenMethod;
+  }
+
+  public String getRuleThenPath() {
+    return ruleThenPath;
+  }
+
+  public void setRuleThenPath(String ruleThenPath) {
+    this.ruleThenPath = ruleThenPath;
+  }
+
+  public String getBodyTemplate() {
+    return bodyTemplate;
+  }
+
+  public void setBodyTemplate(String bodyTemplate) {
+    this.bodyTemplate = bodyTemplate;
   }
 
   public Integer getPriority() {
