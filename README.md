@@ -66,6 +66,16 @@ git config --local core.autocrlf input
 git config --local core.safecrlf true
 ```
 
+### Database Review
+
+``` mysql
+SELECT * from dev.config;
+SELECT * from dev.connector;
+SELECT * from dev.rule;
+SELECT * from dev.token;
+SELECT * from dev.log ORDER BY timestamp_ms DESC LIMIT 100;
+```
+
 ### Others
 
 - All code files are edited by [IntelliJ IDEA](https://www.jetbrains.com/idea/).
