@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.messagehelper.core.exception.InvalidRuleIfException;
 import io.github.messagehelper.core.processor.log.Log;
+import io.github.messagehelper.core.processor.rule._if.httpconnector.listener.http.Receive;
+import io.github.messagehelper.core.processor.rule._if.httpconnector.requestor.http.execute.Response;
+import io.github.messagehelper.core.processor.rule._if.wechatconnector.listener.wechat.Friendship;
 import io.github.messagehelper.core.processor.rule._if.wechatconnector.listener.wechat.Message;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
@@ -28,20 +31,17 @@ public class RuleIf {
   }
 
   public static RuleIf parse(String json) {
-    // general
-    if (json.contains("\"wechat-connector.listener.wechat.message\"")) {
+    if (json.contains("\"http-connector.listener.http.receive\"")) {
+      return new Receive(json);
+    } else if (json.contains("\"http-connector.requestor.http.execute.response\"")) {
+      return new Response(json);
+    } else if (json.contains("\"wechat-connector.listener.wechat.friendship\"")) {
+      return new Friendship(json);
+    } else if (json.contains("\"wechat-connector.listener.wechat.message\"")) {
       return new Message(json);
+    } else if (json.contains("\"wechat-connector.listener.wechat.room-topic\"")) {
+      return new Response(json);
     } else {
-      // "wechat-connector.auto-start"
-      // "wechat-connector.cache.remove-expired"
-      // "wechat-connector.listener.wechat.login"
-      // "wechat-connector.listener.wechat.logout"
-      // "wechat-connector.listener.wechat.ready"
-      // "wechat-connector.listener.wechat.start"
-      // "wechat-connector.listener.wechat.stop"
-      // "wechat-connector.report.not-login-after-start"
-      // "wechat-connector.report.unexpected-logout"
-      // "wechat-connector.requestor.wechat.sync-all"
       return new RuleIf(json);
     }
   }

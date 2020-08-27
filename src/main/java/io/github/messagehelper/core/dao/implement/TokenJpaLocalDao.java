@@ -142,14 +142,14 @@ public class TokenJpaLocalDao implements TokenDao {
   @Override
   public void register(io.github.messagehelper.core.dto.api.register.PostRequestDto dto) {
     // cache
-    if (configDao.load("core.backend.password").length() > 0
-        && configDao.load("core.backend.salt").length() > 0) {
+    if (configDao.load("core.api-password-hash").length() > 0
+        && configDao.load("core.api-password-salt").length() > 0) {
       throw new PasswordAlreadySetException("already registered, please login instead");
     }
     // database
     String salt = String.format("salt%d", IdGenerator.getInstance().generateNegative());
-    configDao.save("core.backend.password", cipher(dto.getPassword(), salt));
-    configDao.save("core.backend.salt", salt);
+    configDao.save("core.api-password-hash", cipher(dto.getPassword(), salt));
+    configDao.save("core.api-password-salt", salt);
   }
 
   private TokenPo find(String key) {
@@ -205,12 +205,12 @@ public class TokenJpaLocalDao implements TokenDao {
 
   public PostResponseDto loginHelper(PostRequestDto dto, boolean permanent) {
     // cache
-    if (configDao.load("core.backend.password").length() <= 0
-        || configDao.load("core.backend.salt").length() <= 0) {
+    if (configDao.load("core.api-password-hash").length() <= 0
+        || configDao.load("core.api-password-salt").length() <= 0) {
       throw new PasswordNotSetException("not registered, please register first");
     }
-    if (!cipher(dto.getPassword(), configDao.load("core.backend.salt"))
-        .equals(configDao.load("core.backend.password"))) {
+    if (!cipher(dto.getPassword(), configDao.load("core.api-password-salt"))
+        .equals(configDao.load("core.api-password-hash"))) {
       throw new PasswordInvalidException("password: not valid");
     }
     String token = String.format("token%d", IdGenerator.getInstance().generateNegative());

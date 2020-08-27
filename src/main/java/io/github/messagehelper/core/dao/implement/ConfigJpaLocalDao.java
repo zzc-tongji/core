@@ -107,7 +107,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     for (ConfigPo po : collection) {
       item = new Item();
       key = po.getKey();
-      if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
+      if (key.equals("core.api-password-hash") || key.equals("core.api-password-salt")) {
         continue;
       }
       item.setKey(key);
@@ -178,7 +178,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   }
 
   private ConfigPo readUpdateHelper(String key) {
-    if (key.equals("core.backend.password") || key.equals("core.backend.salt")) {
+    if (key.equals("core.api-password-hash") || key.equals("core.api-password-salt")) {
       throw new ConfigHiddenException(String.format("key `%s`: hidden", key));
     }
     ConfigPo po = find(key);

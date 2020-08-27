@@ -3,14 +3,34 @@
 ### Prerequisite
 
 - A database of **MySQL 5.7+** is required.
-- Initialize database.
-  - Review file [template.initialize.sql](./prerequisite/template.initialize.sql).
-  - Customize and replace content between `<...>`, then adjust comments to enable them.
-  - Connect to the database and execute.
+
 - Create application properties.
-  - Review file [template.application.properties](./prerequisite/template.application.properties).
-  - Customize and replace content between  `<...>`.
-  - Rename and place it at path `<jar-location>/config/application.properties`.
+  - Place the following content in file `<jar-location>/config/application.properties`.
+  - Fill out database connection parameters.
+  - **Do not modify other lines.**
+  
+
+``` properties
+server.port=8003
+# BEGIN
+#
+# url => jdbc:mysql://<ip-or-domain>:<port>/<database-name>
+spring.datasource.url=
+# username
+spring.datasource.username=
+# password
+spring.datasource.password=
+#
+# END
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.schema=classpath:initialize.sql
+spring.datasource.initialization-mode=always
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hipernate.format_sql=true
+spring.jpa.properties.usb_sq/_comments=true
+```
 
 ### Run
 
@@ -45,8 +65,6 @@ Execute following commands before making any change.
 git config --local core.autocrlf input
 git config --local core.safecrlf true
 ```
-
-Use file [develop.initialize.sql](./prerequisite/develop.initialize.sql) to initialize database.
 
 ### Others
 
