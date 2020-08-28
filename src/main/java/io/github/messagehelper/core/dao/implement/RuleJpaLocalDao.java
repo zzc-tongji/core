@@ -2,7 +2,7 @@ package io.github.messagehelper.core.dao.implement;
 
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
-import io.github.messagehelper.core.dao.LogDao;
+import io.github.messagehelper.core.dao.LogInsertDao;
 import io.github.messagehelper.core.dao.RuleDao;
 import io.github.messagehelper.core.dto.api.rules.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto;
@@ -33,7 +33,7 @@ public class RuleJpaLocalDao implements RuleDao {
   private RuleJpaRepository repository;
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
-  private LogDao logDao;
+  private LogInsertDao logInsertDao;
   private List<Rule> ruleList;
   private final Lock lock;
   private final Logger logger;
@@ -42,11 +42,11 @@ public class RuleJpaLocalDao implements RuleDao {
       @Autowired RuleJpaRepository repository,
       @Autowired ConfigDao configDao,
       @Autowired ConnectorDao connectorDao,
-      @Autowired @Qualifier("LogJpaAsyncDao") LogDao logDao) {
+      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao) {
     this.repository = repository;
     this.configDao = configDao;
     this.connectorDao = connectorDao;
-    this.logDao = logDao;
+    this.logInsertDao = logInsertDao;
     ruleList = new ArrayList<>();
     lock = new Lock();
     logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);
@@ -104,7 +104,7 @@ public class RuleJpaLocalDao implements RuleDao {
       // match rule
       if (rule.getRuleIf().satisfy(log)) {
         // log
-        logDao.insert(
+        logInsertDao.insert(
             configDao.load("core.instance"),
             Constant.LOG_LEVEL_INFO,
             "core.dao.rule-dao.process.hit",

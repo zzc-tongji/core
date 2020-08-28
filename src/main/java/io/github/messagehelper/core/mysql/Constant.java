@@ -11,6 +11,12 @@ public class Constant {
   public static final int CONNECTOR_URL_LENGTH = 2048;
   public static final int CONNECTOR_RPC_TOKEN_LENGTH = 64;
   // log
+  public static final String LOG_COLUMN_NAME_ID = "id";
+  public static final String LOG_COLUMN_NAME_INSTANCE = "instance";
+  public static final String LOG_COLUMN_NAME_LEVEL = "level";
+  public static final String LOG_COLUMN_NAME_CATEGORY = "category";
+  public static final String LOG_COLUMN_NAME_TIMESTAMP_MS = "timestamp_ms";
+  public static final String LOG_COLUMN_NAME_CONTENT = "content";
   public static final int LOG_LEVEL_LENGTH = 4;
   public static final String LOG_LEVEL_ERR = "ERR";
   public static final String LOG_LEVEL_WARN = "WARN";

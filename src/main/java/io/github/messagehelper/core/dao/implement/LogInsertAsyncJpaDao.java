@@ -1,6 +1,6 @@
 package io.github.messagehelper.core.dao.implement;
 
-import io.github.messagehelper.core.dao.LogDao;
+import io.github.messagehelper.core.dao.LogInsertDao;
 import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -8,12 +8,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Async
-@Service("LogJpaAsyncDao")
-public class LogJpaAsyncDao implements LogDao {
-  private LogDao sync;
+@Service("LogInsertAsyncJpaDao")
+public class LogInsertAsyncJpaDao implements LogInsertDao {
+  private LogInsertDao sync;
 
   @Autowired
-  public LogJpaAsyncDao(@Qualifier("LogJpaDao") LogDao sync) {
+  public LogInsertAsyncJpaDao(@Qualifier("LogInsertJpaDao") LogInsertDao sync) {
     this.sync = sync;
   }
 

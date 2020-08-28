@@ -173,6 +173,9 @@ public class TokenJpaLocalDao implements TokenDao {
 
   private boolean authenticateHelper(String token) {
     // cache
+    if (token == null || token.length() <= 0) {
+      return false;
+    }
     TokenPo po = find(token);
     if (po == null) {
       return false;

@@ -3,7 +3,7 @@ package io.github.messagehelper.core.dao.implement;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
-import io.github.messagehelper.core.dao.LogDao;
+import io.github.messagehelper.core.dao.LogInsertDao;
 import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.Item;
@@ -40,17 +40,17 @@ import java.util.Map;
 public class ConnectorJpaLocalDao implements ConnectorDao {
   private ConnectorJpaRepository repository;
   private ConfigDao configDao;
-  private LogDao logDao;
+  private LogInsertDao logInsertDao;
   private Map<String, ConnectorPo> connectorMap;
   private final Lock lock;
 
   public ConnectorJpaLocalDao(
       @Autowired ConnectorJpaRepository repository,
       @Autowired ConfigDao configDao,
-      @Autowired @Qualifier("LogJpaAsyncDao") LogDao logDao) {
+      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao) {
     this.repository = repository;
     this.configDao = configDao;
-    this.logDao = logDao;
+    this.logInsertDao = logInsertDao;
     connectorMap = new HashMap<>();
     lock = new Lock();
     //
@@ -102,7 +102,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .objectNode()
               .put("error", String.format("connector with id [%d]: not found", id))
               .toString();
-      logDao.insert(
+      logInsertDao.insert(
           configDao.load("core.instance"),
           Constant.LOG_LEVEL_ERR,
           "core.dao.connector-dao.execute-delegate.connector-not-found.exception",
@@ -125,7 +125,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .objectNode()
               .put("error", String.format("connector with instance [%s]: not found", instance))
               .toString();
-      logDao.insert(
+      logInsertDao.insert(
           configDao.load("core.instance"),
           Constant.LOG_LEVEL_ERR,
           "core.dao.connector-dao.execute-delegate.connector-not.exception",
@@ -340,7 +340,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
                       "connector with instance [%s] and url [%s]: fail to connect",
                       po.getInstance(), url));
       String jsonString = objectNode.toString();
-      logDao.insert(
+      logInsertDao.insert(
           configDao.load("core.instance"),
           Constant.LOG_LEVEL_ERR,
           "core.dao.connector-dao.execute-helper.fail-to-connect.exception",
@@ -375,7 +375,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
         objectNode.put("responseBody", "...");
         jsonString = objectNode.toString();
       }
-      logDao.insert(
+      logInsertDao.insert(
           configDao.load("core.instance"),
           Constant.LOG_LEVEL_ERR,
           "core.dao.connector-dao.execute-helper.fail-to-fetch.fetch.exception",

@@ -11,21 +11,35 @@ import java.io.Serializable;
 @Entity
 @Table(name = "log")
 public class LogPo implements Serializable {
-  @Id private Long id;
+  @Id
+  @Column(name = Constant.LOG_COLUMN_NAME_ID)
+  private Long id;
 
-  @Column(length = Constant.INSTANCE_LENGTH, nullable = false)
+  @Column(
+      length = Constant.INSTANCE_LENGTH,
+      name = Constant.LOG_COLUMN_NAME_INSTANCE,
+      nullable = false)
   private String instance;
 
-  @Column(columnDefinition = "char(" + Constant.LOG_LEVEL_LENGTH + ")", nullable = false)
+  @Column(
+      columnDefinition = "char(" + Constant.LOG_LEVEL_LENGTH + ")",
+      name = Constant.LOG_COLUMN_NAME_LEVEL,
+      nullable = false)
   private String level;
 
-  @Column(length = Constant.CATEGORY_LENGTH, nullable = false)
+  @Column(
+      length = Constant.CATEGORY_LENGTH,
+      name = Constant.LOG_COLUMN_NAME_CATEGORY,
+      nullable = false)
   private String category;
 
-  @Column(name = "timestamp_ms", nullable = false)
+  @Column(name = Constant.LOG_COLUMN_NAME_TIMESTAMP_MS, nullable = false)
   private Long timestampMs;
 
-  @Column(length = Constant.LOG_CONTENT_LENGTH, nullable = false)
+  @Column(
+      length = Constant.LOG_CONTENT_LENGTH,
+      name = Constant.LOG_COLUMN_NAME_CONTENT,
+      nullable = false)
   private String content;
 
   public Long getId() {

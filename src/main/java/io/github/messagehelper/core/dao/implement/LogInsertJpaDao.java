@@ -1,6 +1,6 @@
 package io.github.messagehelper.core.dao.implement;
 
-import io.github.messagehelper.core.dao.LogDao;
+import io.github.messagehelper.core.dao.LogInsertDao;
 import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.mysql.po.LogPo;
 import io.github.messagehelper.core.mysql.repository.LogJpaRepository;
@@ -8,12 +8,12 @@ import io.github.messagehelper.core.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service("LogJpaDao")
-public class LogJpaDao implements LogDao {
+@Service("LogInsertJpaDao")
+public class LogInsertJpaDao implements LogInsertDao {
   private LogJpaRepository repository;
 
   @Autowired
-  public LogJpaDao(LogJpaRepository repository) {
+  public LogInsertJpaDao(LogJpaRepository repository) {
     this.repository = repository;
   }
 

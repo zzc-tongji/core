@@ -2,6 +2,7 @@ package io.github.messagehelper.core.controller;
 
 import io.github.messagehelper.core.dao.*;
 import io.github.messagehelper.core.exception.IdNotNumericalException;
+import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.utils.DisableCacheHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,12 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 public class Controller {
   private static final String API = "/api";
 
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
+  private LogReadDao logReadDao;
   private ProcessorDao processorDao;
   private RuleDao ruleDao;
   private TokenDao tokenDao;
@@ -23,11 +27,13 @@ public class Controller {
   public Controller(
       ConfigDao configDao,
       ConnectorDao connectorDao,
+      LogReadDao logReadDao,
       ProcessorDao processorDao,
       RuleDao ruleDao,
       TokenDao tokenDao) {
     this.configDao = configDao;
     this.connectorDao = connectorDao;
+    this.logReadDao = logReadDao;
     this.processorDao = processorDao;
     this.ruleDao = ruleDao;
     this.tokenDao = tokenDao;
@@ -37,9 +43,7 @@ public class Controller {
 
   @GetMapping(value = API + "/configs")
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetAllResponseDto>
-      configsGetALL(
-          @RequestHeader(name = "api-token", required = false, defaultValue = "")
-              String headerApiToken) {
+      configsGetALL(@RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     return ResponseEntity.status(200)
         .headers(DisableCacheHeader.getInstance())
@@ -49,8 +53,7 @@ public class Controller {
   @GetMapping(value = API + "/configs/{key}")
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetPutResponseDto> configsGet(
       @PathVariable("key") String key,
-      @RequestHeader(name = "api-token", required = false, defaultValue = "")
-          String headerApiToken) {
+      @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     return ResponseEntity.status(200)
         .headers(DisableCacheHeader.getInstance())
@@ -60,7 +63,7 @@ public class Controller {
   @PutMapping(value = API + "/configs/{key}")
   public io.github.messagehelper.core.dto.api.configs.GetPutResponseDto configsPut(
       @PathVariable("key") String key,
-      @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.configs.PutRequestDto dto) {
     tokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
     return configDao.update(key, dto);
@@ -70,9 +73,7 @@ public class Controller {
 
   @GetMapping(value = API + "/connectors")
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto>
-      connectorsGetAll(
-          @RequestHeader(name = "api-token", required = false, defaultValue = "")
-              String headerApiToken) {
+      connectorsGetAll(@RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     return ResponseEntity.status(200)
         .headers(DisableCacheHeader.getInstance())
@@ -83,8 +84,7 @@ public class Controller {
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto>
       connectorsGet(
           @PathVariable("idOrInstance") String idOrInstance,
-          @RequestHeader(name = "api-token", required = false, defaultValue = "")
-              String headerApiToken) {
+          @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
       return ResponseEntity.status(200)
@@ -100,7 +100,7 @@ public class Controller {
   @PutMapping(value = API + "/connectors/{id}")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPut(
       @PathVariable("id") String id,
-      @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated
           io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
     tokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
@@ -113,7 +113,7 @@ public class Controller {
 
   @PostMapping(value = API + "/connectors")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto connectorsPost(
-      @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated
           io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
     tokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
@@ -124,8 +124,7 @@ public class Controller {
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
       connectorsDelete(
           @PathVariable("id") String id,
-          @RequestHeader(name = "api-token", required = false, defaultValue = "")
-              String headerApiToken) {
+          @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
       return connectorDao.delete(Long.parseLong(id));
@@ -140,8 +139,7 @@ public class Controller {
   public ResponseEntity<String> connectorsDelegateGet(
       @PathVariable("idOrInstance") String idOrInstance,
       @RequestParam(name = "path", required = false, defaultValue = "") String path,
-      @RequestHeader(name = "api-token", required = false, defaultValue = "")
-          String headerApiToken) {
+      @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
       return connectorDao.executeDelegate(Long.parseLong(idOrInstance), "GET", path, "");
@@ -154,7 +152,7 @@ public class Controller {
   public ResponseEntity<String> connectorsDelegatePost(
       @PathVariable("idOrInstance") String idOrInstance,
       @RequestParam(name = "path", required = false, defaultValue = "") String path,
-      @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody(required = false) String request) {
     if (request == null) {
       request = "";
@@ -185,10 +183,32 @@ public class Controller {
 
   @DeleteMapping(value = API + "/logout")
   public ResponseEntity<String> logoutPost(
-      @RequestHeader(name = "api-token", required = false, defaultValue = "")
-          String headerApiToken) {
+      @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.revoke(headerApiToken);
     return ResponseEntity.status(204).body("");
+  }
+
+  // PREFIX + "/logs"
+  @GetMapping(value = API + "/logs")
+  public io.github.messagehelper.core.dto.api.logs.GetResponse logGet(
+      HttpServletRequest httpRequest) {
+    tokenDao.authenticate(new String[] {httpRequest.getHeader("api-token")});
+    io.github.messagehelper.core.dto.api.logs.GetRequest request =
+        new io.github.messagehelper.core.dto.api.logs.GetRequest(
+            httpRequest.getRequestURL().toString(),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_ID + "_greater_than"),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_ID + "_less_than"),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_INSTANCE + "_contain"),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_LEVEL + "_contain"),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_CATEGORY + "_contain"),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_TIMESTAMP_MS + "_greater_than"),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_TIMESTAMP_MS + "_less_than"),
+            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_CONTENT + "_contain"),
+            httpRequest.getParameter("order"),
+            httpRequest.getParameter("ascending"),
+            httpRequest.getParameter("page"),
+            httpRequest.getParameter("size"));
+    return logReadDao.readAdvance(request);
   }
 
   // PREFIX + "/register"
@@ -204,8 +224,7 @@ public class Controller {
 
   @GetMapping(value = API + "/rules")
   public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetAllResponseDto> rulesGetAll(
-      @RequestHeader(name = "api-token", required = false, defaultValue = "")
-          String headerApiToken) {
+      @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     return ResponseEntity.status(200)
         .headers(DisableCacheHeader.getInstance())
@@ -216,8 +235,7 @@ public class Controller {
   public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto>
       rulesGet(
           @PathVariable("idOrName") String idOrName,
-          @RequestHeader(name = "api-token", required = false, defaultValue = "")
-              String headerApiToken) {
+          @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
       return ResponseEntity.status(200)
@@ -233,7 +251,7 @@ public class Controller {
   @PutMapping(value = API + "/rules/{id}")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto rulePut(
       @PathVariable("id") String id,
-      @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
     tokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
     try {
@@ -245,7 +263,7 @@ public class Controller {
 
   @PostMapping(value = API + "/rules")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto rulePost(
-      @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
     tokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
     return ruleDao.create(dto);
@@ -253,7 +271,7 @@ public class Controller {
 
   @DeleteMapping(value = API + "/rules/{id}")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto ruleDelete(
-      @RequestHeader(name = "api-token", required = false, defaultValue = "") String headerApiToken,
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @PathVariable("id") String id) {
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
