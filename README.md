@@ -71,7 +71,7 @@ git config --local core.safecrlf true
 ``` mysql
 SELECT * from config;
 SELECT * from connector;
-SELECT * from rule;
+SELECT * from rule ORDER BY priority ASC;
 SELECT * from token;
 SELECT * from log ORDER BY timestamp_ms DESC LIMIT 100;
 ```
