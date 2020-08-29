@@ -1,8 +1,8 @@
 package io.github.messagehelper.core.controller;
 
 import io.github.messagehelper.core.dao.*;
+import io.github.messagehelper.core.dto.api.logs.Constant;
 import io.github.messagehelper.core.exception.IdNotNumericalException;
-import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.utils.DisableCacheHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -196,18 +196,18 @@ public class Controller {
     io.github.messagehelper.core.dto.api.logs.GetRequest request =
         new io.github.messagehelper.core.dto.api.logs.GetRequest(
             httpRequest.getRequestURL().toString(),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_ID + "_greater_than"),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_ID + "_less_than"),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_INSTANCE + "_contain"),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_LEVEL + "_contain"),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_CATEGORY + "_contain"),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_TIMESTAMP_MS + "_greater_than"),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_TIMESTAMP_MS + "_less_than"),
-            httpRequest.getParameter(Constant.LOG_COLUMN_NAME_CONTENT + "_contain"),
-            httpRequest.getParameter("order"),
-            httpRequest.getParameter("ascending"),
-            httpRequest.getParameter("page"),
-            httpRequest.getParameter("size"));
+            httpRequest.getParameter(Constant.ID_GREATER_THAN),
+            httpRequest.getParameter(Constant.ID_LESS_THAN),
+            httpRequest.getParameter(Constant.INSTANCE_CONTAIN),
+            httpRequest.getParameter(Constant.LEVEL_CONTAIN),
+            httpRequest.getParameter(Constant.CATEGORY_CONTAIN),
+            httpRequest.getParameter(Constant.TIMESTAMP_MS_GREATER_THAN),
+            httpRequest.getParameter(Constant.TIMESTAMP_MS_LESS_THAN),
+            httpRequest.getParameter(Constant.CONTENT_CONTAIN),
+            httpRequest.getParameter(Constant.ORDER),
+            httpRequest.getParameter(Constant.ASCENDING),
+            httpRequest.getParameter(Constant.PAGE),
+            httpRequest.getParameter(Constant.SIZE));
     return logReadDao.readAdvance(request);
   }
 

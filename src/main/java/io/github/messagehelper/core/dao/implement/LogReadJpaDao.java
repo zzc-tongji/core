@@ -96,13 +96,11 @@ public class LogReadJpaDao implements LogReadDao {
         repository.findAll(
             new Filter(request),
             PageRequest.of(
-                request.getPage() - 1,
-                request.getSize(),
+                (int) request.getPage() - 1,
+                (int) request.getSize(),
                 Sort.by(
                     request.getAscending() ? Sort.Direction.ASC : Sort.Direction.DESC,
-                    request.getOrder().equals("timestamp_ms")
-                        ? "timestampMs"
-                        : request.getOrder())));
+                    request.getOrder())));
     // response
     GetResponse response = new GetResponse();
     Data data = response.getData();
@@ -118,9 +116,10 @@ public class LogReadJpaDao implements LogReadDao {
       log.setContent(po.getContent());
       logList.add(log);
     }
-    data.setSize((long) page.getNumberOfElements());
+    data.setPage(page.getNumber() + 1L);
+    data.setSize((long) page.getSize());
     data.setTotal(page.getTotalElements());
-    data.setPageTotal((long) page.getTotalPages());
+    data.setTotalPage((long) page.getTotalPages());
     data.setPrevious(page.isFirst() ? "" : request.generatePreviousUrl());
     data.setNext(page.isLast() ? "" : request.generateNextUrl());
     return response;

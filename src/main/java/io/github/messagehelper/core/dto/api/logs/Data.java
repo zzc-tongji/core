@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Data {
-  private List<Item> logList;
+  private Long page;
   private Long size;
   private Long total;
-  private Long pageTotal;
+  private Long totalPage;
   private String previous;
   private String next;
+  private List<Item> logList;
 
-  public List<Item> getLogList() {
-    return logList;
+  public Long getPage() {
+    return page;
+  }
+
+  public void setPage(Long page) {
+    this.page = page;
   }
 
   public Long getSize() {
@@ -31,12 +36,12 @@ public class Data {
     this.total = total;
   }
 
-  public Long getPageTotal() {
-    return pageTotal;
+  public Long getTotalPage() {
+    return totalPage;
   }
 
-  public void setPageTotal(Long pageTotal) {
-    this.pageTotal = pageTotal;
+  public void setTotalPage(Long totalPage) {
+    this.totalPage = totalPage;
   }
 
   public String getPrevious() {
@@ -55,12 +60,16 @@ public class Data {
     this.next = next;
   }
 
+  public List<Item> getLogList() {
+    return logList;
+  }
+
   public Data() {
-    logList = new ArrayList<>();
     size = 0L;
     total = 0L;
-    pageTotal = 0L;
+    totalPage = 0L;
     previous = "";
     next = "";
+    logList = new ArrayList<>();
   }
 }

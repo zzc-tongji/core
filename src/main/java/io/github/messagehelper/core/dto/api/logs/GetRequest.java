@@ -1,7 +1,5 @@
 package io.github.messagehelper.core.dto.api.logs;
 
-import io.github.messagehelper.core.mysql.Constant;
-
 public class GetRequest {
   private static final int DEFAULT_PAGE = 1;
   private static final int DEFAULT_SIZE = 100;
@@ -24,8 +22,8 @@ public class GetRequest {
   private String order; // (not-nullable, default: DEFAULT_ORDER)
   private boolean ascending; // (default: false)
   // pagination
-  private int page; // (default: DEFAULT_PAGE)
-  private int size; // (default: DEFAULT_SIZE)
+  private long page; // (default: DEFAULT_PAGE)
+  private long size; // (default: DEFAULT_SIZE)
 
   public String getUrl() {
     return url;
@@ -175,7 +173,7 @@ public class GetRequest {
         && !order.equals("instance")
         && !order.equals("level")
         && !order.equals("category")
-        && !order.equals("timestamp_ms")
+        && !order.equals("timestampMs")
         && !order.equals("content")) {
       this.order = DEFAULT_ORDER;
       return;
@@ -191,7 +189,7 @@ public class GetRequest {
     this.ascending = (ascending != null && ascending.equals("true"));
   }
 
-  public int getPage() {
+  public long getPage() {
     return page;
   }
 
@@ -201,14 +199,14 @@ public class GetRequest {
         this.page = DEFAULT_PAGE;
         return;
       }
-      int p = Integer.parseInt(page);
+      long p = Long.parseLong(page);
       this.page = p <= 0 ? DEFAULT_PAGE : p;
     } catch (NumberFormatException e) {
       this.page = DEFAULT_PAGE;
     }
   }
 
-  public int getSize() {
+  public long getSize() {
     return size;
   }
 
@@ -218,7 +216,7 @@ public class GetRequest {
         this.size = DEFAULT_SIZE;
         return;
       }
-      int s = Integer.parseInt(size);
+      long s = Long.parseLong(size);
       this.size = s <= 0 ? DEFAULT_SIZE : s;
     } catch (NumberFormatException e) {
       this.size = DEFAULT_SIZE;
@@ -272,41 +270,49 @@ public class GetRequest {
   public String generatePreviousUrl() {
     StringBuilder builder = new StringBuilder();
     // page
-    return generateUrl(builder.append(url).append("?page=").append(page - 1));
+    return generateUrl(
+        builder.append(url).append("?").append(Constant.PAGE).append("=").append(page - 1));
   }
 
   public String generateNextUrl() {
     StringBuilder builder = new StringBuilder();
     // page
-    return generateUrl(builder.append(url).append("?page=").append(page + 1));
+    return generateUrl(
+        builder.append(url).append("?").append(Constant.PAGE).append("=").append(page + 1));
   }
 
   private String generateUrl(StringBuilder builder) {
     int remainStatementCounter = statementNumber;
     // size
-    builder.append("&size=");
+    builder.append("&");
+    builder.append(Constant.SIZE);
+    builder.append("=");
     builder.append(size);
     // order
-    builder.append("&order=");
+    builder.append("&");
+    builder.append(Constant.ORDER);
+    builder.append("=");
     builder.append(order);
     // ascending
-    builder.append("&ascending=");
+    builder.append("&");
+    builder.append(Constant.ASCENDING);
+    builder.append("=");
     builder.append(ascending);
     if (remainStatementCounter > 0) {
       builder.append("&");
     }
     // id
     if (idGreaterThan != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_ID);
-      builder.append("_greater_than=");
+      builder.append(Constant.ID_GREATER_THAN);
+      builder.append("=");
       builder.append(idGreaterThan);
       if (--remainStatementCounter > 0) {
         builder.append("&");
       }
     }
     if (idLessThan != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_ID);
-      builder.append("_less_than=");
+      builder.append(Constant.ID_LESS_THAN);
+      builder.append("=");
       builder.append(idLessThan);
       if (--remainStatementCounter > 0) {
         builder.append("&");
@@ -314,8 +320,8 @@ public class GetRequest {
     }
     // instance
     if (instanceContain != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_INSTANCE);
-      builder.append("_contain=");
+      builder.append(Constant.INSTANCE_CONTAIN);
+      builder.append("=");
       builder.append(instanceContain);
       if (--remainStatementCounter > 0) {
         builder.append("&");
@@ -323,8 +329,8 @@ public class GetRequest {
     }
     // level
     if (levelContain != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_LEVEL);
-      builder.append("_contain=");
+      builder.append(Constant.LEVEL_CONTAIN);
+      builder.append("=");
       builder.append(levelContain);
       if (--remainStatementCounter > 0) {
         builder.append("&");
@@ -332,8 +338,8 @@ public class GetRequest {
     }
     // category
     if (categoryContain != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_CATEGORY);
-      builder.append("_contain=");
+      builder.append(Constant.CATEGORY_CONTAIN);
+      builder.append("=");
       builder.append(categoryContain);
       if (--remainStatementCounter > 0) {
         builder.append("&");
@@ -341,16 +347,16 @@ public class GetRequest {
     }
     // timestamp_ms
     if (timestampMsGreaterThan != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_TIMESTAMP_MS);
-      builder.append("_greater_than=");
+      builder.append(Constant.TIMESTAMP_MS_GREATER_THAN);
+      builder.append("=");
       builder.append(timestampMsGreaterThan);
       if (--remainStatementCounter > 0) {
         builder.append("&");
       }
     }
     if (timestampMsLessThan != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_TIMESTAMP_MS);
-      builder.append("_less_than=");
+      builder.append(Constant.TIMESTAMP_MS_LESS_THAN);
+      builder.append("=");
       builder.append(timestampMsLessThan);
       if (--remainStatementCounter > 0) {
         builder.append("&");
@@ -358,8 +364,8 @@ public class GetRequest {
     }
     // contain
     if (contentContain != null) {
-      builder.append(Constant.LOG_COLUMN_NAME_CONTENT);
-      builder.append("_contain=");
+      builder.append(Constant.CONTENT_CONTAIN);
+      builder.append("=");
       builder.append(contentContain);
       if (--remainStatementCounter > 0) {
         builder.append("&");
