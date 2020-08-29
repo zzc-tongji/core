@@ -39,13 +39,14 @@ public class ConfigMapSingleton {
     // LOCK
     lock.readIncrease();
     // DO
-    String value = configMap.get(key).getValue();
+    ConfigPo po = configMap.get(key);
     // UNLOCK
     lock.readDecrease();
     //
-    if (value == null) {
-      value = "";
+    if (po == null) {
+      return "";
     }
-    return value;
+    String value = po.getValue();
+    return value == null ? "" : value;
   }
 }

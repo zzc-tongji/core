@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS `config`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
 
+-- [config] API document
+--
+-- the URL of API document
+INSERT IGNORE INTO config (item_key, item_value)
+VALUES ('core.api-document',
+        'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fmessage-helper%2fcore%2fmaster%2fdoc%2fapi.yaml');
+
 -- [config] frontend config
 --
 -- JSON string

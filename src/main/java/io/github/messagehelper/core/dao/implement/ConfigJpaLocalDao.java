@@ -69,7 +69,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
       return "";
     }
     String value = po.getValue();
-    if (value == null || value.length() <= 0) {
+    if (value == null) {
       return "";
     }
     return value;
