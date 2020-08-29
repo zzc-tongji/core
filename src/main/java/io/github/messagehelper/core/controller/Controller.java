@@ -40,8 +40,10 @@ public class Controller {
   // "/api"
 
   @GetMapping(value = "/api")
-  public io.github.messagehelper.core.dto.api.GetResponse get() {
-    return new io.github.messagehelper.core.dto.api.GetResponse();
+  public ResponseEntity<io.github.messagehelper.core.dto.api.GetResponse> get() {
+    return ResponseEntity.status(200)
+        .headers(DisableCacheHeader.getInstance())
+        .body(new io.github.messagehelper.core.dto.api.GetResponse());
   }
 
   // "/api/configs"
@@ -199,7 +201,7 @@ public class Controller {
 
   // "/api/logs"
   @GetMapping(value = "/api/logs")
-  public io.github.messagehelper.core.dto.api.logs.GetResponse apiLogGet(
+  public ResponseEntity<io.github.messagehelper.core.dto.api.logs.GetResponse> apiLogGet(
       HttpServletRequest httpRequest) {
     tokenDao.authenticate(new String[] {httpRequest.getHeader("api-token")});
     io.github.messagehelper.core.dto.api.logs.GetRequest request =
@@ -217,7 +219,9 @@ public class Controller {
             httpRequest.getParameter(Constant.ASCENDING),
             httpRequest.getParameter(Constant.PAGE),
             httpRequest.getParameter(Constant.SIZE));
-    return logReadDao.readAdvance(request);
+    return ResponseEntity.status(200)
+        .headers(DisableCacheHeader.getInstance())
+        .body(logReadDao.readAdvance(request));
   }
 
   // "/api/register"
