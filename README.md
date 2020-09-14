@@ -15,7 +15,7 @@ server.port=8003
 # BEGIN
 #
 # setting.global-cors
-# => Set as `true` to enable CORS.
+# => Set as `true` to enable CORS for all APIs.
 setting.global-cors=
 # spring.datasource.url
 # => The format is `jdbc:mysql://<ip-or-domain>:<port>/<database-name>`.
