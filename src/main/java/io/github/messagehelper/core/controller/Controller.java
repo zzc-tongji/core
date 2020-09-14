@@ -294,7 +294,7 @@ public class Controller {
     }
   }
 
-  @CrossOrigin(origins = "*", allowedHeaders = "api-header")
+  @CrossOrigin(origins = "*", allowedHeaders = "*")
   @PostMapping(value = "/api/webhooks")
   public ResponseEntity<String> apiWebhooksPost(
       @RequestHeader(name = "api-token", required = false) String headerApiToken,
