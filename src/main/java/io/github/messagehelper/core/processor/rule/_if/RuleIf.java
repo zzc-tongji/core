@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.messagehelper.core.exception.InvalidRuleIfException;
 import io.github.messagehelper.core.processor.log.Log;
+import io.github.messagehelper.core.processor.rule._if.core.Webhook;
 import io.github.messagehelper.core.processor.rule._if.httpconnector.listener.http.Receive;
 import io.github.messagehelper.core.processor.rule._if.httpconnector.requestor.http.execute.Response;
 import io.github.messagehelper.core.processor.rule._if.wechatconnector.listener.wechat.Friendship;
@@ -31,7 +32,9 @@ public class RuleIf {
   }
 
   public static RuleIf parse(String json) {
-    if (json.contains("\"http-connector.listener.http.receive\"")) {
+    if (json.contains("\"core.webhook\"")) {
+      return new Webhook(json);
+    } else if (json.contains("\"http-connector.listener.http.receive\"")) {
       return new Receive(json);
     } else if (json.contains("\"http-connector.requestor.http.execute.response\"")) {
       return new Response(json);

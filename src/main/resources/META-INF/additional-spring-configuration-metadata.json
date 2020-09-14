@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "setting.global-cors",
+      "type": "java.lang.Boolean",
+      "description": "Set as `true` to enable CORS."
+    }
+  ]
+}

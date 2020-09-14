@@ -1,7 +1,7 @@
 package io.github.messagehelper.core.dao;
 
-import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
-
 public interface ProcessorDao {
-  void start(PostRequestDto dto);
+  void start(io.github.messagehelper.core.dto.rpc.log.PostRequestDto dto);
+
+  void startWithWebhook(io.github.messagehelper.core.dto.api.webhooks.PostRequestDto dto);
 }

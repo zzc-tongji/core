@@ -1,12 +1,15 @@
 package io.github.messagehelper.core.dao.implement;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.LogInsertDao;
 import io.github.messagehelper.core.dao.ProcessorDao;
 import io.github.messagehelper.core.dao.RuleDao;
-import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.exception.TokenInvalidException;
+import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.processor.log.Log;
+import io.github.messagehelper.core.utils.IdGenerator;
+import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -28,11 +31,34 @@ public class ProcessorImplementDao implements ProcessorDao {
   }
 
   @Override
-  public void start(PostRequestDto dto) {
+  public void start(io.github.messagehelper.core.dto.rpc.log.PostRequestDto dto) {
     if (!configDao.load("core.rpc-token").equals(dto.getRpcToken())) {
       throw new TokenInvalidException("rpc token: not valid");
     }
     logInsertDao.insert(dto);
     ruleDao.process(Log.parse(dto));
+  }
+
+  @Override
+  public void startWithWebhook(io.github.messagehelper.core.dto.api.webhooks.PostRequestDto dto) {
+    // convert
+    io.github.messagehelper.core.dto.rpc.log.PostRequestDto logDto =
+        new io.github.messagehelper.core.dto.rpc.log.PostRequestDto();
+    logDto.setId(IdGenerator.getInstance().generate());
+    logDto.setInstance(configDao.load("core.instance"));
+    logDto.setLevel(Constant.LOG_LEVEL_INFO);
+    logDto.setCategory("core.webhook");
+    logDto.setTimestampMs(System.currentTimeMillis());
+    ObjectNode objectNode =
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("value1", dto.getValue1())
+            .put("value2", dto.getValue2())
+            .put("value3", dto.getValue3());
+    logDto.setContent(objectNode.toString());
+    logDto.setRpcToken(configDao.load("core.rpc-token"));
+    // start
+    start(logDto);
   }
 }

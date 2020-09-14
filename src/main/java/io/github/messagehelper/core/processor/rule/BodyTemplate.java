@@ -57,12 +57,6 @@ public class BodyTemplate {
         .toString();
   }
 
-  private static String escapeHelper(String text) {
-    StringBuilder e1 = new StringBuilder();
-    JsonStringEncoder.getInstance().quoteAsString(text, e1);
-    return e1.toString().replace("\\", "\\\\");
-  }
-
   private static String replaceHelper(String input, String regex, String replacement) {
     StringBuilder stringBuilder = new StringBuilder();
     JsonStringEncoder.getInstance().quoteAsString(replacement, stringBuilder);

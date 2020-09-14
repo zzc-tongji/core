@@ -14,11 +14,15 @@
 server.port=8003
 # BEGIN
 #
-# url => jdbc:mysql://<ip-or-domain>:<port>/<database-name>
+# setting.global-cors
+# => Set as `true` to enable CORS.
+setting.global-cors=
+# spring.datasource.url
+# => The format is `jdbc:mysql://<ip-or-domain>:<port>/<database-name>`.
 spring.datasource.url=
-# username
+# spring.datasource.username
 spring.datasource.username=
-# password
+# spring.datasource.password
 spring.datasource.password=
 #
 # END
