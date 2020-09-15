@@ -14,7 +14,7 @@ docker build -t messagehelper/core .
 #### Script
 
 ``` sh
-docker run --detach --name core --ports 8003:8003 --restart always --volumes ./mount/config/:/home/app/config/ messagehelper/core
+docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ messagehelper/core
 ```
 
 #### Compose

@@ -41,7 +41,7 @@ spring.jpa.properties.usb_sq/_comments=true
 
 ### Run
 
-``` bash
+``` sh
 git clean -xfd
 
 ./mvnw clean && ./mvnw package # macOS and Linux only
@@ -54,10 +54,10 @@ java -jar ./target/id.jar
 
 Execute following commands to pull and run:
 
-```bash
+```sh
 docker pull messagehelper/core
 
-docker run --detach --name core --ports 8003:8003 --restart always --volumes ./mount/config/:/home/app/config/ messagehelper/core
+docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ messagehelper/core
 ```
 
 Path `/home/app/` in docker container acts as `<jar-location>`.
@@ -68,7 +68,7 @@ See [Docker.md](./Docker.md) for more details.
 
 Execute following commands before making any change.
 
-``` bash
+``` sh
 git config --local core.autocrlf input
 git config --local core.safecrlf true
 ```
