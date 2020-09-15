@@ -57,7 +57,7 @@ Execute following commands to pull and run:
 ```bash
 docker pull messagehelper/core
 
-docker run -d --restart on-failure --name core -v ./config/:/home/app/config/ -p 8003:8003 messagehelper/core
+docker run --detach --name core --ports 8003:8003 --restart always --volumes ./mount/config/:/home/app/config/ messagehelper/core
 ```
 
 Path `/home/app/` in docker container acts as `<jar-location>`.
