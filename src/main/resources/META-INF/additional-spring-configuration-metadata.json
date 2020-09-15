@@ -1,6 +1,11 @@
 {
   "properties": [
     {
+      "name": "setting.debug",
+      "type": "java.lang.Boolean",
+      "description": "Set as `true` to show all exceptions in local log (console)."
+    },
+    {
       "name": "setting.global-cors",
       "type": "java.lang.Boolean",
       "description": "Set as `true` to enable CORS for all APIs."

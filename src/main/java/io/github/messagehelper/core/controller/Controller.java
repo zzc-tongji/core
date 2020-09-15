@@ -146,7 +146,7 @@ public class Controller {
 
   // "/api/connectors/{idOrInstance}/delegate?path={path}"
 
-  @CrossOrigin(origins = "*", allowedHeaders = "*")
+  @CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "delegate-status")
   @GetMapping(value = "/api/connectors/{idOrInstance}/delegate")
   public ResponseEntity<String> apiConnectorsDelegateGet(
       @PathVariable("idOrInstance") String idOrInstance,
@@ -160,7 +160,7 @@ public class Controller {
     }
   }
 
-  @CrossOrigin(origins = "*", allowedHeaders = "*")
+  @CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "delegate-status")
   @PostMapping(value = "/api/connectors/{idOrInstance}/delegate")
   public ResponseEntity<String> apiConnectorsDelegatePost(
       @PathVariable("idOrInstance") String idOrInstance,

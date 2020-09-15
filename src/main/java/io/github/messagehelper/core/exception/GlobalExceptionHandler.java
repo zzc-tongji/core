@@ -1,8 +1,11 @@
 package io.github.messagehelper.core.exception;
 
-import io.github.messagehelper.core.dto.ExceptionResponseDto;
+import io.github.messagehelper.core.dto.HttpClientErrorResponseDto;
+import io.github.messagehelper.core.dto.HttpServerErrorResponseDto;
+import io.github.messagehelper.core.utils.ThrowableTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,24 +19,30 @@ import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-  private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  private final Logger logger;
+  private final Boolean debug;
+
+  public GlobalExceptionHandler(@Value("${setting.debug}") Boolean debug) {
+    logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    this.debug = debug;
+  }
 
   // JSON string not valid
   @ExceptionHandler(value = HttpMessageNotReadableException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(HttpMessageNotReadableException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(HttpMessageNotReadableException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   // JSON format not correct (based on different requests)
   @ExceptionHandler(value = MethodArgumentNotValidException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(MethodArgumentNotValidException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(
+  public HttpClientErrorResponseDto handle(MethodArgumentNotValidException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(
         Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
   }
 
@@ -41,144 +50,151 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(value = MissingRequestHeaderException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(MissingRequestHeaderException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(MissingRequestHeaderException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = ConfigHiddenException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(ConfigHiddenException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(ConfigHiddenException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = ConfigNotFoundException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(ConfigNotFoundException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(ConfigNotFoundException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = ConnectorAlreadyExistentException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(ConnectorAlreadyExistentException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(ConnectorAlreadyExistentException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = ConnectorInstanceNumericalException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(ConnectorInstanceNumericalException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(ConnectorInstanceNumericalException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = ConnectorNotFoundException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(ConnectorNotFoundException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(ConnectorNotFoundException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = IdNotNumericalException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(IdNotNumericalException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(IdNotNumericalException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = InvalidRuleIfException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(InvalidRuleIfException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(InvalidRuleIfException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = InvalidRuleThenException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(InvalidRuleThenException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(InvalidRuleThenException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = LogContentInvalidException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(LogContentInvalidException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(LogContentInvalidException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = PasswordAlreadySetException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
-  public ExceptionResponseDto handle(PasswordAlreadySetException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(PasswordAlreadySetException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = PasswordInvalidException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)
-  public ExceptionResponseDto handle(PasswordInvalidException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(PasswordInvalidException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = PasswordNotSetException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
-  public ExceptionResponseDto handle(PasswordNotSetException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(PasswordNotSetException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = RuleAlreadyExistentException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(RuleAlreadyExistentException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(RuleAlreadyExistentException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = RuleNameNumericalException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(RuleNameNumericalException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(RuleNameNumericalException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = RuleNotFoundException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ExceptionResponseDto handle(RuleNotFoundException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(RuleNotFoundException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = TokenInvalidException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)
-  public ExceptionResponseDto handle(TokenInvalidException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpClientErrorResponseDto handle(TokenInvalidException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
   }
 
   @ExceptionHandler(value = RuntimeException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public ExceptionResponseDto handle(RuntimeException e) {
-    logger.info(e.toString());
-    return new ExceptionResponseDto(e.getMessage());
+  public HttpServerErrorResponseDto handle(RuntimeException e) {
+    String detail = ThrowableTool.getInstance().convertToString(e, 3);
+    logger.error(detail);
+    return new HttpServerErrorResponseDto(detail);
+  }
+
+  private void develop(Throwable t) {
+    if (debug) {
+      logger.error(ThrowableTool.getInstance().convertToString(t, 3));
+    }
   }
 }

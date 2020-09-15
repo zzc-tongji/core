@@ -14,6 +14,9 @@
 server.port=8003
 # BEGIN
 #
+# setting.debug
+# => Set as `true` to show all exceptions in local log (console).
+setting.debug=
 # setting.global-cors
 # => Set as `true` to enable CORS for all APIs.
 setting.global-cors=
