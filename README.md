@@ -76,12 +76,12 @@ git config --local core.safecrlf true
 ### Data Review
 
 ``` mysql
+SELECT count(id) FROM log;
+SELECT * FROM log ORDER BY timestamp_ms DESC LIMIT 100;
 SELECT * FROM config;
 SELECT * FROM connector;
 SELECT * FROM rule ORDER BY priority ASC;
 SELECT * FROM token;
-SELECT count(id) FROM log;
-SELECT * FROM log ORDER BY timestamp_ms DESC LIMIT 100;
 ```
 
 ### Others
