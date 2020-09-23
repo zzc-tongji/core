@@ -10,6 +10,8 @@ public class Constant {
   // connector
   public static final int CONNECTOR_URL_LENGTH = 2048;
   public static final int CONNECTOR_RPC_TOKEN_LENGTH = 64;
+  public static final long CONNECTOR_ID_VIRTUAL = 0L;
+  public static final String CONNECTOR_INSTANCE_VIRTUAL = "-";
   // log
   public static final String LOG_COLUMN_NAME_ID = "id";
   public static final String LOG_COLUMN_NAME_INSTANCE = "instance";

@@ -12,12 +12,16 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
       min = 1,
       max = Constant.INSTANCE_LENGTH,
       message =
-          "instance: required, string with length in [1, "
+          "instance: required, a not \""
+              + Constant.CONNECTOR_INSTANCE_VIRTUAL
+              + "\" string with length in [1, "
               + Constant.INSTANCE_LENGTH
               + "] which cannot be converted to long")
   @NotNull(
       message =
-          "instance: required, string with length in [1, "
+          "instance: required, a not \""
+              + Constant.CONNECTOR_INSTANCE_VIRTUAL
+              + "\" string with length in [1, "
               + Constant.INSTANCE_LENGTH
               + "] which cannot be converted to long")
   private String instance;

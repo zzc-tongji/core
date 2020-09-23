@@ -87,6 +87,14 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
+  @ExceptionHandler(value = ConnectorVirtualException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConnectorVirtualException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
   @ExceptionHandler(value = ConnectorNotFoundException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)

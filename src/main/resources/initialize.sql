@@ -57,6 +57,13 @@ CREATE TABLE IF NOT EXISTS `connector`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
+-- [connector]
+--
+-- virtual connector with category `core.webhook`
+-- DO NOT MODIFY ANY PART OF THE FOLLOWING STATEMENT!
+REPLACE INTO connector (id, category, instance, rpc_token, url)
+VALUES (0, 'core.webhook', '-', '-', '-');
+
 -- [log]
 CREATE TABLE IF NOT EXISTS `log`
 (

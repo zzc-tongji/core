@@ -9,8 +9,9 @@ import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseD
 import io.github.messagehelper.core.dto.api.connectors.Item;
 import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
 import io.github.messagehelper.core.exception.ConnectorAlreadyExistentException;
+import io.github.messagehelper.core.exception.ConnectorInstanceNumericalException;
 import io.github.messagehelper.core.exception.ConnectorNotFoundException;
-import io.github.messagehelper.core.exception.RuleNameNumericalException;
+import io.github.messagehelper.core.exception.ConnectorVirtualException;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.ConnectorPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
@@ -139,6 +140,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
+    // validate
     validateInstance(dto.getInstance());
     // cache
     if (find(dto.getInstance()) != null) {
@@ -157,8 +159,12 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
+  @SuppressWarnings("Duplicates")
   public GetPutPostDeleteResponseDto delete(Long id) {
     // cache
+    if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
+      throw new ConnectorVirtualException(String.format("connector with id [%d]: virtual", id));
+    }
     ConnectorPo po = find(id);
     if (po == null) {
       throw new ConnectorNotFoundException(String.format("connector with id [%d]: not found", id));
@@ -174,8 +180,12 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
+  @SuppressWarnings("Duplicates")
   public GetPutPostDeleteResponseDto readById(Long id) {
     // cache
+    if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
+      throw new ConnectorVirtualException(String.format("connector with id [%d]: virtual", id));
+    }
     ConnectorPo po = find(id);
     if (po == null) {
       throw new ConnectorNotFoundException(String.format("connector with id [%d]: not found", id));
@@ -189,6 +199,10 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   @Override
   public GetPutPostDeleteResponseDto readByInstance(String instance) {
     // cache
+    if (instance.equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
+      throw new ConnectorVirtualException(
+          String.format("connector with instance [%s]: virtual", instance));
+    }
     ConnectorPo po = find(instance);
     if (po == null) {
       throw new ConnectorNotFoundException(
@@ -209,6 +223,11 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     Collection<Item> data = responseDto.getData();
     Item item;
     for (ConnectorPo po : collection) {
+      // ignore virtual connector
+      if (po.getId().equals(Constant.CONNECTOR_ID_VIRTUAL)) {
+        continue;
+      }
+      // data
       item = new Item();
       item.setId(po.getId());
       item.setInstance(po.getInstance());
@@ -222,6 +241,10 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   @Override
   public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
+    // validate
+    if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
+      throw new ConnectorVirtualException(String.format("connector with id [%d]: virtual", id));
+    }
     validateInstance(dto.getInstance());
     // cache
     ConnectorPo po = find(id);
@@ -431,13 +454,17 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   public void validateInstance(String instance) {
+    String message =
+        String.format(
+            "instance: required, a not \"%s\" string with length in [1, %d] which cannot be converted to long",
+            Constant.CONNECTOR_INSTANCE_VIRTUAL, Constant.INSTANCE_LENGTH);
     try {
       Long.parseLong(instance);
-      throw new RuleNameNumericalException(
-          "instance: required, string with length in [1, "
-              + Constant.INSTANCE_LENGTH
-              + "] which cannot be converted to long");
+      throw new ConnectorInstanceNumericalException(message);
     } catch (NumberFormatException ignored) {
+    }
+    if (instance.equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
+      throw new ConnectorVirtualException(message);
     }
   }
 }
