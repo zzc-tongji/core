@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `connector`
 -- virtual connector with category `core.webhook`
 -- DO NOT MODIFY ANY PART OF THE FOLLOWING STATEMENT!
 REPLACE INTO connector (id, category, instance, rpc_token, url)
-VALUES (0, 'core.webhook', '-', '-', '-');
+VALUES (0, 'webhook-connector', '-', '-', '-');
 
 -- [log]
 CREATE TABLE IF NOT EXISTS `log`
