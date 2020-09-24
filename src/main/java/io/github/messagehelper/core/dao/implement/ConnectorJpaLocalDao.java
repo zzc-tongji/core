@@ -51,12 +51,13 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       @Autowired ConnectorJpaRepository repository,
       @Autowired ConfigDao configDao,
       @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao) {
+    // initialize
     this.repository = repository;
     this.configDao = configDao;
     this.logInsertDao = logInsertDao;
     connectorMap = new HashMap<>();
     lock = new Lock();
-    //
+    // create virtual connector
     ConnectorPo po = new ConnectorPo();
     po.setId(0L);
     po.setInstance(Constant.CONNECTOR_INSTANCE_VIRTUAL);
@@ -64,6 +65,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     po.setUrl("(empty)");
     po.setRpcToken("(empty)");
     repository.save(po);
+    // cache
     refreshCache();
   }
 
