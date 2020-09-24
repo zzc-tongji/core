@@ -86,8 +86,11 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   @Override
   public void executeRule(Rule rule, Log log) {
-    executeDelegate(
-        rule.getRuleThenInstance(),
+    ConnectorPo po = find(rule.getRuleThenInstance());
+    // `po` will never be `null`,
+    // since `rule.getRuleThenInstance()` always returns a valid instance,
+    executeHelper(
+        po,
         rule.getRuleThenMethod(),
         rule.getRuleThenPath(),
         BodyTemplate.fill(rule.getBodyTemplate(), log));
@@ -97,20 +100,25 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   public ResponseEntity<String> executeDelegate(Long id, String method, String path, String body) {
     ConnectorPo po = find(id);
     if (po == null) {
-      String errorJson =
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_LEVEL_WARN,
+          "core.delegate.failure.connector-not-found",
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
-              .put("error", String.format("connector with id [%d]: not found", id))
-              .toString();
-      logInsertDao.insert(
-          configDao.load("core.instance"),
-          Constant.LOG_LEVEL_ERR,
-          "core.dao.connector-dao.execute-delegate.connector-not-found.exception",
-          errorJson);
+              .put("requestUrl", path)
+              .put("requestMethod", method)
+              .put("requestBody", body)
+              .toString());
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
-          .body(errorJson);
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("error", String.format("connector with id [%d]: not found", id))
+                  .toString());
     }
     return executeHelper(po, method, path, body);
   }
@@ -120,26 +128,49 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       String instance, String method, String path, String body) {
     ConnectorPo po = find(instance);
     if (po == null) {
-      String errorJson =
+      // log
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_LEVEL_WARN,
+          "core.delegate.failure.connector-not-found",
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
-              .put("error", String.format("connector with instance [%s]: not found", instance))
-              .toString();
-      logInsertDao.insert(
-          configDao.load("core.instance"),
-          Constant.LOG_LEVEL_ERR,
-          "core.dao.connector-dao.execute-delegate.connector-not.exception",
-          errorJson);
+              .put("requestUrl", path)
+              .put("requestMethod", method)
+              .put("requestBody", body)
+              .toString());
+      // response
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
-          .body(errorJson);
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("error", String.format("connector with instance [%s]: not found", instance))
+                  .toString());
     }
+    // log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        Constant.LOG_LEVEL_INFO,
+        "core.delegate",
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("connectorInstance", po.getInstance())
+            .put("connectorId", po.getId())
+            .put("requestUrl", po.getUrl() + path)
+            .put("requestMethod", method)
+            .put("requestBody", body)
+            .toString());
+    // response
     return executeHelper(po, method, path, body);
   }
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
+    // TODO: fetch url with token and '/rpc/status' to check availability and then add
     // validate
     validateInstance(dto.getInstance());
     // cache
@@ -161,6 +192,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   @Override
   @SuppressWarnings("Duplicates")
   public GetPutPostDeleteResponseDto delete(Long id) {
+    // TODO: disable corresponding rule before remove connector
     // cache
     if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
       throw new ConnectorVirtualException(String.format("connector with id [%d]: virtual", id));
@@ -334,10 +366,22 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   private ResponseEntity<String> executeHelper(
       ConnectorPo po, String method, String path, String body) {
-    HttpRequest request;
     String url = po.getUrl() + path;
     String requestMethod = method.equals("GET") ? "GET" : "POST";
     String requestBodyWithToken = insertToken(body, po.getRpcToken());
+    // log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        Constant.LOG_LEVEL_VERB,
+        "core.executor",
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("requestUrl", url)
+            .put("requestMethod", requestMethod)
+            .put("requestBody", requestBodyWithToken)
+            .toString());
+    HttpRequest request;
     try {
       request =
           HttpRequest.newBuilder()
@@ -346,65 +390,85 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .method(requestMethod, HttpRequest.BodyPublishers.ofString(requestBodyWithToken))
               .build();
     } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
+      // log
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_LEVEL_WARN,
+          "core.executor.failure.invalid-url",
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("requestUrl", url)
+              .put("requestMethod", requestMethod)
+              .put("requestBody", requestBodyWithToken)
+              .toString());
+      // response
+      return ResponseEntity.status(400)
+          .header("content-type", "application/json;charset=utf-8")
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("error", String.format("url [%s]: invalid format", url))
+                  .toString());
     }
     HttpResponse<String> response;
     try {
       response =
           HttpClientSingleton.getInstance().send(request, HttpResponse.BodyHandlers.ofString());
     } catch (IOException e) {
-      ObjectNode objectNode =
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_LEVEL_WARN,
+          "core.executor.failure.cannot-connect",
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
-              .put(
-                  "error",
-                  String.format(
-                      "connector with instance [%s] and url [%s]: fail to connect",
-                      po.getInstance(), url));
-      String jsonString = objectNode.toString();
-      logInsertDao.insert(
-          configDao.load("core.instance"),
-          Constant.LOG_LEVEL_ERR,
-          "core.dao.connector-dao.execute-helper.fail-to-connect.exception",
-          jsonString);
+              .put("requestUrl", url)
+              .put("requestMethod", requestMethod)
+              .put("requestBody", requestBodyWithToken)
+              .toString());
+      // response
       return ResponseEntity.status(400)
           .header("content-type", "application/json;charset=utf-8")
-          .body(jsonString);
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("error", String.format("url [%s]: cannot connect", url))
+                  .toString());
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
     int statusCode = response.statusCode();
-    if (statusCode <= 199 || statusCode >= 300) {
-      ObjectNode objectNode =
-          ObjectMapperSingleton.getInstance()
-              .getNodeFactory()
-              .objectNode()
-              .put("instance", po.getInstance())
-              .put("category", po.getCategory())
-              .put("url", url)
-              .put("requestMethod", requestMethod)
-              .put("requestBody", requestBodyWithToken)
-              .put("responseStatus", statusCode)
-              .put("responseBody", response.body())
-              .put("url", url);
-      String jsonString = objectNode.toString();
-      System.out.println(jsonString);
-      if (jsonString.length() > Constant.LOG_CONTENT_LENGTH) {
-        objectNode.put("requestBody", "...");
-        jsonString = objectNode.toString();
-      }
-      if (jsonString.length() > Constant.LOG_CONTENT_LENGTH) {
-        objectNode.put("responseBody", "...");
-        jsonString = objectNode.toString();
-      }
-      logInsertDao.insert(
-          configDao.load("core.instance"),
-          Constant.LOG_LEVEL_ERR,
-          "core.dao.connector-dao.execute-helper.fail-to-fetch.fetch.exception",
-          jsonString);
-    }
     String responseBody = response.body();
+    boolean success = (statusCode >= 200 && statusCode <= 299);
+    // generate log with appropriate length
+    ObjectNode objectNode =
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("requestUrl", url)
+            .put("requestMethod", requestMethod)
+            .put("requestBody", requestBodyWithToken)
+            .put("responseStatus", statusCode)
+            .put("responseBody", responseBody);
+    String jsonString = objectNode.toString();
+    if (jsonString.length() > Constant.LOG_CONTENT_LENGTH) {
+      objectNode.put("requestBody", "...");
+      jsonString = objectNode.toString();
+    }
+    if (jsonString.length() > Constant.LOG_CONTENT_LENGTH) {
+      objectNode.put("responseBody", "...");
+      jsonString = objectNode.toString();
+    }
+    // log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        success ? Constant.LOG_LEVEL_INFO : Constant.LOG_LEVEL_WARN,
+        success ? "core.executor" : "core.executor.failure.http-client-error",
+        jsonString);
+    // response
     if (responseBody.length() <= 0) {
       return ResponseEntity.status(204)
           .header("delegate-status", String.valueOf(statusCode))

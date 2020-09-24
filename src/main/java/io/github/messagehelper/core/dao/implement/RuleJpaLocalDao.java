@@ -107,8 +107,10 @@ public class RuleJpaLocalDao implements RuleDao {
         logInsertDao.insert(
             configDao.load("core.instance"),
             Constant.LOG_LEVEL_INFO,
-            "core.dao.rule-dao.process.hit",
-            String.format("{\"ruleName\":\"%s\",\"logId\":%d}", rule.getName(), log.getId()));
+            "core.rule.hit",
+            String.format(
+                "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
+                rule.getName(), rule.getId(), log.getId()));
         // execute rule
         connectorDao.executeRule(rule, log);
         // terminate or not
@@ -119,10 +121,18 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     // UNLOCK
     lock.readDecrease();
+    // log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        Constant.LOG_LEVEL_VERB,
+        "core.rule.miss",
+        String.format("{\"logId\":%d}", log.getId()));
   }
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
+    // TODO: change rule if instance as column
+    // TODO: validate connector and type
     validateName(dto.getName());
     // cache
     Rule rule = find(dto.getName());

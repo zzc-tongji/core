@@ -3,7 +3,7 @@ package io.github.messagehelper.core.processor.log.content;
 public class Content {
   public static Content parse(String category, String json) {
     switch (category) {
-      case "core.webhook":
+      case "webhook-connector.receive":
         return new io.github.messagehelper.core.processor.log.content.core.Webhook(json);
       case "http-connector.listener.http.receive":
         return new io.github.messagehelper.core.processor.log.content.httpconnector.listener.http

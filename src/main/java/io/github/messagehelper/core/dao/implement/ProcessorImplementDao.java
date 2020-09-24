@@ -45,7 +45,7 @@ public class ProcessorImplementDao implements ProcessorDao {
     io.github.messagehelper.core.dto.rpc.log.PostRequestDto logDto =
         new io.github.messagehelper.core.dto.rpc.log.PostRequestDto();
     logDto.setId(IdGenerator.getInstance().generate());
-    logDto.setInstance(Constant.CONNECTOR_INSTANCE_VIRTUAL);
+    logDto.setInstance(configDao.load("core.instance"));
     logDto.setLevel(Constant.LOG_LEVEL_INFO);
     logDto.setCategory("webhook-connector.receive");
     logDto.setTimestampMs(System.currentTimeMillis());

@@ -32,7 +32,8 @@ public class IdGenerator {
       JsonNode jsonNode = ObjectMapperSingleton.getInstance().readTree(response.body());
       JsonNode temp = jsonNode.get("id");
       if (temp != null && temp.isIntegralNumber() && temp.canConvertToLong()) {
-        return temp.asLong();
+        long result = temp.asLong();
+        return result > 0 ? result : generateNegative();
       } else {
         return generateNegative();
       }

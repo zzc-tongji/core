@@ -32,7 +32,7 @@ public class RuleIf {
   }
 
   public static RuleIf parse(String json) {
-    if (json.contains("\"core.webhook\"")) {
+    if (json.contains("\"webhook-connector.receive\"")) {
       return new Webhook(json);
     } else if (json.contains("\"http-connector.listener.http.receive\"")) {
       return new Receive(json);
