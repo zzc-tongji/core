@@ -89,7 +89,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   @Override
   public GetPutResponseDto read(String key) {
     // cache
-    ConfigPo po = readUpdateHelper(key, false);
+    ConfigPo po = readUpdateHelper(key);
     // response
     GetPutResponseDto responseDto = new GetPutResponseDto();
     poToResponseDto(po, responseDto);
@@ -121,7 +121,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   @Override
   public GetPutResponseDto update(String key, PutRequestDto dto) {
     // cache
-    readUpdateHelper(key, true);
+    readUpdateHelper(key);
     // database
     ConfigPo po = new ConfigPo();
     po.setKey(key);
@@ -178,14 +178,9 @@ public class ConfigJpaLocalDao implements ConfigDao {
     data.setValue(po.getValue());
   }
 
-  private ConfigPo readUpdateHelper(String key, boolean isUpdate) {
+  private ConfigPo readUpdateHelper(String key) {
     if (key.equals("core.api-password-hash") || key.equals("core.api-password-salt")) {
       throw new ConfigHiddenException(String.format("key [%s]: hidden", key));
-    }
-    if (isUpdate) {
-      if (key.equals("core.instance") || key.equals("core.rpc-token")) {
-        throw new ConfigReadOnlyException(String.format("key [%s]: read only", key));
-      }
     }
     ConfigPo po = find(key);
     if (po == null) {

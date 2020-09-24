@@ -77,7 +77,7 @@ git config --local core.safecrlf true
 
 ``` mysql
 SELECT count(id) FROM log;
-SELECT * FROM log ORDER BY timestamp_ms DESC LIMIT 100;
+SELECT * FROM log WHERE level = "INFO" OR level = "WARN" OR level = "ERR" ORDER BY timestamp_ms DESC LIMIT 100;
 SELECT * FROM config;
 SELECT * FROM connector;
 SELECT * FROM rule ORDER BY priority ASC;

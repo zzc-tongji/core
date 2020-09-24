@@ -61,8 +61,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     po.setId(0L);
     po.setInstance(Constant.CONNECTOR_INSTANCE_VIRTUAL);
     po.setCategory("webhook-connector");
-    po.setUrl(configDao.load("core.instance"));
-    po.setRpcToken(configDao.load("core.instance"));
+    po.setUrl("(empty)");
+    po.setRpcToken("(empty)");
     repository.save(po);
     refreshCache();
   }
