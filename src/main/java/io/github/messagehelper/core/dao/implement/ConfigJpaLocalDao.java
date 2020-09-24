@@ -7,6 +7,7 @@ import io.github.messagehelper.core.dto.api.configs.Item;
 import io.github.messagehelper.core.dto.api.configs.PutRequestDto;
 import io.github.messagehelper.core.exception.ConfigHiddenException;
 import io.github.messagehelper.core.exception.ConfigNotFoundException;
+import io.github.messagehelper.core.exception.ConfigReadOnlyException;
 import io.github.messagehelper.core.mysql.po.ConfigPo;
 import io.github.messagehelper.core.mysql.repository.ConfigJpaRepository;
 import io.github.messagehelper.core.utils.ConfigMapSingleton;
@@ -88,7 +89,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   @Override
   public GetPutResponseDto read(String key) {
     // cache
-    ConfigPo po = readUpdateHelper(key);
+    ConfigPo po = readUpdateHelper(key, false);
     // response
     GetPutResponseDto responseDto = new GetPutResponseDto();
     poToResponseDto(po, responseDto);
@@ -120,7 +121,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   @Override
   public GetPutResponseDto update(String key, PutRequestDto dto) {
     // cache
-    readUpdateHelper(key);
+    readUpdateHelper(key, true);
     // database
     ConfigPo po = new ConfigPo();
     po.setKey(key);
@@ -177,13 +178,18 @@ public class ConfigJpaLocalDao implements ConfigDao {
     data.setValue(po.getValue());
   }
 
-  private ConfigPo readUpdateHelper(String key) {
+  private ConfigPo readUpdateHelper(String key, boolean isUpdate) {
     if (key.equals("core.api-password-hash") || key.equals("core.api-password-salt")) {
-      throw new ConfigHiddenException(String.format("key `%s`: hidden", key));
+      throw new ConfigHiddenException(String.format("key [%s]: hidden", key));
+    }
+    if (isUpdate) {
+      if (key.equals("core.instance") || key.equals("core.rpc-token")) {
+        throw new ConfigReadOnlyException(String.format("key [%s]: read only", key));
+      }
     }
     ConfigPo po = find(key);
     if (po == null) {
-      throw new ConfigNotFoundException(String.format("key `%s`: not found", key));
+      throw new ConfigNotFoundException(String.format("key [%s]: not found", key));
     }
     return po;
   }

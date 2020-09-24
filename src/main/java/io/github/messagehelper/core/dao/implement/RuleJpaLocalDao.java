@@ -133,6 +133,8 @@ public class RuleJpaLocalDao implements RuleDao {
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
     // TODO: change rule if instance as column
     // TODO: validate connector and type
+    // TODO: when connector is "@", validate "rule_then_path" as URL,
+    // TODO: "rule_then_method" as content-type is necessary to validate
     validateName(dto.getName());
     // cache
     Rule rule = find(dto.getName());

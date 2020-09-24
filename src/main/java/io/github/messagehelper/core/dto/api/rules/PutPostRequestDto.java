@@ -5,18 +5,17 @@ import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
 public class PutPostRequestDto extends ApiTokenRequestDto {
-  private static final String METHOD_REGEXP =
-      "^(" + Constant.RULE_THEN_METHOD_GET + "|" + Constant.RULE_THEN_METHOD_POST + ")$";
   private static final String METHOD_MESSAGE =
       "ruleThenMethod: required, string in {\""
           + Constant.RULE_THEN_METHOD_GET
           + "\", \""
           + Constant.RULE_THEN_METHOD_POST
-          + "\"}";
+          + "\"} with length in [1, "
+          + Constant.RULE_THEN_PATH_LENGTH
+          + "]";
 
   @Length(
       min = 1,
@@ -54,7 +53,6 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
               + "]")
   private String ruleThenInstance;
 
-  @Pattern(regexp = METHOD_REGEXP, message = METHOD_MESSAGE)
   @NotNull(message = METHOD_MESSAGE)
   private String ruleThenMethod;
 

@@ -71,6 +71,14 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
+  @ExceptionHandler(value = ConfigReadOnlyException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConfigReadOnlyException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
   @ExceptionHandler(value = ConnectorAlreadyExistentException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)

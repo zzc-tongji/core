@@ -1,5 +1,7 @@
 package io.github.messagehelper.core.dao.implement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
@@ -55,6 +57,13 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     connectorMap = new HashMap<>();
     lock = new Lock();
     //
+    ConnectorPo po = new ConnectorPo();
+    po.setId(0L);
+    po.setInstance(Constant.CONNECTOR_INSTANCE_VIRTUAL);
+    po.setCategory("webhook-connector");
+    po.setUrl(configDao.load("core.instance"));
+    po.setRpcToken(configDao.load("core.instance"));
+    repository.save(po);
     refreshCache();
   }
 
@@ -89,15 +98,47 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     ConnectorPo po = find(rule.getRuleThenInstance());
     // `po` will never be `null`,
     // since `rule.getRuleThenInstance()` always returns a valid instance,
-    executeHelper(
-        po,
-        rule.getRuleThenMethod(),
-        rule.getRuleThenPath(),
-        BodyTemplate.fill(rule.getBodyTemplate(), log));
+    if (po.getId().equals(0L)) {
+      // virtual connector
+      executeWebhookHelper(
+          rule.getRuleThenPath(), // => URL
+          rule.getRuleThenMethod(), // => request header "content-type"
+          BodyTemplate.fill(rule.getBodyTemplate(), log)); // => request body
+      // If "request body" is an empty string, use GET method. If not, use POST method instead.
+    } else {
+      // normal connector
+      executeHelper(
+          po,
+          rule.getRuleThenMethod(),
+          rule.getRuleThenPath(),
+          BodyTemplate.fill(rule.getBodyTemplate(), log));
+    }
   }
 
   @Override
+  @SuppressWarnings("Duplicates")
   public ResponseEntity<String> executeDelegate(Long id, String method, String path, String body) {
+    if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_LEVEL_WARN,
+          "core.delegate.failure.not-allowed",
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("requestUrl", path)
+              .put("requestMethod", method)
+              .put("requestBody", body)
+              .toString());
+      return ResponseEntity.status(400)
+          .header("content-type", "application/json;charset=utf-8")
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("error", String.format("connector with id [%d]: not allowed", id))
+                  .toString());
+    }
     ConnectorPo po = find(id);
     if (po == null) {
       logInsertDao.insert(
@@ -120,12 +161,50 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
                   .put("error", String.format("connector with id [%d]: not found", id))
                   .toString());
     }
+    // log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        Constant.LOG_LEVEL_INFO,
+        "core.delegate",
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("connectorInstance", po.getInstance())
+            .put("connectorId", po.getId())
+            .put("requestUrl", po.getUrl() + path)
+            .put("requestMethod", method)
+            .put("requestBody", body)
+            .toString());
+    // response
     return executeHelper(po, method, path, body);
   }
 
   @Override
+  @SuppressWarnings("Duplicates")
   public ResponseEntity<String> executeDelegate(
       String instance, String method, String path, String body) {
+    if (instance.equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_LEVEL_WARN,
+          "core.delegate.failure.not-allowed",
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("requestUrl", path)
+              .put("requestMethod", method)
+              .put("requestBody", body)
+              .toString());
+      return ResponseEntity.status(400)
+          .header("content-type", "application/json;charset=utf-8")
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put(
+                      "error", String.format("connector with instance [%s]: not allowed", instance))
+                  .toString());
+    }
     ConnectorPo po = find(instance);
     if (po == null) {
       // log
@@ -480,6 +559,84 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
         .body(response.body());
   }
 
+  private void executeWebhookHelper(String url, String contentType, String body) {
+    String requestMethod = body.length() > 0 ? "POST" : "GET";
+    // [webhook-connector] request
+    HttpRequest request;
+    try {
+      request =
+          HttpRequest.newBuilder()
+              .uri(new URI(url))
+              .headers("content-type", contentType)
+              .method(requestMethod, HttpRequest.BodyPublishers.ofString(body))
+              .build();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+    // [webhook-connector] log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        Constant.LOG_LEVEL_INFO,
+        "webhook-connector.send.request",
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("requestUrl", url)
+            .put("requestMethod", requestMethod)
+            .put("requestBody", body)
+            .toString());
+    // [webhook-connector] response
+    HttpResponse<String> response;
+    try {
+      response =
+          HttpClientSingleton.getInstance().send(request, HttpResponse.BodyHandlers.ofString());
+    } catch (IOException e) {
+      // [webhook-connector] log
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          Constant.LOG_LEVEL_WARN,
+          "webhook-connector.send.response.failure.cannot-connect",
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("requestUrl", url)
+              .put("requestMethod", requestMethod)
+              .put("requestBody", body)
+              .toString());
+      return;
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    // [webhook-connector] log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        Constant.LOG_LEVEL_INFO,
+        "webhook-connector.send.response",
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("requestUrl", url)
+            .put("requestMethod", requestMethod)
+            .put("requestBody", body)
+            .put("responseStatus", response.statusCode())
+            .put("responseBody", response.body())
+            .toString());
+    // log
+    logInsertDao.insert(
+        configDao.load("core.instance"),
+        Constant.LOG_LEVEL_INFO,
+        "core.executor",
+        ObjectMapperSingleton.getInstance()
+            .getNodeFactory()
+            .objectNode()
+            .put("requestUrl", "virtual://webhook-connector")
+            .put("requestMethod", "POST")
+            .put("requestBody", body)
+            .put("responseStatus", 204)
+            .put("responseBody", "")
+            .toString());
+  }
+
   private String insertToken(String requestBody, String token) {
     if (requestBody.length() <= 0
         || requestBody.equals("{}")
@@ -517,7 +674,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     po.setRpcToken(dto.getRpcToken());
   }
 
-  public void validateInstance(String instance) {
+  private void validateInstance(String instance) {
     String message =
         String.format(
             "instance: required, a not \"%s\" string with length in [1, %d] which cannot be converted to long",

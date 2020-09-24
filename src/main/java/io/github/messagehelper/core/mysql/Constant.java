@@ -11,7 +11,7 @@ public class Constant {
   public static final int CONNECTOR_URL_LENGTH = 2048;
   public static final int CONNECTOR_RPC_TOKEN_LENGTH = 64;
   public static final long CONNECTOR_ID_VIRTUAL = 0L;
-  public static final String CONNECTOR_INSTANCE_VIRTUAL = "-";
+  public static final String CONNECTOR_INSTANCE_VIRTUAL = "@";
   // log
   public static final String LOG_COLUMN_NAME_ID = "id";
   public static final String LOG_COLUMN_NAME_INSTANCE = "instance";
@@ -30,10 +30,10 @@ public class Constant {
   // rule
   public static final int RULE_NAME_LENGTH = 256;
   public static final int RULE_IF_LENGTH = 2048;
-  public static final int RULE_THEN_METHOD_LENGTH = 4;
+  public static final int RULE_THEN_METHOD_LENGTH = 64;
   public static final String RULE_THEN_METHOD_GET = "GET";
   public static final String RULE_THEN_METHOD_POST = "POST";
-  public static final int RULE_THEN_PATH_LENGTH = 64;
+  public static final int RULE_THEN_PATH_LENGTH = 1024;
   public static final int RULE_BODY_TEMPLATE_LENGTH = 4096;
   // token
   public static final int TOKEN_LENGTH = 32;

@@ -22,10 +22,7 @@ public class RulePo implements Serializable {
   @Column(name = "rule_then_instance", length = Constant.INSTANCE_LENGTH, nullable = false)
   private String ruleThenInstance;
 
-  @Column(
-      columnDefinition = "char(" + Constant.RULE_THEN_METHOD_LENGTH + ")",
-      name = "rule_then_method",
-      nullable = false)
+  @Column(name = "rule_then_method", length = Constant.RULE_THEN_METHOD_LENGTH, nullable = false)
   private String ruleThenMethod;
 
   @Column(name = "rule_then_path", length = Constant.RULE_THEN_PATH_LENGTH, nullable = false)

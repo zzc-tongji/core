@@ -57,13 +57,6 @@ CREATE TABLE IF NOT EXISTS `connector`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
--- [connector]
---
--- virtual connector with category `webhook-connector`
--- DO NOT MODIFY ANY PART OF THE FOLLOWING STATEMENT!
-REPLACE INTO connector (id, category, instance, rpc_token, url)
-VALUES (0, 'webhook-connector', '-', '-', '-');
-
 -- [log]
 CREATE TABLE IF NOT EXISTS `log`
 (
@@ -85,8 +78,8 @@ CREATE TABLE IF NOT EXISTS `rule`
     `name`               varchar(256)  NOT NULL,
     `rule_if`            varchar(2048) NOT NULL,
     `rule_then_instance` varchar(64)   NOT NULL,
-    `rule_then_method`   varchar(4)    NOT NULL,
-    `rule_then_path`     varchar(64)   NOT NULL,
+    `rule_then_method`   varchar(64)    NOT NULL,
+    `rule_then_path`     varchar(1024)   NOT NULL,
     `body_template`      varchar(4096) NOT NULL,
     `priority`           int(11)       NOT NULL,
     `terminate`          bit(1)        NOT NULL,
