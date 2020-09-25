@@ -28,7 +28,7 @@ public class RuleIf {
     try {
       return ObjectMapperSingleton.getInstance().writeValueAsString(this);
     } catch (JsonProcessingException e) {
-      throw new RuntimeException();
+      return "{}";
     }
   }
 
