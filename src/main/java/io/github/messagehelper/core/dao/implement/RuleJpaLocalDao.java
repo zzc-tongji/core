@@ -57,7 +57,7 @@ public class RuleJpaLocalDao implements RuleDao {
     logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);
     //
     refreshCache();
-    disableRuleWithInvalidConnectorId();
+    fix();
   }
 
   @Override
@@ -157,16 +157,31 @@ public class RuleJpaLocalDao implements RuleDao {
   }
 
   @Override
-  public void disableRuleWithInvalidConnectorId() {
+  public void fix() {
     // check `thenUseConnectorId` and ignore `ifLogInstanceEqual`
     boolean cache = false;
     for (Rule rule : ruleList) {
-      if (connectorDao.notExistent(rule.getThenUseConnectorId()) && rule.getEnable()) {
+      if (!rule.getEnable()) {
+        continue;
+      }
+      if (connectorDao.notExistent(rule.getThenUseConnectorId())) {
+        // disable rules with invalid connector id
         RulePo po = new RulePo();
         ruleToPo(rule, po);
         po.setEnable(false);
         repository.save(po);
         cache = true;
+      } else {
+        try {
+          new URI(connectorDao.getUrlById(rule.getThenUseConnectorId()) + rule.getThenUseUrlPath());
+        } catch (URISyntaxException e) {
+          // disable rules with invalid url
+          RulePo po = new RulePo();
+          ruleToPo(rule, po);
+          po.setEnable(false);
+          repository.save(po);
+          cache = true;
+        }
       }
     }
     if (cache) {

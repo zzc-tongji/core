@@ -61,7 +61,7 @@ public class Controller {
     configDao.refreshCache();
     connectorDao.refreshCache();
     ruleDao.refreshCache();
-    ruleDao.disableRuleWithInvalidConnectorId();
+    ruleDao.fix();
   }
 
   // "/api/configs"

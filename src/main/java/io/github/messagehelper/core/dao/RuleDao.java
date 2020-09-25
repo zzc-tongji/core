@@ -12,7 +12,7 @@ public interface RuleDao {
 
   void disableRuleByConnectorId(Long connectorId);
 
-  void disableRuleWithInvalidConnectorId();
+  void fix();
 
   //
 
