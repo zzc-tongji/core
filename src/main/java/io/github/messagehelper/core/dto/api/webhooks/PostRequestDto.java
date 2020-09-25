@@ -1,10 +1,21 @@
 package io.github.messagehelper.core.dto.api.webhooks;
 
 import io.github.messagehelper.core.dto.api.ApiTokenRequestDto;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
 
 public class PostRequestDto extends ApiTokenRequestDto {
+  @Length(message = "value1: required")
+  @NotNull(message = "value1: required")
   private String value1;
+
+  @Length(message = "value2: required")
+  @NotNull(message = "value2: required")
   private String value2;
+
+  @Length(message = "value3: required")
+  @NotNull(message = "value3: required")
   private String value3;
 
   public String getValue1() {
@@ -12,7 +23,7 @@ public class PostRequestDto extends ApiTokenRequestDto {
   }
 
   public void setValue1(String value1) {
-    this.value1 = (value1 == null ? "" : value1);
+    this.value1 = value1;
   }
 
   public String getValue2() {
@@ -20,7 +31,7 @@ public class PostRequestDto extends ApiTokenRequestDto {
   }
 
   public void setValue2(String value2) {
-    this.value2 = (value2 == null ? "" : value2);
+    this.value2 = value2;
   }
 
   public String getValue3() {
@@ -28,6 +39,6 @@ public class PostRequestDto extends ApiTokenRequestDto {
   }
 
   public void setValue3(String value3) {
-    this.value3 = (value3 == null ? "" : value3);
+    this.value3 = value3;
   }
 }
