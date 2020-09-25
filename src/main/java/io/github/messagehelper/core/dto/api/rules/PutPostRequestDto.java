@@ -62,9 +62,15 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   @Length(
       min = 1,
       max = Constant.RULE_IF_LENGTH,
-      message = "ifLogContentSatisfy: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
+      message =
+          "ifLogContentSatisfy: required, JSON string with length in [1, "
+              + Constant.RULE_IF_LENGTH
+              + "]")
   @NotNull(
-      message = "ifLogContentSatisfy: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
+      message =
+          "ifLogContentSatisfy: required, JSON string with length in [1, "
+              + Constant.RULE_IF_LENGTH
+              + "]")
   private String ifLogContentSatisfy;
 
   @NotNull(message = "thenUseConnectorId: required, long")
@@ -112,15 +118,14 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   private Boolean enable;
 
   @Length(
-      min = 1,
       max = Constant.RULE_ANNOTATION_LENGTH,
       message =
-          "annotation: required, string with length in [1, "
+          "annotation: required, string with length in [0, "
               + Constant.RULE_ANNOTATION_LENGTH
               + "]")
   @NotNull(
       message =
-          "annotation: required, string with length in [1, "
+          "annotation: required, string with length in [0, "
               + Constant.RULE_ANNOTATION_LENGTH
               + "]")
   private String annotation;

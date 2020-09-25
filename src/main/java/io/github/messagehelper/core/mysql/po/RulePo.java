@@ -37,7 +37,10 @@ public class RulePo implements Serializable {
   @Column(name = "then_use_url_path", length = Constant.RULE_THEN_PATH_LENGTH, nullable = false)
   private String thenUseUrlPath;
 
-  @Column(name = "then_use_body_template", length = Constant.RULE_BODY_TEMPLATE_LENGTH, nullable = false)
+  @Column(
+      name = "then_use_body_template",
+      length = Constant.RULE_BODY_TEMPLATE_LENGTH,
+      nullable = false)
   private String thenUseBodyTemplate;
 
   @Column(nullable = false)
