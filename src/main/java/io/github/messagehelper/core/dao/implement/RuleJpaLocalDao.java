@@ -39,10 +39,6 @@ public class RuleJpaLocalDao implements RuleDao {
       String.format(
           "thenUseHttpMethod: required, string as value of header \"content-type\" with length in [1, %d]",
           Constant.RULE_THEN_USE_URL_PATH_LENGTH);
-  private static final String EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_URL_PATH =
-      String.format(
-          "thenUseUrlPath: url string with length in [1, %d]",
-          Constant.RULE_THEN_USE_URL_PATH_LENGTH);
 
   private RuleJpaRepository repository;
   private ConfigDao configDao;
@@ -379,7 +375,7 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @SuppressWarnings("Duplicates")
   private void requestDtoToPo(Long id, PutPostRequestDto dto, RulePo po) {
-    // validate #1 => `name`
+    // validate `name`
     String name = dto.getName();
     try {
       Long.parseLong(name);
@@ -387,7 +383,7 @@ public class RuleJpaLocalDao implements RuleDao {
     } catch (NumberFormatException ignored) {
     }
     po.setName(name);
-    // validate #2 => `thenUseConnectorId` and `enable`
+    // validate `thenUseConnectorId` and `enable`
     Long thenUseConnectorId = dto.getThenUseConnectorId();
     boolean enable = dto.getEnable();
     if (connectorDao.notExistent(thenUseConnectorId) && enable) {
@@ -398,48 +394,37 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     po.setThenUseConnectorId(thenUseConnectorId);
     po.setEnable(enable);
-    // validate #3 => `thenUseHttpMethod` and `thenUseUrlPath`
+    // validate `thenUseHttpMethod`
     String thenUseHttpMethod = dto.getThenUseHttpMethod();
-    String thenUseUrlPath = dto.getThenUseUrlPath();
     if (thenUseConnectorId.equals(0L)) {
-      // virtual connector
-      //
-      // `thenUseHttpMethod` => value of header "content-type"
+      // virtual connector: `thenUseHttpMethod` => value of request header "content-type"
       try {
         ContentType.parse(thenUseHttpMethod);
       } catch (ParseException | UnsupportedCharsetException e) {
         throw new RuleInvalidContentTypeException(
             EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_HTTP_METHOD);
       }
-      // `thenUseUrlPath` => URL
-      try {
-        new URI(thenUseUrlPath);
-      } catch (URISyntaxException e) {
-        throw new RuleInvalidUrlException(EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_URL_PATH);
-      }
     } else {
-      // normal connector
-      //
-      // `thenUseHttpMethod` => "GET" or "POST"
-      if (!thenUseHttpMethod.equals(Constant.RULE_THEN_USE_HTTP_METHOD_GET)
-          && !thenUseHttpMethod.equals(Constant.RULE_THEN_USE_HTTP_METHOD_POST)) {
+      // normal connector: `thenUseHttpMethod` => "GET" or "POST"
+      if (!thenUseHttpMethod.equals("GET") && !thenUseHttpMethod.equals("POST")) {
         throw new RuleInvalidHttpMethodException(
             PutPostRequestDto.EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD);
       }
-      // `thenUseUrlPath` => just path
-      String urlWithPath = connectorDao.getUrlById(thenUseConnectorId) + thenUseUrlPath;
-      try {
-        new URI(urlWithPath);
-      } catch (URISyntaxException e) {
-        throw new RuleInvalidUrlException(
-            String.format(
-                "path [%s] concatenated as url [%s]: invalid format, please revise rule path or connector url",
-                thenUseUrlPath, urlWithPath));
-      }
     }
     po.setThenUseHttpMethod(thenUseHttpMethod);
+    // validate `thenUseUrlPath`
+    String thenUseUrlPath = dto.getThenUseUrlPath();
+    String url = connectorDao.getUrlById(thenUseConnectorId) + thenUseUrlPath;
+    try {
+      new URI(url);
+    } catch (URISyntaxException e) {
+      throw new RuleInvalidUrlException(
+          String.format(
+              "path [%s] concatenated as url [%s]: invalid format, please revise rule path or connector url",
+              thenUseUrlPath, url));
+    }
     po.setThenUseUrlPath(thenUseUrlPath);
-    // validate #4 => `setIfLogContentSatisfy`
+    // validate `setIfLogContentSatisfy`
     RuleIf.parse(dto.getIfLogContentSatisfy(), dto.getIfLogCategoryEqual()); // validate
     po.setIfLogContentSatisfy(dto.getIfLogContentSatisfy());
     // already validated

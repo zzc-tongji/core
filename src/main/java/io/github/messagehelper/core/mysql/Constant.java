@@ -30,8 +30,6 @@ public class Constant {
   public static final int RULE_NAME_LENGTH = 256;
   public static final int RULE_IF_LOG_CONTENT_SATISFY_LENGTH = 1024;
   public static final int RULE_THEN_USE_HTTP_METHOD_LENGTH = 64;
-  public static final String RULE_THEN_USE_HTTP_METHOD_GET = "GET";
-  public static final String RULE_THEN_USE_HTTP_METHOD_POST = "POST";
   public static final int RULE_THEN_USE_URL_PATH_LENGTH = 1024;
   public static final int RULE_THEN_USE_BODY_TEMPLATE_LENGTH = 4096;
   public static final int RULE_ANNOTATION_LENGTH = 1024;

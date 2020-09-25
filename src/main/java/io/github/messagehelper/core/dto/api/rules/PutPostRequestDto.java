@@ -21,13 +21,7 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
           + Constant.RULE_IF_LOG_CONTENT_SATISFY_LENGTH
           + "]";
   public static final String EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD =
-      "thenUseHttpMethod: required, string in {\""
-          + Constant.RULE_THEN_USE_HTTP_METHOD_GET
-          + "\", \""
-          + Constant.RULE_THEN_USE_HTTP_METHOD_POST
-          + "\"} with length in [1, "
-          + Constant.RULE_THEN_USE_URL_PATH_LENGTH
-          + "]";
+      "thenUseHttpMethod: required, string in {\"GET\", \"POST\"}";
   private static final String EXCEPTION_MESSAGE_THEN_USE_CONNECTOR_ID =
       "thenUseConnectorId: required, long";
   private static final String EXCEPTION_MESSAGE_THEN_USE_URL_PATH =

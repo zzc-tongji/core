@@ -115,14 +115,14 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   public void executeRule(Rule rule, Log log) {
     ConnectorPo po = find(rule.getThenUseConnectorId());
     // `po` will never be `null`,
-    // since `rule.getRuleThenInstance()` always returns a valid instance,
+    // since `rule.getThenUseConnectorId()` always returns a valid id,
     if (po.getId().equals(0L)) {
       // virtual connector
       executeWebhookHelper(
           rule.getThenUseUrlPath(), // => URL
           rule.getThenUseHttpMethod(), // => request header "content-type"
           RuleThen.fill(rule.getThenUseBodyTemplate(), log)); // => request body
-      // If "request body" is an empty string, use GET method. If not, use POST method instead.
+      // If "request body" is an empty string, use GET method, otherwise, use POST method.
     } else {
       // normal connector
       executeHelper(
@@ -470,10 +470,9 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private ResponseEntity<String> executeHelper(
-      ConnectorPo po, String method, String path, String body) {
-    String url = po.getUrl() + path;
-    String requestMethod = method.equals("GET") ? "GET" : "POST";
-    String requestBodyWithToken = insertToken(body, po.getRpcToken());
+      ConnectorPo po, String requestMethod, String urlPath, String requestBody) {
+    String url = po.getUrl() + urlPath;
+    String requestBodyWithToken = insertToken(requestBody, po.getRpcToken());
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
