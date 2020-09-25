@@ -20,11 +20,10 @@ public class ProcessorImplementDao implements ProcessorDao {
   private LogInsertDao logInsertDao;
   private RuleDao ruleDao;
 
-  @Autowired
   public ProcessorImplementDao(
-      ConfigDao configDao,
+      @Autowired ConfigDao configDao,
       @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao,
-      RuleDao ruleDao) {
+      @Autowired RuleDao ruleDao) {
     this.configDao = configDao;
     this.logInsertDao = logInsertDao;
     this.ruleDao = ruleDao;

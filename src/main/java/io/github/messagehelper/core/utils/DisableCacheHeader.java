@@ -7,7 +7,7 @@ public class DisableCacheHeader {
 
   static {
     instance = new HttpHeaders();
-    instance.add("content-type", "application/json;charset=UTF-8");
+    instance.add("content-type", "application/json;charset=utf-8");
     instance.add("cache-control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     instance.add("pragma", "no-cache");
     instance.add("expires", "no-store");

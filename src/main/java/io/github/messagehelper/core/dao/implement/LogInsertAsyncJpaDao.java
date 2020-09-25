@@ -13,7 +13,7 @@ public class LogInsertAsyncJpaDao implements LogInsertDao {
   private LogInsertDao sync;
 
   @Autowired
-  public LogInsertAsyncJpaDao(@Qualifier("LogInsertJpaDao") LogInsertDao sync) {
+  public LogInsertAsyncJpaDao(@Autowired @Qualifier("LogInsertJpaDao") LogInsertDao sync) {
     this.sync = sync;
   }
 

@@ -16,6 +16,8 @@ public interface ConnectorDao {
 
   ResponseEntity<String> executeDelegate(String instance, String method, String path, String body);
 
+  boolean isExistent(Long id);
+
   //
 
   GetPutPostDeleteResponseDto create(PutPostRequestDto dto);

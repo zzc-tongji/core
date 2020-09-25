@@ -10,6 +10,10 @@ public interface RuleDao {
 
   void process(Log log);
 
+  void disableRuleByConnectorId(Long connectorId);
+
+  void disableRuleWithInvalidConnectorId();
+
   //
 
   GetPutPostDeleteResponseDto create(PutPostRequestDto dto);

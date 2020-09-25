@@ -1,17 +1,17 @@
 package io.github.messagehelper.core.dao.implement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
 import io.github.messagehelper.core.dao.LogInsertDao;
+import io.github.messagehelper.core.dao.RuleDao;
 import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.Item;
 import io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto;
-import io.github.messagehelper.core.exception.ConnectorAlreadyExistentException;
-import io.github.messagehelper.core.exception.ConnectorInstanceNumericalException;
-import io.github.messagehelper.core.exception.ConnectorNotFoundException;
-import io.github.messagehelper.core.exception.ConnectorVirtualException;
+import io.github.messagehelper.core.exception.*;
 import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.ConnectorPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
@@ -24,6 +24,7 @@ import io.github.messagehelper.core.utils.Lock;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +40,20 @@ import java.util.Map;
 
 @Service
 public class ConnectorJpaLocalDao implements ConnectorDao {
+  private static final int INSTANCE = 0;
+  private static final int CATEGORY = 1;
+  public static final String INSTANCE_EXCEPTION_MESSAGE =
+      String.format(
+          "fetch => instance: required, a non \"%s\" string with length in [1, %d] which cannot be converted to long",
+          Constant.CONNECTOR_INSTANCE_VIRTUAL, Constant.INSTANCE_LENGTH);
+  public static final String CATEGORY_EXCEPTION_MESSAGE =
+      String.format(
+          "fetch => category: required, string with length in [1, %d]", Constant.CATEGORY_LENGTH);
+
   private ConnectorJpaRepository repository;
   private ConfigDao configDao;
   private LogInsertDao logInsertDao;
+  private RuleDao ruleDao;
   private Map<Long, ConnectorPo> connectorMapById;
   private Map<String, ConnectorPo> connectorMapByInstance;
   private final Lock lock;
@@ -49,11 +61,13 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   public ConnectorJpaLocalDao(
       @Autowired ConnectorJpaRepository repository,
       @Autowired ConfigDao configDao,
-      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao) {
+      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao,
+      @Autowired @Lazy RuleDao ruleDao) {
     // initialize
     this.repository = repository;
     this.configDao = configDao;
     this.logInsertDao = logInsertDao;
+    this.ruleDao = ruleDao;
     connectorMapById = new HashMap<>();
     connectorMapByInstance = new HashMap<>();
     lock = new Lock();
@@ -252,18 +266,20 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
+  public boolean isExistent(Long id) {
+    return !(find(id) == null);
+  }
+
+  @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
-    // TODO: fetch url with token and '/rpc/status' to check availability and then add
-    // validate
-    validateInstance(dto.getInstance());
     // cache
-    if (find(dto.getInstance()) != null) {
+    ConnectorPo po = new ConnectorPo();
+    requestDtoToPo(null, dto, po);
+    if (find(po.getInstance()) != null) {
       throw new ConnectorAlreadyExistentException(
-          String.format("connector with instance [%s]: already existent", dto.getInstance()));
+          String.format("connector with instance [%s]: already existent", po.getInstance()));
     }
     // database
-    ConnectorPo po = new ConnectorPo();
-    requestDtoToPo(0L, dto, po);
     repository.save(po);
     refreshCache();
     // response
@@ -275,7 +291,6 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   @Override
   @SuppressWarnings("Duplicates")
   public GetPutPostDeleteResponseDto delete(Long id) {
-    // TODO: disable corresponding rule before remove connector
     // cache
     if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
       throw new ConnectorVirtualException(String.format("connector with id [%d]: virtual", id));
@@ -287,6 +302,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // response
     GetPutPostDeleteResponseDto responseDto = new GetPutPostDeleteResponseDto();
     poToResponseDto(po, responseDto);
+    // disable corresponding rules before removing
+    ruleDao.disableRuleByConnectorId(id);
     // database
     repository.deleteById(id);
     refreshCache();
@@ -360,22 +377,22 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
       throw new ConnectorVirtualException(String.format("connector with id [%d]: virtual", id));
     }
-    validateInstance(dto.getInstance());
     // cache
+    ConnectorPo updatedPo = new ConnectorPo();
+    requestDtoToPo(id, dto, updatedPo);
     ConnectorPo po = find(id);
     if (po == null) {
       throw new ConnectorNotFoundException(String.format("connector with id [%d]: not found", id));
     }
-    if (!po.getInstance().equals(dto.getInstance())) {
-      po = find(dto.getInstance());
+    if (!po.getInstance().equals(updatedPo.getInstance())) {
+      po = find(updatedPo.getInstance());
       if (po != null) {
         throw new ConnectorAlreadyExistentException(
-            String.format("connector with instance [%s]: already existent", dto.getInstance()));
+            String.format(
+                "connector with instance [%s]: already existent", updatedPo.getInstance()));
       }
     }
     // database
-    ConnectorPo updatedPo = new ConnectorPo();
-    requestDtoToPo(id, dto, updatedPo);
     repository.save(updatedPo);
     refreshCache();
     // response
@@ -654,29 +671,88 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private void requestDtoToPo(Long id, PutPostRequestDto dto, ConnectorPo po) {
-    if (id.equals(0L)) {
+    if (id == null) {
       po.setId(IdGenerator.getInstance().generate());
     } else {
       po.setId(id);
     }
-    po.setInstance(dto.getInstance());
-    po.setCategory(dto.getCategory());
+    String[] result = fetch(dto.getUrl(), dto.getRpcToken());
+    po.setInstance(result[INSTANCE]);
+    po.setCategory(result[CATEGORY]);
     po.setUrl(dto.getUrl());
     po.setRpcToken(dto.getRpcToken());
   }
 
-  private void validateInstance(String instance) {
-    String message =
-        String.format(
-            "instance: required, a not \"%s\" string with length in [1, %d] which cannot be converted to long",
-            Constant.CONNECTOR_INSTANCE_VIRTUAL, Constant.INSTANCE_LENGTH);
+  private String[] fetch(String url, String rpcToken) {
+    String urlWithPath = url + "/rpc/status";
+    HttpRequest request;
     try {
-      Long.parseLong(instance);
-      throw new ConnectorInstanceNumericalException(message);
-    } catch (NumberFormatException ignored) {
+      request =
+          HttpRequest.newBuilder()
+              .uri(new URI(urlWithPath))
+              .headers("content-type", "application/json;charset=utf-8")
+              .POST(
+                  HttpRequest.BodyPublishers.ofString(
+                      ObjectMapperSingleton.getInstance()
+                          .getNodeFactory()
+                          .objectNode()
+                          .put("rpcToken", rpcToken)
+                          .toString()))
+              .build();
+    } catch (URISyntaxException e) {
+      throw new ConnectorFetchInvalidUrlException(
+          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]");
     }
-    if (instance.equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
-      throw new ConnectorVirtualException(message);
+    HttpResponse<String> response;
+    try {
+      response =
+          HttpClientSingleton.getInstance().send(request, HttpResponse.BodyHandlers.ofString());
+    } catch (IOException e) {
+      throw new ConnectorFetchCannotConnectException(
+          String.format("cannot connect url [%s]", urlWithPath));
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
+    int statusCode = response.statusCode();
+    if (statusCode <= 199 || statusCode >= 300) {
+      throw new ConnectorFetchHttpErrorException(
+          String.format(
+              "fetch url [%s] with method POST => status code [%d]", urlWithPath, statusCode));
+    }
+    String json = response.body();
+    JsonNode jsonNode;
+    try {
+      jsonNode = ObjectMapperSingleton.getInstance().readTree(json);
+    } catch (JsonProcessingException e) {
+      throw new ConnectorFetchInvalidJsonException(
+          String.format(
+              "fetch url [%s] with method POST => response body [%s] => invalid JSON",
+              urlWithPath, json));
+    }
+    String[] result = new String[2];
+    JsonNode temp = jsonNode.get("instance");
+    if (temp != null && temp.isTextual()) {
+      result[INSTANCE] = temp.asText();
+      if (result[INSTANCE].length() <= 0 || result[INSTANCE].length() > Constant.INSTANCE_LENGTH) {
+        throw new ConnectorInstanceInvalidFormatException(INSTANCE_EXCEPTION_MESSAGE);
+      }
+      if (result[INSTANCE].equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
+        throw new ConnectorVirtualException(INSTANCE_EXCEPTION_MESSAGE);
+      }
+      try {
+        Long.parseLong(result[INSTANCE]);
+        throw new ConnectorInstanceNumericalException(INSTANCE_EXCEPTION_MESSAGE);
+      } catch (NumberFormatException ignored) {
+      }
+    } else {
+      throw new ConnectorInstanceInvalidFormatException(INSTANCE_EXCEPTION_MESSAGE);
+    }
+    temp = jsonNode.get("category");
+    if (temp != null && temp.isTextual()) {
+      result[CATEGORY] = temp.asText();
+    } else {
+      throw new ConnectorCategoryInvalidFormatException(CATEGORY_EXCEPTION_MESSAGE);
+    }
+    return result;
   }
 }

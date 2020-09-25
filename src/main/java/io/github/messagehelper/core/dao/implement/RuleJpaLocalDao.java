@@ -52,6 +52,7 @@ public class RuleJpaLocalDao implements RuleDao {
     logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);
     //
     refreshCache();
+    disableRuleWithInvalidConnectorId();
   }
 
   @Override
@@ -130,6 +131,48 @@ public class RuleJpaLocalDao implements RuleDao {
   }
 
   @Override
+  public void disableRuleByConnectorId(Long connectorId) {
+    // check `thenUseConnectorId` and ignore `ifLogInstanceEqual`
+    boolean cache = false;
+    for (Rule rule : ruleList) {
+      if (rule.getThenUseConnectorId().equals(connectorId) && rule.getEnable()) {
+        RulePo po = new RulePo();
+        ruleToPo(rule, po);
+        po.setEnable(false);
+        repository.save(po);
+        cache = true;
+      }
+    }
+    if (cache) {
+      refreshCache();
+      // log
+      logInsertDao.insert(
+          configDao.load("core.instance"), Constant.LOG_LEVEL_INFO, "core.rule.auto-disable", "{}");
+    }
+  }
+
+  @Override
+  public void disableRuleWithInvalidConnectorId() {
+    // check `thenUseConnectorId` and ignore `ifLogInstanceEqual`
+    boolean cache = false;
+    for (Rule rule : ruleList) {
+      if (!connectorDao.isExistent(rule.getThenUseConnectorId()) && rule.getEnable()) {
+        RulePo po = new RulePo();
+        ruleToPo(rule, po);
+        po.setEnable(false);
+        repository.save(po);
+        cache = true;
+      }
+    }
+    if (cache) {
+      refreshCache();
+      // log
+      logInsertDao.insert(
+          configDao.load("core.instance"), Constant.LOG_LEVEL_INFO, "core.rule.auto-disable", "{}");
+    }
+  }
+
+  @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
     // TODO: change rule if instance as column
     // TODO: validate connector and type
@@ -144,7 +187,7 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     // database
     RulePo po = new RulePo();
-    requestDtoToPo(IdGenerator.getInstance().generate(), dto, po);
+    requestDtoToPo(null, dto, po);
     repository.save(po);
     refreshCache();
     // response
@@ -327,7 +370,11 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @SuppressWarnings("Duplicates")
   private void requestDtoToPo(Long id, PutPostRequestDto dto, RulePo po) {
-    po.setId(id);
+    if (id == null) {
+      po.setId(IdGenerator.getInstance().generate());
+    } else {
+      po.setId(id);
+    }
     po.setName(dto.getName());
     po.setIfLogInstanceEqual(dto.getIfLogInstanceEqual());
     po.setIfLogCategoryEqual(dto.getIfLogCategoryEqual());
@@ -341,6 +388,23 @@ public class RuleJpaLocalDao implements RuleDao {
     po.setTerminate(dto.getTerminate());
     po.setEnable(dto.getEnable());
     po.setAnnotation(dto.getAnnotation());
+  }
+
+  @SuppressWarnings("Duplicates")
+  private void ruleToPo(Rule rule, RulePo po) {
+    po.setId(rule.getId());
+    po.setName(rule.getName());
+    po.setIfLogInstanceEqual(rule.getIfLogInstanceEqual());
+    po.setIfLogCategoryEqual(rule.getIfLogCategoryEqual());
+    po.setIfLogContentSatisfy(rule.getIfLogContentSatisfy().toString());
+    po.setThenUseConnectorId(rule.getThenUseConnectorId());
+    po.setThenUseHttpMethod(rule.getThenUseHttpMethod());
+    po.setThenUseUrlPath(rule.getThenUseUrlPath());
+    po.setThenUseBodyTemplate(rule.getThenUseBodyTemplate());
+    po.setPriority(rule.getPriority());
+    po.setTerminate(rule.getTerminate());
+    po.setEnable(rule.getEnable());
+    po.setAnnotation(rule.getAnnotation());
   }
 
   private void ruleToResponseDto(Rule rule, GetPutPostDeleteResponseDto dto) {

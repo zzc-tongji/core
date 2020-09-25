@@ -87,6 +87,54 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
+  @ExceptionHandler(value = ConnectorCategoryInvalidFormatException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConnectorCategoryInvalidFormatException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = ConnectorFetchCannotConnectException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConnectorFetchCannotConnectException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = ConnectorFetchHttpErrorException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConnectorFetchHttpErrorException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = ConnectorFetchInvalidJsonException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConnectorFetchInvalidJsonException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = ConnectorFetchInvalidUrlException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConnectorFetchInvalidUrlException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = ConnectorInstanceInvalidFormatException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(ConnectorInstanceInvalidFormatException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
   @ExceptionHandler(value = ConnectorInstanceNumericalException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)

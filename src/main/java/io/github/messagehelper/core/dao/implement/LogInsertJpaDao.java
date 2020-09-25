@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
 public class LogInsertJpaDao implements LogInsertDao {
   private LogJpaRepository repository;
 
-  @Autowired
-  public LogInsertJpaDao(LogJpaRepository repository) {
+  public LogInsertJpaDao(@Autowired LogJpaRepository repository) {
     this.repository = repository;
   }
 

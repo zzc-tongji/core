@@ -46,6 +46,21 @@ public class Controller {
         .body(new io.github.messagehelper.core.dto.api.GetResponse());
   }
 
+  // "/api/cache"
+
+  @PostMapping(value = "/api/cache")
+  public ResponseEntity<String> apiCachePost(
+      @RequestHeader(name = "api-token", required = false) String headerApiToken,
+      @RequestBody @Validated io.github.messagehelper.core.dto.api.cache.PostRequestDto dto) {
+    tokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
+    tokenDao.refreshCache();
+    configDao.refreshCache();
+    connectorDao.refreshCache();
+    ruleDao.refreshCache();
+    ruleDao.disableRuleWithInvalidConnectorId();
+    return ResponseEntity.status(204).body("");
+  }
+
   // "/api/configs"
 
   @GetMapping(value = "/api/configs")
