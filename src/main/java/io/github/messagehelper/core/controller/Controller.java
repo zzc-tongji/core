@@ -44,7 +44,7 @@ public class Controller {
 
   @GetMapping(value = "/api")
   public ResponseEntity<io.github.messagehelper.core.dto.api.GetResponse> get() {
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(new io.github.messagehelper.core.dto.api.GetResponse());
   }
@@ -52,7 +52,8 @@ public class Controller {
   // "/api/cache"
 
   @PostMapping(value = "/api/cache")
-  public ResponseEntity<String> apiCachePost(
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void apiCachePost(
       @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.cache.PostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
@@ -61,7 +62,6 @@ public class Controller {
     connectorDao.refreshCache();
     ruleDao.refreshCache();
     ruleDao.disableRuleWithInvalidConnectorId();
-    return ResponseEntity.status(204).body("");
   }
 
   // "/api/configs"
@@ -70,7 +70,7 @@ public class Controller {
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetAllResponseDto>
       configsGetALL(@RequestHeader(name = "api-token", required = false) String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken});
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(configDao.readAll());
   }
@@ -81,7 +81,7 @@ public class Controller {
           @PathVariable("key") String key,
           @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken});
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(configDao.read(key));
   }
@@ -102,7 +102,7 @@ public class Controller {
       apiConnectorsGetAll(
           @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken});
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(connectorDao.readAll());
   }
@@ -114,11 +114,11 @@ public class Controller {
           @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken});
     try {
-      return ResponseEntity.status(200)
+      return ResponseEntity.status(HttpStatus.OK)
           .headers(DisableCacheHeader.getInstance())
           .body(connectorDao.readById(Long.parseLong(idOrInstance)));
     } catch (NumberFormatException e) {
-      return ResponseEntity.status(200)
+      return ResponseEntity.status(HttpStatus.OK)
           .headers(DisableCacheHeader.getInstance())
           .body(connectorDao.readByInstance(idOrInstance));
     }
@@ -215,10 +215,10 @@ public class Controller {
   // "/api/logout"
 
   @DeleteMapping(value = "/api/logout")
-  public ResponseEntity<String> apiLogoutPost(
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void apiLogoutPost(
       @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     apiTokenDao.revoke(headerApiToken);
-    return ResponseEntity.status(204).body("");
   }
 
   // "/api/logs"
@@ -241,7 +241,7 @@ public class Controller {
             httpRequest.getParameter(Constant.ASCENDING),
             httpRequest.getParameter(Constant.PAGE),
             httpRequest.getParameter(Constant.SIZE));
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(logReadDao.readAdvance(request));
   }
@@ -261,7 +261,7 @@ public class Controller {
   public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetAllResponseDto>
       apiRulesGetAll(@RequestHeader(name = "api-token", required = false) String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken});
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(ruleDao.readAll());
   }
@@ -273,11 +273,11 @@ public class Controller {
           @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken});
     try {
-      return ResponseEntity.status(200)
+      return ResponseEntity.status(HttpStatus.OK)
           .headers(DisableCacheHeader.getInstance())
           .body(ruleDao.readById(Long.parseLong(idOrName)));
     } catch (NumberFormatException e) {
-      return ResponseEntity.status(200)
+      return ResponseEntity.status(HttpStatus.OK)
           .headers(DisableCacheHeader.getInstance())
           .body(ruleDao.readByName(idOrName));
     }
@@ -318,15 +318,15 @@ public class Controller {
 
   @CrossOrigin(origins = "*", allowedHeaders = "*")
   @PostMapping(value = "/api/webhooks")
-  public ResponseEntity<String> apiWebhooksPost(
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public void apiWebhooksPost(
       @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.webhooks.PostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
     processorDao.startWithWebhook(dto);
-    return ResponseEntity.status(204).body("");
   }
 
-  // "/rpc/log"
+  // "/rpc"
 
   @CrossOrigin(origins = "*", allowedHeaders = "*")
   @PostMapping(value = "/rpc/log")
@@ -337,14 +337,12 @@ public class Controller {
     processorDao.start(dto);
   }
 
-  // "/rpc/status"
-
   @CrossOrigin(origins = "*", allowedHeaders = "*")
   @PostMapping(value = "/rpc/status")
   public ResponseEntity<String> rpcStatusPost(
       @RequestBody @Validated io.github.messagehelper.core.dto.rpc.status.PostRequestDto dto) {
     rpcTokenDao.authenticate(dto.getRpcToken());
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.OK)
         .body(
             ObjectMapperSingleton.getInstance()
                 .getNodeFactory()
