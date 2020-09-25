@@ -55,6 +55,14 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
+  @ExceptionHandler(value = ApiTokenInvalidException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public HttpClientErrorResponseDto handle(ApiTokenInvalidException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
   @ExceptionHandler(value = ConfigHiddenException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -215,6 +223,14 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
+  @ExceptionHandler(value = RpcTokenInvalidException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public HttpClientErrorResponseDto handle(RpcTokenInvalidException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
   @ExceptionHandler(value = RuleAlreadyExistentException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -267,14 +283,6 @@ public class GlobalExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public HttpClientErrorResponseDto handle(RuleNotFoundException e) {
-    develop(e);
-    return new HttpClientErrorResponseDto(e);
-  }
-
-  @ExceptionHandler(value = TokenInvalidException.class)
-  @ResponseBody
-  @ResponseStatus(HttpStatus.FORBIDDEN)
-  public HttpClientErrorResponseDto handle(TokenInvalidException e) {
     develop(e);
     return new HttpClientErrorResponseDto(e);
   }

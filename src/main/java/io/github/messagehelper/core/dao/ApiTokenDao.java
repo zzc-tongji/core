@@ -2,7 +2,7 @@ package io.github.messagehelper.core.dao;
 
 import io.github.messagehelper.core.dto.api.login.PostResponseDto;
 
-public interface TokenDao {
+public interface ApiTokenDao {
   void refreshCache();
 
   void authenticate(String[] tokenList);

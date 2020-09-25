@@ -1,14 +1,14 @@
 package io.github.messagehelper.core.dao.implement;
 
+import io.github.messagehelper.core.dao.ApiTokenDao;
 import io.github.messagehelper.core.dao.ConfigDao;
-import io.github.messagehelper.core.dao.TokenDao;
 import io.github.messagehelper.core.dto.api.login.Item;
 import io.github.messagehelper.core.dto.api.login.PostRequestDto;
 import io.github.messagehelper.core.dto.api.login.PostResponseDto;
+import io.github.messagehelper.core.exception.ApiTokenInvalidException;
 import io.github.messagehelper.core.exception.PasswordAlreadySetException;
 import io.github.messagehelper.core.exception.PasswordInvalidException;
 import io.github.messagehelper.core.exception.PasswordNotSetException;
-import io.github.messagehelper.core.exception.TokenInvalidException;
 import io.github.messagehelper.core.mysql.po.TokenPo;
 import io.github.messagehelper.core.mysql.repository.TokenJpaRepository;
 import io.github.messagehelper.core.utils.IdGenerator;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class TokenJpaLocalDao implements TokenDao {
+public class ApiTokenJpaLocalDao implements ApiTokenDao {
   private TokenJpaRepository repository;
   private ConfigDao configDao;
   private Map<String, TokenPo> tokenMap;
@@ -32,7 +32,7 @@ public class TokenJpaLocalDao implements TokenDao {
   private final Long lifetimeMs;
   private final MessageDigest messageDigest;
 
-  public TokenJpaLocalDao(
+  public ApiTokenJpaLocalDao(
       @Autowired TokenJpaRepository repository, @Autowired ConfigDao configDao) {
     this.repository = repository;
     this.configDao = configDao;
@@ -118,7 +118,7 @@ public class TokenJpaLocalDao implements TokenDao {
         return;
       }
     }
-    throw new TokenInvalidException("api token: not valid");
+    throw new ApiTokenInvalidException("api token: not valid");
   }
 
   @Override

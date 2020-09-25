@@ -1,12 +1,13 @@
 package io.github.messagehelper.core.dto.rpc.log;
 
+import io.github.messagehelper.core.dto.rpc.RpcTokenRequestDto;
 import io.github.messagehelper.core.mysql.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class PostRequestDto {
+public class PostRequestDto extends RpcTokenRequestDto {
 
   private static final String EXCEPTION_MESSAGE_ID = "id: required, long";
   private static final String EXCEPTION_MESSAGE_INSTANCE =
@@ -65,10 +66,6 @@ public class PostRequestDto {
   @NotNull(message = EXCEPTION_MESSAGE_CONTENT)
   private String content;
 
-  @Length(min = 1, max = Constant.CONFIG_VALUE_LENGTH, message = EXCEPTION_MESSAGE_RPC_TOKEN)
-  @NotNull(message = EXCEPTION_MESSAGE_RPC_TOKEN)
-  private String rpcToken;
-
   public Long getId() {
     return id;
   }
@@ -115,13 +112,5 @@ public class PostRequestDto {
 
   public void setContent(String content) {
     this.content = content;
-  }
-
-  public String getRpcToken() {
-    return rpcToken;
-  }
-
-  public void setRpcToken(String rpcToken) {
-    this.rpcToken = rpcToken;
   }
 }
