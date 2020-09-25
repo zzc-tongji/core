@@ -18,10 +18,7 @@ import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.Rule;
 import io.github.messagehelper.core.processor.rule.RuleThen;
-import io.github.messagehelper.core.utils.HttpClientSingleton;
-import io.github.messagehelper.core.utils.IdGenerator;
-import io.github.messagehelper.core.utils.Lock;
-import io.github.messagehelper.core.utils.ObjectMapperSingleton;
+import io.github.messagehelper.core.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -45,7 +42,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   public static final String EXCEPTION_MESSAGE_INSTANCE =
       String.format(
           "fetch => instance: required, a non \"%s\" string with length in [1, %d] which cannot be converted to long",
-          Constant.CONNECTOR_INSTANCE_VIRTUAL, Constant.INSTANCE_LENGTH);
+          ConfigMapSingleton.getInstance().load("core.instance"), Constant.INSTANCE_LENGTH);
   public static final String EXCEPTION_MESSAGE_CATEGORY =
       String.format(
           "fetch => category: required, string with length in [1, %d]", Constant.CATEGORY_LENGTH);
@@ -305,7 +302,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   @Override
   public GetPutPostDeleteResponseDto readByInstance(String instance) {
     // cache
-    if (instance.equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
+    if (instance.equals(configDao.load("core.instance"))) {
       throw new ConnectorVirtualException(
           String.format("connector with instance [%s]: virtual", instance));
     }
@@ -685,8 +682,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
                           .toString()))
               .build();
     } catch (URISyntaxException e) {
-      throw new ConnectorFetchInvalidUrlException(
-          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]");
+      throw new ConnectorFetchInvalidUrlException(PutPostRequestDto.EXCEPTION_MESSAGE_URL);
     }
     HttpResponse<String> response;
     try {
@@ -722,7 +718,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           || result[INDEX_INSTANCE].length() > Constant.INSTANCE_LENGTH) {
         throw new ConnectorInstanceInvalidFormatException(EXCEPTION_MESSAGE_INSTANCE);
       }
-      if (result[INDEX_INSTANCE].equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
+      if (result[INDEX_INSTANCE].equals(configDao.load("core.instance"))) {
         throw new ConnectorVirtualException(EXCEPTION_MESSAGE_INSTANCE);
       }
       try {

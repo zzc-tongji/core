@@ -22,13 +22,13 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
           + "]";
   private static final String EXCEPTION_MESSAGE_THEN_USE_CONNECTOR_ID =
       "thenUseConnectorId: required, long";
-  public static final String EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE =
-      "thenUseHeaderContentType: required, value of header \"content-type\" as string with length in [0, "
-          + Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE
-          + "]";
   private static final String EXCEPTION_MESSAGE_THEN_USE_URL_PATH =
       "thenUseUrlPath: required, string with length in [1, "
           + Constant.RULE_THEN_USE_URL_PATH_LENGTH
+          + "]";
+  public static final String EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE =
+      "thenUseHeaderContentType: required, value of header \"content-type\" as string with length in [0, "
+          + Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE_LENGTH
           + "]";
   private static final String EXCEPTION_MESSAGE_THEN_USE_BODY_TEMPLATE =
       "thenUseBodyTemplate: required, JSON string with length in [1, "
@@ -76,7 +76,7 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   private String thenUseUrlPath;
 
   @Length(
-      max = Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE,
+      max = Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE_LENGTH,
       message = EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE)
   @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE)
   private String thenUseHeaderContentType;

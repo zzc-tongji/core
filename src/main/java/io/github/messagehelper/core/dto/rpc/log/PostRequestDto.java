@@ -7,19 +7,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class PostRequestDto {
-  private static final String LEVEL_REGEXP =
-      "^("
-          + Constant.LOG_LEVEL_ERR
-          + "|"
-          + Constant.LOG_LEVEL_WARN
-          + "|"
-          + Constant.LOG_LEVEL_INFO
-          + "|"
-          + Constant.LOG_LEVEL_VERB
-          + "|"
-          + Constant.LOG_LEVEL_SILL
-          + ")$";
-  private static final String LEVEL_MESSAGE =
+
+  private static final String EXCEPTION_MESSAGE_ID = "id: required, long";
+  private static final String EXCEPTION_MESSAGE_INSTANCE =
+      "instance: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]";
+  private static final String EXCEPTION_MESSAGE_CATEGORY =
+      "category: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]";
+  private static final String EXCEPTION_MESSAGE_LEVEL =
       "level: required, string in {\""
           + Constant.LOG_LEVEL_ERR
           + "\", \""
@@ -31,49 +25,48 @@ public class PostRequestDto {
           + "\", \""
           + Constant.LOG_LEVEL_SILL
           + "\"}";
+  private static final String EXCEPTION_MESSAGE_TIMESTAMP_MS = "timestampMs: required, long";
+  private static final String EXCEPTION_MESSAGE_CONTENT =
+      "content: required, string with length in [1, " + Constant.LOG_CONTENT_LENGTH + "]";
+  private static final String EXCEPTION_MESSAGE_RPC_TOKEN =
+      "rpcToken: required, string with length in [1, " + Constant.CONFIG_VALUE_LENGTH + "]";
+  private static final String REGEXP_LEVEL =
+      "^("
+          + Constant.LOG_LEVEL_ERR
+          + "|"
+          + Constant.LOG_LEVEL_WARN
+          + "|"
+          + Constant.LOG_LEVEL_INFO
+          + "|"
+          + Constant.LOG_LEVEL_VERB
+          + "|"
+          + Constant.LOG_LEVEL_SILL
+          + ")$";
 
-  @NotNull(message = "id: required, long")
+  @NotNull(message = EXCEPTION_MESSAGE_ID)
   private Long id;
 
-  @Length(
-      min = 1,
-      max = Constant.INSTANCE_LENGTH,
-      message = "instance: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]")
-  @NotNull(
-      message = "instance: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]")
+  @Length(min = 1, max = Constant.INSTANCE_LENGTH, message = EXCEPTION_MESSAGE_INSTANCE)
+  @NotNull(message = EXCEPTION_MESSAGE_INSTANCE)
   private String instance;
 
-  @Pattern(regexp = LEVEL_REGEXP, message = LEVEL_MESSAGE)
-  @NotNull(message = LEVEL_MESSAGE)
-  private String level;
-
-  @Length(
-      min = 1,
-      max = Constant.CATEGORY_LENGTH,
-      message = "category: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]")
-  @NotNull(
-      message = "category: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]")
+  @Length(min = 1, max = Constant.CATEGORY_LENGTH, message = EXCEPTION_MESSAGE_CATEGORY)
+  @NotNull(message = EXCEPTION_MESSAGE_CATEGORY)
   private String category;
 
-  @NotNull(message = "timestampMs: required, long")
+  @Pattern(regexp = REGEXP_LEVEL, message = EXCEPTION_MESSAGE_LEVEL)
+  @NotNull(message = EXCEPTION_MESSAGE_LEVEL)
+  private String level;
+
+  @NotNull(message = EXCEPTION_MESSAGE_TIMESTAMP_MS)
   private Long timestampMs;
 
-  @Length(
-      min = 1,
-      max = Constant.LOG_CONTENT_LENGTH,
-      message = "content: required, string with length in [1, " + Constant.LOG_CONTENT_LENGTH + "]")
-  @NotNull(
-      message = "content: required, string with length in [1, " + Constant.LOG_CONTENT_LENGTH + "]")
+  @Length(min = 1, max = Constant.LOG_CONTENT_LENGTH, message = EXCEPTION_MESSAGE_CONTENT)
+  @NotNull(message = EXCEPTION_MESSAGE_CONTENT)
   private String content;
 
-  @Length(
-      min = 1,
-      max = Constant.CONFIG_VALUE_LENGTH,
-      message =
-          "rpcToken: required, string with length in [1, " + Constant.CONFIG_VALUE_LENGTH + "]")
-  @NotNull(
-      message =
-          "rpcToken: required, string with length in [1, " + Constant.CONFIG_VALUE_LENGTH + "]")
+  @Length(min = 1, max = Constant.CONFIG_VALUE_LENGTH, message = EXCEPTION_MESSAGE_RPC_TOKEN)
+  @NotNull(message = EXCEPTION_MESSAGE_RPC_TOKEN)
   private String rpcToken;
 
   public Long getId() {
@@ -92,20 +85,20 @@ public class PostRequestDto {
     this.instance = instance;
   }
 
-  public String getLevel() {
-    return level;
-  }
-
-  public void setLevel(String level) {
-    this.level = level;
-  }
-
   public String getCategory() {
     return category;
   }
 
   public void setCategory(String category) {
     this.category = category;
+  }
+
+  public String getLevel() {
+    return level;
+  }
+
+  public void setLevel(String level) {
+    this.level = level;
   }
 
   public Long getTimestampMs() {

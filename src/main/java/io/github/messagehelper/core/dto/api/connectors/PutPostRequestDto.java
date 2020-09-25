@@ -8,31 +8,18 @@ import org.hibernate.validator.constraints.URL;
 import javax.validation.constraints.NotNull;
 
 public class PutPostRequestDto extends ApiTokenRequestDto {
-  @Length(
-      min = 1,
-      max = Constant.CONNECTOR_URL_LENGTH,
-      message =
-          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
-  @NotNull(
-      message =
-          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
-  @URL(
-      message =
-          "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]")
+  public static final String EXCEPTION_MESSAGE_URL =
+      "url: required, url string with length in [1, " + Constant.CONNECTOR_URL_LENGTH + "]";
+  private static final String EXCEPTION_MESSAGE_RPC_TOKEN =
+      "rpcToken: required, string with length in [1, " + Constant.CONNECTOR_RPC_TOKEN_LENGTH + "]";
+
+  @Length(min = 1, max = Constant.CONNECTOR_URL_LENGTH, message = EXCEPTION_MESSAGE_URL)
+  @NotNull(message = EXCEPTION_MESSAGE_URL)
+  @URL(message = EXCEPTION_MESSAGE_URL)
   private String url;
 
-  @Length(
-      min = 1,
-      max = Constant.CONNECTOR_RPC_TOKEN_LENGTH,
-      message =
-          "rpcToken: required, string with length in [1, "
-              + Constant.CONNECTOR_RPC_TOKEN_LENGTH
-              + "]")
-  @NotNull(
-      message =
-          "rpcToken: required, string with length in [1, "
-              + Constant.CONNECTOR_RPC_TOKEN_LENGTH
-              + "]")
+  @Length(min = 1, max = Constant.CONNECTOR_RPC_TOKEN_LENGTH, message = EXCEPTION_MESSAGE_RPC_TOKEN)
+  @NotNull(message = EXCEPTION_MESSAGE_RPC_TOKEN)
   private String rpcToken;
 
   public String getUrl() {

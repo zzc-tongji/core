@@ -39,7 +39,7 @@ public class RulePo implements Serializable {
 
   @Column(
       name = "then_use_header_content_type",
-      length = Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE,
+      length = Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE_LENGTH,
       nullable = false)
   private String thenUseHeaderContentType;
 

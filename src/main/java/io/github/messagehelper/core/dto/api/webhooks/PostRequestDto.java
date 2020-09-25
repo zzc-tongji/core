@@ -6,16 +6,20 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 
 public class PostRequestDto extends ApiTokenRequestDto {
-  @Length(message = "value1: required")
-  @NotNull(message = "value1: required")
+  private static final String EXCEPTION_MESSAGE_VALUE_1 = "value1: required";
+  private static final String EXCEPTION_MESSAGE_VALUE_2 = "value2: required";
+  private static final String EXCEPTION_MESSAGE_VALUE_3 = "value3: required";
+
+  @Length(message = EXCEPTION_MESSAGE_VALUE_1)
+  @NotNull(message = EXCEPTION_MESSAGE_VALUE_1)
   private String value1;
 
-  @Length(message = "value2: required")
-  @NotNull(message = "value2: required")
+  @Length(message = EXCEPTION_MESSAGE_VALUE_2)
+  @NotNull(message = EXCEPTION_MESSAGE_VALUE_2)
   private String value2;
 
-  @Length(message = "value3: required")
-  @NotNull(message = "value3: required")
+  @Length(message = EXCEPTION_MESSAGE_VALUE_3)
+  @NotNull(message = EXCEPTION_MESSAGE_VALUE_3)
   private String value3;
 
   public String getValue1() {

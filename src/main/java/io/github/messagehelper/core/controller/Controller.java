@@ -324,7 +324,7 @@ public class Controller {
   }
 
   // "/rpc/log"
-
+  @CrossOrigin(origins = "*", allowedHeaders = "*")
   @PostMapping(value = "/rpc/log")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void rpcLogPost(
