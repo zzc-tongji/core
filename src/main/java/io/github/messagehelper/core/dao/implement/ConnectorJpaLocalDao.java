@@ -1,7 +1,5 @@
 package io.github.messagehelper.core.dao.implement;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dao.ConfigDao;
 import io.github.messagehelper.core.dao.ConnectorDao;
@@ -18,8 +16,8 @@ import io.github.messagehelper.core.mysql.Constant;
 import io.github.messagehelper.core.mysql.po.ConnectorPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
-import io.github.messagehelper.core.processor.rule.BodyTemplate;
 import io.github.messagehelper.core.processor.rule.Rule;
+import io.github.messagehelper.core.processor.rule.RuleThen;
 import io.github.messagehelper.core.utils.HttpClientSingleton;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
@@ -44,7 +42,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   private ConnectorJpaRepository repository;
   private ConfigDao configDao;
   private LogInsertDao logInsertDao;
-  private Map<String, ConnectorPo> connectorMap;
+  private Map<Long, ConnectorPo> connectorMapById;
+  private Map<String, ConnectorPo> connectorMapByInstance;
   private final Lock lock;
 
   public ConnectorJpaLocalDao(
@@ -55,15 +54,16 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     this.repository = repository;
     this.configDao = configDao;
     this.logInsertDao = logInsertDao;
-    connectorMap = new HashMap<>();
+    connectorMapById = new HashMap<>();
+    connectorMapByInstance = new HashMap<>();
     lock = new Lock();
     // create virtual connector
     ConnectorPo po = new ConnectorPo();
     po.setId(0L);
-    po.setInstance(Constant.CONNECTOR_INSTANCE_VIRTUAL);
+    po.setInstance(configDao.load("core.instance"));
     po.setCategory("webhook-connector");
-    po.setUrl("(empty)");
-    po.setRpcToken("(empty)");
+    po.setUrl("");
+    po.setRpcToken("");
     repository.save(po);
     // cache
     refreshCache();
@@ -84,10 +84,12 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       // LOCK
       lock.writeIncrease();
       // DO
-      connectorMap.clear();
+      connectorMapById.clear();
+      connectorMapByInstance.clear();
       List<ConnectorPo> data = repository.findAll();
       for (ConnectorPo item : data) {
-        connectorMap.put(item.getInstance(), item);
+        connectorMapById.put(item.getId(), item);
+        connectorMapByInstance.put(item.getInstance(), item);
       }
       // UNLOCK
       lock.writeDecrease();
@@ -97,23 +99,23 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   @Override
   public void executeRule(Rule rule, Log log) {
-    ConnectorPo po = find(rule.getRuleThenInstance());
+    ConnectorPo po = find(rule.getThenUseConnectorId());
     // `po` will never be `null`,
     // since `rule.getRuleThenInstance()` always returns a valid instance,
     if (po.getId().equals(0L)) {
       // virtual connector
       executeWebhookHelper(
-          rule.getRuleThenPath(), // => URL
-          rule.getRuleThenMethod(), // => request header "content-type"
-          BodyTemplate.fill(rule.getBodyTemplate(), log)); // => request body
+          rule.getThenUseUrlPath(), // => URL
+          rule.getThenUseHttpMethod(), // => request header "content-type"
+          RuleThen.fill(rule.getThenUseBodyTemplate(), log)); // => request body
       // If "request body" is an empty string, use GET method. If not, use POST method instead.
     } else {
       // normal connector
       executeHelper(
           po,
-          rule.getRuleThenMethod(),
-          rule.getRuleThenPath(),
-          BodyTemplate.fill(rule.getBodyTemplate(), log));
+          rule.getThenUseHttpMethod(),
+          rule.getThenUseUrlPath(),
+          RuleThen.fill(rule.getThenUseBodyTemplate(), log));
     }
   }
 
@@ -382,6 +384,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     return responseDto;
   }
 
+  @SuppressWarnings("Duplicates")
   private ConnectorPo find(Long id) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -394,19 +397,14 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // LOCK
     lock.readIncrease();
     // DO
-    ConnectorPo po = null;
-    for (ConnectorPo item : connectorMap.values()) {
-      if (item.getId().equals(id)) {
-        po = item;
-        break;
-      }
-    }
+    ConnectorPo po = connectorMapById.get(id);
     // UNLOCK
     lock.readDecrease();
     //
     return po;
   }
 
+  @SuppressWarnings("Duplicates")
   private ConnectorPo find(String instance) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -419,7 +417,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // LOCK
     lock.readIncrease();
     // DO
-    ConnectorPo po = connectorMap.get(instance);
+    ConnectorPo po = connectorMapByInstance.get(instance);
     // UNLOCK
     lock.readDecrease();
     //
@@ -438,7 +436,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // LOCK
     lock.readIncrease();
     // DO
-    Collection<ConnectorPo> poCollection = connectorMap.values();
+    Collection<ConnectorPo> poCollection = connectorMapById.values();
     // UNLOCK
     lock.readDecrease();
     //
@@ -603,6 +601,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .objectNode()
               .put("requestUrl", url)
               .put("requestMethod", requestMethod)
+              .put("requestHeaderContentType", contentType)
               .put("requestBody", body)
               .toString());
       return;
@@ -619,24 +618,14 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .objectNode()
             .put("requestUrl", url)
             .put("requestMethod", requestMethod)
+            .put("requestHeaderContentType", contentType)
             .put("requestBody", body)
             .put("responseStatus", response.statusCode())
             .put("responseBody", response.body())
             .toString());
     // log
     logInsertDao.insert(
-        configDao.load("core.instance"),
-        Constant.LOG_LEVEL_INFO,
-        "core.executor",
-        ObjectMapperSingleton.getInstance()
-            .getNodeFactory()
-            .objectNode()
-            .put("requestUrl", "virtual://webhook-connector")
-            .put("requestMethod", "POST")
-            .put("requestBody", body)
-            .put("responseStatus", 204)
-            .put("responseBody", "")
-            .toString());
+        configDao.load("core.instance"), Constant.LOG_LEVEL_INFO, "core.executor.virtual", "{}");
   }
 
   private String insertToken(String requestBody, String token) {

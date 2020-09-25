@@ -1,11 +1,10 @@
-package io.github.messagehelper.core.processor.rule._if.wechatconnector.listener.wechat;
+package io.github.messagehelper.core.processor.rule.wechat_connector.listener.wechat.room_topic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.messagehelper.core.exception.InvalidRuleIfException;
 import io.github.messagehelper.core.processor.log.Log;
-import io.github.messagehelper.core.processor.log.content.Content;
-import io.github.messagehelper.core.processor.rule._if.RuleIf;
+import io.github.messagehelper.core.processor.rule.RuleIf;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
 public class RoomTopic extends RuleIf {
@@ -30,10 +29,7 @@ public class RoomTopic extends RuleIf {
 
   @Override
   public boolean satisfy(Log log) {
-    if (!super.satisfy(log)) {
-      return false;
-    }
-    Content content = log.getContent();
+    io.github.messagehelper.core.processor.log.content.Content content = log.getContent();
     if (!(content
         instanceof
         io.github.messagehelper.core.processor.log.content.wechatconnector.listener.wechat
@@ -52,7 +48,6 @@ public class RoomTopic extends RuleIf {
   }
 
   public RoomTopic(String json) {
-    super(json);
     JsonNode jsonNode;
     try {
       jsonNode = ObjectMapperSingleton.getInstance().readTree(json);

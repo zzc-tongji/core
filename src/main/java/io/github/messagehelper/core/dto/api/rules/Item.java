@@ -3,14 +3,17 @@ package io.github.messagehelper.core.dto.api.rules;
 public class Item {
   private Long id;
   private String name;
-  private String ruleIf;
-  private String ruleThenInstance;
-  private String ruleThenMethod;
-  private String ruleThenPath;
-  private String bodyTemplate;
+  private String ifLogInstanceEqual;
+  private String ifLogCategoryEqual;
+  private String ifLogContentSatisfy;
+  private Long thenUseConnectorId;
+  private String thenUseHttpMethod;
+  private String thenUseUrlPath;
+  private String thenUseBodyTemplate;
   private Integer priority;
   private Boolean terminate;
   private Boolean enable;
+  private String annotation;
 
   public Long getId() {
     return id;
@@ -28,44 +31,60 @@ public class Item {
     this.name = name;
   }
 
-  public String getRuleIf() {
-    return ruleIf;
+  public String getIfLogInstanceEqual() {
+    return ifLogInstanceEqual;
   }
 
-  public void setRuleIf(String ruleIf) {
-    this.ruleIf = ruleIf;
+  public void setIfLogInstanceEqual(String ifLogInstanceEqual) {
+    this.ifLogInstanceEqual = ifLogInstanceEqual;
   }
 
-  public String getRuleThenInstance() {
-    return ruleThenInstance;
+  public String getIfLogCategoryEqual() {
+    return ifLogCategoryEqual;
   }
 
-  public void setRuleThenInstance(String ruleThenInstance) {
-    this.ruleThenInstance = ruleThenInstance;
+  public void setIfLogCategoryEqual(String ifLogCategoryEqual) {
+    this.ifLogCategoryEqual = ifLogCategoryEqual;
   }
 
-  public String getRuleThenMethod() {
-    return ruleThenMethod;
+  public String getIfLogContentSatisfy() {
+    return ifLogContentSatisfy;
   }
 
-  public void setRuleThenMethod(String ruleThenMethod) {
-    this.ruleThenMethod = ruleThenMethod;
+  public void setIfLogContentSatisfy(String ifLogContentSatisfy) {
+    this.ifLogContentSatisfy = ifLogContentSatisfy;
   }
 
-  public String getRuleThenPath() {
-    return ruleThenPath;
+  public Long getThenUseConnectorId() {
+    return thenUseConnectorId;
   }
 
-  public void setRuleThenPath(String ruleThenPath) {
-    this.ruleThenPath = ruleThenPath;
+  public void setThenUseConnectorId(Long thenUseConnectorId) {
+    this.thenUseConnectorId = thenUseConnectorId;
   }
 
-  public String getBodyTemplate() {
-    return bodyTemplate;
+  public String getThenUseHttpMethod() {
+    return thenUseHttpMethod;
   }
 
-  public void setBodyTemplate(String bodyTemplate) {
-    this.bodyTemplate = bodyTemplate;
+  public void setThenUseHttpMethod(String thenUseHttpMethod) {
+    this.thenUseHttpMethod = thenUseHttpMethod;
+  }
+
+  public String getThenUseUrlPath() {
+    return thenUseUrlPath;
+  }
+
+  public void setThenUseUrlPath(String thenUseUrlPath) {
+    this.thenUseUrlPath = thenUseUrlPath;
+  }
+
+  public String getThenUseBodyTemplate() {
+    return thenUseBodyTemplate;
+  }
+
+  public void setThenUseBodyTemplate(String thenUseBodyTemplate) {
+    this.thenUseBodyTemplate = thenUseBodyTemplate;
   }
 
   public Integer getPriority() {
@@ -90,5 +109,13 @@ public class Item {
 
   public void setEnable(Boolean enable) {
     this.enable = enable;
+  }
+
+  public String getAnnotation() {
+    return annotation;
+  }
+
+  public void setAnnotation(String annotation) {
+    this.annotation = annotation;
   }
 }

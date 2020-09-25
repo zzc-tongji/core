@@ -1,14 +1,13 @@
-package io.github.messagehelper.core.processor.rule._if.core;
+package io.github.messagehelper.core.processor.rule.webhook_connector.receive;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.messagehelper.core.exception.InvalidRuleIfException;
 import io.github.messagehelper.core.processor.log.Log;
-import io.github.messagehelper.core.processor.log.content.Content;
-import io.github.messagehelper.core.processor.rule._if.RuleIf;
+import io.github.messagehelper.core.processor.rule.RuleIf;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
-public class Webhook extends RuleIf {
+public class Receive extends RuleIf {
   private String value1Regex;
   private String value2Regex;
   private String value3Regex;
@@ -39,10 +38,7 @@ public class Webhook extends RuleIf {
 
   @Override
   public boolean satisfy(Log log) {
-    if (!super.satisfy(log)) {
-      return false;
-    }
-    Content content = log.getContent();
+    io.github.messagehelper.core.processor.log.content.Content content = log.getContent();
     if (!(content instanceof io.github.messagehelper.core.processor.log.content.core.Webhook)) {
       return false;
     }
@@ -57,8 +53,7 @@ public class Webhook extends RuleIf {
     return webhook.getValue3().matches(value3Regex);
   }
 
-  public Webhook(String json) {
-    super(json);
+  public Receive(String json) {
     JsonNode jsonNode;
     try {
       jsonNode = ObjectMapperSingleton.getInstance().readTree(json);

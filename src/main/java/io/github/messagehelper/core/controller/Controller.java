@@ -299,9 +299,7 @@ public class Controller {
   @CrossOrigin(origins = "*", allowedHeaders = "*")
   @PostMapping(value = "/api/webhooks")
   public ResponseEntity<String> apiWebhooksPost(
-      @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.webhooks.PostRequestDto dto) {
-    tokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken});
     processorDao.startWithWebhook(dto);
     return ResponseEntity.status(204).body("");
   }

@@ -9,7 +9,7 @@ import javax.validation.constraints.Positive;
 
 public class PutPostRequestDto extends ApiTokenRequestDto {
   private static final String METHOD_MESSAGE =
-      "ruleThenMethod: required, string in {\""
+      "thenUseHttpMethod: required, string in {\""
           + Constant.RULE_THEN_METHOD_GET
           + "\", \""
           + Constant.RULE_THEN_METHOD_POST
@@ -33,56 +33,73 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
 
   @Length(
       min = 1,
-      max = Constant.RULE_IF_LENGTH,
-      message = "ruleIf: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
+      max = Constant.INSTANCE_LENGTH,
+      message =
+          "ifLogInstanceEqual: required, string with length in [1, "
+              + Constant.INSTANCE_LENGTH
+              + "]")
   @NotNull(
-      message = "ruleIf: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
-  private String ruleIf;
+      message =
+          "ifLogInstanceEqual: required, string with length in [1, "
+              + Constant.INSTANCE_LENGTH
+              + "]")
+  private String ifLogInstanceEqual;
 
   @Length(
       min = 1,
-      max = Constant.INSTANCE_LENGTH,
+      max = Constant.CATEGORY_LENGTH,
       message =
-          "ruleThenInstance: required, JSON string with length in [1, "
-              + Constant.INSTANCE_LENGTH
+          "ifLogCategoryEqual: required, string with length in [1, "
+              + Constant.CATEGORY_LENGTH
               + "]")
   @NotNull(
       message =
-          "ruleThenInstance: required, JSON string with length in [1, "
-              + Constant.INSTANCE_LENGTH
+          "ifLogCategoryEqual: required, string with length in [1, "
+              + Constant.CATEGORY_LENGTH
               + "]")
-  private String ruleThenInstance;
+  private String ifLogCategoryEqual;
+
+  @Length(
+      min = 1,
+      max = Constant.RULE_IF_LENGTH,
+      message = "ifLogContentSatisfy: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
+  @NotNull(
+      message = "ifLogContentSatisfy: required, JSON string with length in [1, " + Constant.RULE_IF_LENGTH + "]")
+  private String ifLogContentSatisfy;
+
+  @NotNull(message = "thenUseConnectorId: required, long")
+  private Long thenUseConnectorId;
 
   @NotNull(message = METHOD_MESSAGE)
-  private String ruleThenMethod;
+  private String thenUseHttpMethod;
 
   @Length(
       min = 1,
       max = Constant.RULE_THEN_PATH_LENGTH,
       message =
-          "ruleThenPath: required, JSON string with length in [1, "
+          "thenUseUrlPath: required, string with length in [1, "
               + Constant.RULE_THEN_PATH_LENGTH
               + "]")
   @NotNull(
       message =
-          "ruleThenPath: required, JSON string with length in [1, "
+          "thenUseUrlPath: required, string with length in [1, "
               + Constant.RULE_THEN_PATH_LENGTH
               + "]")
-  private String ruleThenPath;
+  private String thenUseUrlPath;
 
   @Length(
       min = 1,
       max = Constant.RULE_BODY_TEMPLATE_LENGTH,
       message =
-          "bodyTemplate: required, JSON string with length in [1, "
+          "ThenUseBodyTemplate: required, JSON string with length in [1, "
               + Constant.RULE_BODY_TEMPLATE_LENGTH
               + "]")
   @NotNull(
       message =
-          "bodyTemplate: required, JSON string with length in [1, "
+          "ThenUseBodyTemplate: required, JSON string with length in [1, "
               + Constant.RULE_BODY_TEMPLATE_LENGTH
               + "]")
-  private String bodyTemplate;
+  private String ThenUseBodyTemplate;
 
   @Positive(message = "priority: required, positive integer")
   @NotNull(message = "priority: required, positive integer")
@@ -94,6 +111,20 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   @NotNull(message = "enable: required, boolean")
   private Boolean enable;
 
+  @Length(
+      min = 1,
+      max = Constant.RULE_ANNOTATION_LENGTH,
+      message =
+          "annotation: required, string with length in [1, "
+              + Constant.RULE_ANNOTATION_LENGTH
+              + "]")
+  @NotNull(
+      message =
+          "annotation: required, string with length in [1, "
+              + Constant.RULE_ANNOTATION_LENGTH
+              + "]")
+  private String annotation;
+
   public String getName() {
     return name;
   }
@@ -102,44 +133,60 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
     this.name = name;
   }
 
-  public String getRuleIf() {
-    return ruleIf;
+  public String getIfLogInstanceEqual() {
+    return ifLogInstanceEqual;
   }
 
-  public void setRuleIf(String ruleIf) {
-    this.ruleIf = ruleIf;
+  public void setIfLogInstanceEqual(String ifLogInstanceEqual) {
+    this.ifLogInstanceEqual = ifLogInstanceEqual;
   }
 
-  public String getRuleThenInstance() {
-    return ruleThenInstance;
+  public String getIfLogCategoryEqual() {
+    return ifLogCategoryEqual;
   }
 
-  public void setRuleThenInstance(String ruleThenInstance) {
-    this.ruleThenInstance = ruleThenInstance;
+  public void setIfLogCategoryEqual(String ifLogCategoryEqual) {
+    this.ifLogCategoryEqual = ifLogCategoryEqual;
   }
 
-  public String getRuleThenMethod() {
-    return ruleThenMethod;
+  public String getIfLogContentSatisfy() {
+    return ifLogContentSatisfy;
   }
 
-  public void setRuleThenMethod(String ruleThenMethod) {
-    this.ruleThenMethod = ruleThenMethod;
+  public void setIfLogContentSatisfy(String ifLogContentSatisfy) {
+    this.ifLogContentSatisfy = ifLogContentSatisfy;
   }
 
-  public String getRuleThenPath() {
-    return ruleThenPath;
+  public Long getThenUseConnectorId() {
+    return thenUseConnectorId;
   }
 
-  public void setRuleThenPath(String ruleThenPath) {
-    this.ruleThenPath = ruleThenPath;
+  public void setThenUseConnectorId(Long thenUseConnectorId) {
+    this.thenUseConnectorId = thenUseConnectorId;
   }
 
-  public String getBodyTemplate() {
-    return bodyTemplate;
+  public String getThenUseHttpMethod() {
+    return thenUseHttpMethod;
   }
 
-  public void setBodyTemplate(String bodyTemplate) {
-    this.bodyTemplate = bodyTemplate;
+  public void setThenUseHttpMethod(String thenUseHttpMethod) {
+    this.thenUseHttpMethod = thenUseHttpMethod;
+  }
+
+  public String getThenUseUrlPath() {
+    return thenUseUrlPath;
+  }
+
+  public void setThenUseUrlPath(String thenUseUrlPath) {
+    this.thenUseUrlPath = thenUseUrlPath;
+  }
+
+  public String getThenUseBodyTemplate() {
+    return ThenUseBodyTemplate;
+  }
+
+  public void setThenUseBodyTemplate(String thenUseBodyTemplate) {
+    this.ThenUseBodyTemplate = thenUseBodyTemplate;
   }
 
   public Integer getPriority() {
@@ -164,5 +211,13 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
 
   public void setEnable(Boolean enable) {
     this.enable = enable;
+  }
+
+  public String getAnnotation() {
+    return annotation;
+  }
+
+  public void setAnnotation(String annotation) {
+    this.annotation = annotation;
   }
 }

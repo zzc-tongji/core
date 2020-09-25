@@ -16,20 +16,29 @@ public class RulePo implements Serializable {
   @Column(length = Constant.RULE_NAME_LENGTH, nullable = false, unique = true)
   private String name;
 
-  @Column(name = "rule_if", length = Constant.RULE_IF_LENGTH, nullable = false)
-  private String ruleIf;
+  @Column(name = "if_log_instance_equal", nullable = false)
+  private String ifLogInstanceEqual;
 
-  @Column(name = "rule_then_instance", length = Constant.INSTANCE_LENGTH, nullable = false)
-  private String ruleThenInstance;
+  @Column(name = "if_log_category_equal", nullable = false)
+  private String ifLogCategoryEqual;
 
-  @Column(name = "rule_then_method", length = Constant.RULE_THEN_METHOD_LENGTH, nullable = false)
-  private String ruleThenMethod;
+  @Column(name = "if_log_content_satisfy", length = Constant.RULE_IF_LENGTH, nullable = false)
+  private String ifLogContentSatisfy;
 
-  @Column(name = "rule_then_path", length = Constant.RULE_THEN_PATH_LENGTH, nullable = false)
-  private String ruleThenPath;
+  @Column(name = "then_use_connector_id", nullable = false)
+  private Long thenUseConnectorId;
 
-  @Column(name = "body_template", length = Constant.RULE_BODY_TEMPLATE_LENGTH, nullable = false)
-  private String bodyTemplate;
+  @Column(
+      name = "then_use_http_method",
+      length = Constant.RULE_THEN_METHOD_LENGTH,
+      nullable = false)
+  private String thenUseHttpMethod;
+
+  @Column(name = "then_use_url_path", length = Constant.RULE_THEN_PATH_LENGTH, nullable = false)
+  private String thenUseUrlPath;
+
+  @Column(name = "then_use_body_template", length = Constant.RULE_BODY_TEMPLATE_LENGTH, nullable = false)
+  private String thenUseBodyTemplate;
 
   @Column(nullable = false)
   private Integer priority;
@@ -39,6 +48,9 @@ public class RulePo implements Serializable {
 
   @Column(nullable = false)
   private Boolean enable;
+
+  @Column(nullable = false)
+  private String annotation;
 
   public Long getId() {
     return id;
@@ -56,44 +68,60 @@ public class RulePo implements Serializable {
     this.name = name;
   }
 
-  public String getRuleIf() {
-    return ruleIf;
+  public String getIfLogInstanceEqual() {
+    return ifLogInstanceEqual;
   }
 
-  public void setRuleIf(String ruleIf) {
-    this.ruleIf = ruleIf;
+  public void setIfLogInstanceEqual(String ruleIfLogInstance) {
+    this.ifLogInstanceEqual = ruleIfLogInstance;
   }
 
-  public String getRuleThenInstance() {
-    return ruleThenInstance;
+  public String getIfLogCategoryEqual() {
+    return ifLogCategoryEqual;
   }
 
-  public void setRuleThenInstance(String ruleThenInstance) {
-    this.ruleThenInstance = ruleThenInstance;
+  public void setIfLogCategoryEqual(String ruleIfLogCategory) {
+    this.ifLogCategoryEqual = ruleIfLogCategory;
   }
 
-  public String getRuleThenMethod() {
-    return ruleThenMethod;
+  public String getIfLogContentSatisfy() {
+    return ifLogContentSatisfy;
   }
 
-  public void setRuleThenMethod(String ruleThenMethod) {
-    this.ruleThenMethod = ruleThenMethod;
+  public void setIfLogContentSatisfy(String ruleIf) {
+    this.ifLogContentSatisfy = ruleIf;
   }
 
-  public String getRuleThenPath() {
-    return ruleThenPath;
+  public Long getThenUseConnectorId() {
+    return thenUseConnectorId;
   }
 
-  public void setRuleThenPath(String ruleThenPath) {
-    this.ruleThenPath = ruleThenPath;
+  public void setThenUseConnectorId(Long ruleThenConnectorId) {
+    this.thenUseConnectorId = ruleThenConnectorId;
   }
 
-  public String getBodyTemplate() {
-    return bodyTemplate;
+  public String getThenUseHttpMethod() {
+    return thenUseHttpMethod;
   }
 
-  public void setBodyTemplate(String bodyTemplate) {
-    this.bodyTemplate = bodyTemplate;
+  public void setThenUseHttpMethod(String ruleThenMethod) {
+    this.thenUseHttpMethod = ruleThenMethod;
+  }
+
+  public String getThenUseUrlPath() {
+    return thenUseUrlPath;
+  }
+
+  public void setThenUseUrlPath(String ruleThenPath) {
+    this.thenUseUrlPath = ruleThenPath;
+  }
+
+  public String getThenUseBodyTemplate() {
+    return thenUseBodyTemplate;
+  }
+
+  public void setThenUseBodyTemplate(String bodyTemplate) {
+    this.thenUseBodyTemplate = bodyTemplate;
   }
 
   public Integer getPriority() {
@@ -118,5 +146,13 @@ public class RulePo implements Serializable {
 
   public void setEnable(Boolean enable) {
     this.enable = enable;
+  }
+
+  public String getAnnotation() {
+    return annotation;
+  }
+
+  public void setAnnotation(String annotation) {
+    this.annotation = annotation;
   }
 }

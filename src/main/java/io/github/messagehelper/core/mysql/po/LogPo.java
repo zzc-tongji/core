@@ -22,16 +22,16 @@ public class LogPo implements Serializable {
   private String instance;
 
   @Column(
-      columnDefinition = "char(" + Constant.LOG_LEVEL_LENGTH + ")",
-      name = Constant.LOG_COLUMN_NAME_LEVEL,
-      nullable = false)
-  private String level;
-
-  @Column(
       length = Constant.CATEGORY_LENGTH,
       name = Constant.LOG_COLUMN_NAME_CATEGORY,
       nullable = false)
   private String category;
+
+  @Column(
+      columnDefinition = "char(" + Constant.LOG_LEVEL_LENGTH + ")",
+      name = Constant.LOG_COLUMN_NAME_LEVEL,
+      nullable = false)
+  private String level;
 
   @Column(name = Constant.LOG_COLUMN_NAME_TIMESTAMP_MS, nullable = false)
   private Long timestampMs;
@@ -58,20 +58,20 @@ public class LogPo implements Serializable {
     this.instance = instance;
   }
 
-  public String getLevel() {
-    return level;
-  }
-
-  public void setLevel(String level) {
-    this.level = level;
-  }
-
   public String getCategory() {
     return category;
   }
 
   public void setCategory(String category) {
     this.category = category;
+  }
+
+  public String getLevel() {
+    return level;
+  }
+
+  public void setLevel(String level) {
+    this.level = level;
   }
 
   public Long getTimestampMs() {

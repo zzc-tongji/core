@@ -6,7 +6,7 @@ import io.github.messagehelper.core.processor.log.content.Content;
 
 import java.lang.reflect.Field;
 
-public class BodyTemplate {
+public class RuleThen {
   private static final StringBuilder BUILDER = new StringBuilder();
   private static final String REGEX_PREFIX = "\\(\\(";
   private static final String REGEX_CONTENT = "content\\.";

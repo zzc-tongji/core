@@ -14,7 +14,7 @@ import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.Rule;
-import io.github.messagehelper.core.processor.rule._if.RuleIf;
+import io.github.messagehelper.core.processor.rule.RuleIf;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
 import org.slf4j.Logger;
@@ -102,7 +102,7 @@ public class RuleJpaLocalDao implements RuleDao {
         continue;
       }
       // match rule
-      if (rule.getRuleIf().satisfy(log)) {
+      if (rule.satisfy(log)) {
         // log
         logInsertDao.insert(
             configDao.load("core.instance"),
@@ -312,29 +312,35 @@ public class RuleJpaLocalDao implements RuleDao {
     Item data = dto.getData();
     data.setId(po.getId());
     data.setName(po.getName());
-    data.setRuleIf(po.getRuleIf());
-    data.setRuleThenInstance(po.getRuleThenInstance());
-    data.setRuleThenMethod(po.getRuleThenMethod());
-    data.setRuleThenPath(po.getRuleThenPath());
-    data.setBodyTemplate(po.getBodyTemplate());
+    data.setIfLogInstanceEqual(po.getIfLogInstanceEqual());
+    data.setIfLogCategoryEqual(po.getIfLogCategoryEqual());
+    data.setIfLogContentSatisfy(po.getIfLogContentSatisfy());
+    data.setThenUseConnectorId(po.getThenUseConnectorId());
+    data.setThenUseHttpMethod(po.getThenUseHttpMethod());
+    data.setThenUseUrlPath(po.getThenUseUrlPath());
+    data.setThenUseBodyTemplate(po.getThenUseBodyTemplate());
     data.setPriority(po.getPriority());
     data.setTerminate(po.getTerminate());
     data.setEnable(po.getEnable());
+    data.setAnnotation(po.getAnnotation());
   }
 
   @SuppressWarnings("Duplicates")
   private void requestDtoToPo(Long id, PutPostRequestDto dto, RulePo po) {
     po.setId(id);
     po.setName(dto.getName());
-    RuleIf.parse(dto.getRuleIf()); // validate
-    po.setRuleIf(dto.getRuleIf());
-    po.setRuleThenInstance(dto.getRuleThenInstance());
-    po.setRuleThenMethod(dto.getRuleThenMethod());
-    po.setRuleThenPath(dto.getRuleThenPath());
-    po.setBodyTemplate(dto.getBodyTemplate());
+    po.setIfLogInstanceEqual(dto.getIfLogInstanceEqual());
+    po.setIfLogCategoryEqual(dto.getIfLogCategoryEqual());
+    RuleIf.parse(dto.getIfLogContentSatisfy(), dto.getIfLogCategoryEqual()); // validate
+    po.setIfLogContentSatisfy(dto.getIfLogContentSatisfy());
+    po.setThenUseConnectorId(dto.getThenUseConnectorId());
+    po.setThenUseHttpMethod(dto.getThenUseHttpMethod());
+    po.setThenUseUrlPath(dto.getThenUseUrlPath());
+    po.setThenUseBodyTemplate(dto.getThenUseBodyTemplate());
     po.setPriority(dto.getPriority());
     po.setTerminate(dto.getTerminate());
     po.setEnable(dto.getEnable());
+    po.setAnnotation(dto.getAnnotation());
   }
 
   private void ruleToResponseDto(Rule rule, GetPutPostDeleteResponseDto dto) {
@@ -346,14 +352,17 @@ public class RuleJpaLocalDao implements RuleDao {
   private void ruleToResponseDtoItem(Rule rule, Item item) {
     item.setId(rule.getId());
     item.setName(rule.getName());
-    item.setRuleIf(rule.getRuleIf().toString());
-    item.setRuleThenInstance(rule.getRuleThenInstance());
-    item.setRuleThenMethod(rule.getRuleThenMethod());
-    item.setRuleThenPath(rule.getRuleThenPath());
-    item.setBodyTemplate(rule.getBodyTemplate());
+    item.setIfLogInstanceEqual(rule.getIfLogInstanceEqual());
+    item.setIfLogCategoryEqual(rule.getIfLogCategoryEqual());
+    item.setIfLogContentSatisfy(rule.getIfLogContentSatisfy().toString());
+    item.setThenUseConnectorId(rule.getThenUseConnectorId());
+    item.setThenUseHttpMethod(rule.getThenUseHttpMethod());
+    item.setThenUseUrlPath(rule.getThenUseUrlPath());
+    item.setThenUseBodyTemplate(rule.getThenUseBodyTemplate());
     item.setPriority(rule.getPriority());
     item.setTerminate(rule.getTerminate());
     item.setEnable(rule.getEnable());
+    item.setAnnotation(rule.getAnnotation());
   }
 
   public void validateName(String name) {
