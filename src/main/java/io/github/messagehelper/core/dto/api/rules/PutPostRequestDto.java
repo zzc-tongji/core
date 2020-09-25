@@ -8,126 +8,99 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 public class PutPostRequestDto extends ApiTokenRequestDto {
-  private static final String METHOD_MESSAGE =
-      "thenUseHttpMethod: required, string in {\""
-          + Constant.RULE_THEN_METHOD_GET
-          + "\", \""
-          + Constant.RULE_THEN_METHOD_POST
-          + "\"} with length in [1, "
-          + Constant.RULE_THEN_PATH_LENGTH
+  public static final String EXCEPTION_MESSAGE_NAME =
+      "name: required, string with length in [1, "
+          + Constant.RULE_NAME_LENGTH
+          + "] which cannot be converted to long";
+  private static final String EXCEPTION_MESSAGE_IF_LOG_INSTANCE_EQUAL =
+      "ifLogInstanceEqual: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]";
+  private static final String EXCEPTION_MESSAGE_IF_LOG_CATEGORY_EQUAL =
+      "ifLogCategoryEqual: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]";
+  private static final String EXCEPTION_MESSAGE_IF_LOG_CONTENT_SATISFY =
+      "ifLogContentSatisfy: required, JSON string with length in [1, "
+          + Constant.RULE_IF_LOG_CONTENT_SATISFY_LENGTH
           + "]";
+  public static final String EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD =
+      "thenUseHttpMethod: required, string in {\""
+          + Constant.RULE_THEN_USE_HTTP_METHOD_GET
+          + "\", \""
+          + Constant.RULE_THEN_USE_HTTP_METHOD_POST
+          + "\"} with length in [1, "
+          + Constant.RULE_THEN_USE_URL_PATH_LENGTH
+          + "]";
+  private static final String EXCEPTION_MESSAGE_THEN_USE_CONNECTOR_ID =
+      "thenUseConnectorId: required, long";
+  private static final String EXCEPTION_MESSAGE_THEN_USE_URL_PATH =
+      "thenUseUrlPath: required, string with length in [1, "
+          + Constant.RULE_THEN_USE_URL_PATH_LENGTH
+          + "]";
+  private static final String EXCEPTION_MESSAGE_THEN_USE_BODY_TEMPLATE =
+      "thenUseBodyTemplate: required, JSON string with length in [1, "
+          + Constant.RULE_THEN_USE_BODY_TEMPLATE_LENGTH
+          + "]";
+  private static final String EXCEPTION_MESSAGE_PRIORITY = "priority: required, positive integer";
+  private static final String EXCEPTION_MESSAGE_TERMINATE = "terminate: required, boolean";
+  private static final String EXCEPTION_MESSAGE_ENABLE = "enable: required, boolean";
+  private static final String EXCEPTION_MESSAGE_ANNOTATION =
+      "annotation: required, string with length in [0, " + Constant.RULE_ANNOTATION_LENGTH + "]";
 
-  @Length(
-      min = 1,
-      max = Constant.RULE_NAME_LENGTH,
-      message =
-          "name: required, string with length in [1, "
-              + Constant.RULE_NAME_LENGTH
-              + "] which cannot be converted to long")
-  @NotNull(
-      message =
-          "name: required, string with length in [1, "
-              + Constant.RULE_NAME_LENGTH
-              + "] which cannot be converted to long")
+  @Length(min = 1, max = Constant.RULE_NAME_LENGTH, message = EXCEPTION_MESSAGE_NAME)
+  @NotNull(message = EXCEPTION_MESSAGE_NAME)
   private String name;
 
   @Length(
       min = 1,
       max = Constant.INSTANCE_LENGTH,
-      message =
-          "ifLogInstanceEqual: required, string with length in [1, "
-              + Constant.INSTANCE_LENGTH
-              + "]")
-  @NotNull(
-      message =
-          "ifLogInstanceEqual: required, string with length in [1, "
-              + Constant.INSTANCE_LENGTH
-              + "]")
+      message = EXCEPTION_MESSAGE_IF_LOG_INSTANCE_EQUAL)
+  @NotNull(message = EXCEPTION_MESSAGE_IF_LOG_INSTANCE_EQUAL)
   private String ifLogInstanceEqual;
 
   @Length(
       min = 1,
       max = Constant.CATEGORY_LENGTH,
-      message =
-          "ifLogCategoryEqual: required, string with length in [1, "
-              + Constant.CATEGORY_LENGTH
-              + "]")
-  @NotNull(
-      message =
-          "ifLogCategoryEqual: required, string with length in [1, "
-              + Constant.CATEGORY_LENGTH
-              + "]")
+      message = EXCEPTION_MESSAGE_IF_LOG_CATEGORY_EQUAL)
+  @NotNull(message = EXCEPTION_MESSAGE_IF_LOG_CATEGORY_EQUAL)
   private String ifLogCategoryEqual;
 
   @Length(
       min = 1,
-      max = Constant.RULE_IF_LENGTH,
-      message =
-          "ifLogContentSatisfy: required, JSON string with length in [1, "
-              + Constant.RULE_IF_LENGTH
-              + "]")
-  @NotNull(
-      message =
-          "ifLogContentSatisfy: required, JSON string with length in [1, "
-              + Constant.RULE_IF_LENGTH
-              + "]")
+      max = Constant.RULE_IF_LOG_CONTENT_SATISFY_LENGTH,
+      message = EXCEPTION_MESSAGE_IF_LOG_CONTENT_SATISFY)
+  @NotNull(message = EXCEPTION_MESSAGE_IF_LOG_CONTENT_SATISFY)
   private String ifLogContentSatisfy;
 
-  @NotNull(message = "thenUseConnectorId: required, long")
+  @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_CONNECTOR_ID)
   private Long thenUseConnectorId;
 
-  @NotNull(message = METHOD_MESSAGE)
+  @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD)
   private String thenUseHttpMethod;
 
   @Length(
       min = 1,
-      max = Constant.RULE_THEN_PATH_LENGTH,
-      message =
-          "thenUseUrlPath: required, string with length in [1, "
-              + Constant.RULE_THEN_PATH_LENGTH
-              + "]")
-  @NotNull(
-      message =
-          "thenUseUrlPath: required, string with length in [1, "
-              + Constant.RULE_THEN_PATH_LENGTH
-              + "]")
+      max = Constant.RULE_THEN_USE_URL_PATH_LENGTH,
+      message = EXCEPTION_MESSAGE_THEN_USE_URL_PATH)
+  @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_URL_PATH)
   private String thenUseUrlPath;
 
   @Length(
       min = 1,
-      max = Constant.RULE_BODY_TEMPLATE_LENGTH,
-      message =
-          "ThenUseBodyTemplate: required, JSON string with length in [1, "
-              + Constant.RULE_BODY_TEMPLATE_LENGTH
-              + "]")
-  @NotNull(
-      message =
-          "ThenUseBodyTemplate: required, JSON string with length in [1, "
-              + Constant.RULE_BODY_TEMPLATE_LENGTH
-              + "]")
-  private String ThenUseBodyTemplate;
+      max = Constant.RULE_THEN_USE_BODY_TEMPLATE_LENGTH,
+      message = EXCEPTION_MESSAGE_THEN_USE_BODY_TEMPLATE)
+  @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_BODY_TEMPLATE)
+  private String thenUseBodyTemplate;
 
-  @Positive(message = "priority: required, positive integer")
-  @NotNull(message = "priority: required, positive integer")
+  @Positive(message = EXCEPTION_MESSAGE_PRIORITY)
+  @NotNull(message = EXCEPTION_MESSAGE_PRIORITY)
   private Integer priority;
 
-  @NotNull(message = "terminate: required, boolean")
+  @NotNull(message = EXCEPTION_MESSAGE_TERMINATE)
   private Boolean terminate;
 
-  @NotNull(message = "enable: required, boolean")
+  @NotNull(message = EXCEPTION_MESSAGE_ENABLE)
   private Boolean enable;
 
-  @Length(
-      max = Constant.RULE_ANNOTATION_LENGTH,
-      message =
-          "annotation: required, string with length in [0, "
-              + Constant.RULE_ANNOTATION_LENGTH
-              + "]")
-  @NotNull(
-      message =
-          "annotation: required, string with length in [0, "
-              + Constant.RULE_ANNOTATION_LENGTH
-              + "]")
+  @Length(max = Constant.RULE_ANNOTATION_LENGTH, message = EXCEPTION_MESSAGE_ANNOTATION)
+  @NotNull(message = EXCEPTION_MESSAGE_ANNOTATION)
   private String annotation;
 
   public String getName() {
@@ -187,11 +160,11 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   }
 
   public String getThenUseBodyTemplate() {
-    return ThenUseBodyTemplate;
+    return thenUseBodyTemplate;
   }
 
   public void setThenUseBodyTemplate(String thenUseBodyTemplate) {
-    this.ThenUseBodyTemplate = thenUseBodyTemplate;
+    this.thenUseBodyTemplate = thenUseBodyTemplate;
   }
 
   public Integer getPriority() {

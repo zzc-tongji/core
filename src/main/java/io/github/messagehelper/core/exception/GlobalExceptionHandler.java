@@ -223,6 +223,38 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
+  @ExceptionHandler(value = RuleEnableWithInvalidConnectorException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(RuleEnableWithInvalidConnectorException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = RuleInvalidContentTypeException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(RuleInvalidContentTypeException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = RuleInvalidHttpMethodException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(RuleInvalidHttpMethodException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = RuleInvalidUrlException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(RuleInvalidUrlException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
   @ExceptionHandler(value = RuleNameNumericalException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)

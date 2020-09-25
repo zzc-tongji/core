@@ -16,7 +16,9 @@ public interface ConnectorDao {
 
   ResponseEntity<String> executeDelegate(String instance, String method, String path, String body);
 
-  boolean isExistent(Long id);
+  boolean notExistent(Long id);
+
+  String getUrlById(Long id);
 
   //
 

@@ -22,7 +22,10 @@ public class RulePo implements Serializable {
   @Column(name = "if_log_category_equal", nullable = false)
   private String ifLogCategoryEqual;
 
-  @Column(name = "if_log_content_satisfy", length = Constant.RULE_IF_LENGTH, nullable = false)
+  @Column(
+      name = "if_log_content_satisfy",
+      length = Constant.RULE_IF_LOG_CONTENT_SATISFY_LENGTH,
+      nullable = false)
   private String ifLogContentSatisfy;
 
   @Column(name = "then_use_connector_id", nullable = false)
@@ -30,16 +33,19 @@ public class RulePo implements Serializable {
 
   @Column(
       name = "then_use_http_method",
-      length = Constant.RULE_THEN_METHOD_LENGTH,
+      length = Constant.RULE_THEN_USE_HTTP_METHOD_LENGTH,
       nullable = false)
   private String thenUseHttpMethod;
 
-  @Column(name = "then_use_url_path", length = Constant.RULE_THEN_PATH_LENGTH, nullable = false)
+  @Column(
+      name = "then_use_url_path",
+      length = Constant.RULE_THEN_USE_URL_PATH_LENGTH,
+      nullable = false)
   private String thenUseUrlPath;
 
   @Column(
       name = "then_use_body_template",
-      length = Constant.RULE_BODY_TEMPLATE_LENGTH,
+      length = Constant.RULE_THEN_USE_BODY_TEMPLATE_LENGTH,
       nullable = false)
   private String thenUseBodyTemplate;
 

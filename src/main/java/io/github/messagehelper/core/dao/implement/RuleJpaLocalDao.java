@@ -17,12 +17,17 @@ import io.github.messagehelper.core.processor.rule.Rule;
 import io.github.messagehelper.core.processor.rule.RuleIf;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
+import org.apache.http.ParseException;
+import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +35,15 @@ import java.util.List;
 
 @Service
 public class RuleJpaLocalDao implements RuleDao {
+  private static final String EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_HTTP_METHOD =
+      String.format(
+          "thenUseHttpMethod: required, string as value of header \"content-type\" with length in [1, %d]",
+          Constant.RULE_THEN_USE_URL_PATH_LENGTH);
+  private static final String EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_URL_PATH =
+      String.format(
+          "thenUseUrlPath: url string with length in [1, %d]",
+          Constant.RULE_THEN_USE_URL_PATH_LENGTH);
+
   private RuleJpaRepository repository;
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
@@ -156,7 +170,7 @@ public class RuleJpaLocalDao implements RuleDao {
     // check `thenUseConnectorId` and ignore `ifLogInstanceEqual`
     boolean cache = false;
     for (Rule rule : ruleList) {
-      if (!connectorDao.isExistent(rule.getThenUseConnectorId()) && rule.getEnable()) {
+      if (connectorDao.notExistent(rule.getThenUseConnectorId()) && rule.getEnable()) {
         RulePo po = new RulePo();
         ruleToPo(rule, po);
         po.setEnable(false);
@@ -174,20 +188,15 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
-    // TODO: change rule if instance as column
-    // TODO: validate connector and type
-    // TODO: when connector is "@", validate "rule_then_path" as URL,
-    // TODO: "rule_then_method" as content-type is necessary to validate
-    validateName(dto.getName());
+    // validate and convert
+    RulePo po = new RulePo();
+    requestDtoToPo(null, dto, po);
     // cache
-    Rule rule = find(dto.getName());
-    if (rule != null) {
+    if (find(po.getName()) != null) {
       throw new RuleAlreadyExistentException(
           String.format("rule with name [%s]: already existent", dto.getName()));
     }
     // database
-    RulePo po = new RulePo();
-    requestDtoToPo(null, dto, po);
     repository.save(po);
     refreshCache();
     // response
@@ -257,22 +266,22 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @Override
   public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
-    validateName(dto.getName());
+    // convert and validate
+    RulePo po = new RulePo();
+    requestDtoToPo(id, dto, po);
     // cache
     Rule rule = find(id);
     if (rule == null) {
       throw new RuleNotFoundException(String.format("rule with id [%d]: not found", id));
     }
-    if (!rule.getName().equals(dto.getName())) {
-      rule = find(dto.getName());
+    if (!rule.getName().equals(po.getName())) {
+      rule = find(po.getName());
       if (rule != null) {
         throw new RuleAlreadyExistentException(
-            String.format("rule with name [%s]: already existent", dto.getName()));
+            String.format("rule with name [%s]: already existent", po.getName()));
       }
     }
     // database
-    RulePo po = new RulePo();
-    requestDtoToPo(id, dto, po);
     repository.save(po);
     refreshCache();
     // response
@@ -370,24 +379,82 @@ public class RuleJpaLocalDao implements RuleDao {
 
   @SuppressWarnings("Duplicates")
   private void requestDtoToPo(Long id, PutPostRequestDto dto, RulePo po) {
+    // validate #1 => `name`
+    String name = dto.getName();
+    try {
+      Long.parseLong(name);
+      throw new RuleNameNumericalException(PutPostRequestDto.EXCEPTION_MESSAGE_NAME);
+    } catch (NumberFormatException ignored) {
+    }
+    po.setName(name);
+    // validate #2 => `thenUseConnectorId` and `enable`
+    Long thenUseConnectorId = dto.getThenUseConnectorId();
+    boolean enable = dto.getEnable();
+    if (connectorDao.notExistent(thenUseConnectorId) && enable) {
+      throw new RuleEnableWithInvalidConnectorException(
+          String.format(
+              "connector with id [%d]: not found => cannot enable rule, please revise connector id or disable rule",
+              thenUseConnectorId));
+    }
+    po.setThenUseConnectorId(thenUseConnectorId);
+    po.setEnable(enable);
+    // validate #3 => `thenUseHttpMethod` and `thenUseUrlPath`
+    String thenUseHttpMethod = dto.getThenUseHttpMethod();
+    String thenUseUrlPath = dto.getThenUseUrlPath();
+    if (thenUseConnectorId.equals(0L)) {
+      // virtual connector
+      //
+      // `thenUseHttpMethod` => value of header "content-type"
+      try {
+        ContentType.parse(thenUseHttpMethod);
+      } catch (ParseException | UnsupportedCharsetException e) {
+        throw new RuleInvalidContentTypeException(
+            EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_HTTP_METHOD);
+      }
+      // `thenUseUrlPath` => URL
+      try {
+        new URI(thenUseUrlPath);
+      } catch (URISyntaxException e) {
+        throw new RuleInvalidUrlException(EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_URL_PATH);
+      }
+    } else {
+      // normal connector
+      //
+      // `thenUseHttpMethod` => "GET" or "POST"
+      if (!thenUseHttpMethod.equals(Constant.RULE_THEN_USE_HTTP_METHOD_GET)
+          && !thenUseHttpMethod.equals(Constant.RULE_THEN_USE_HTTP_METHOD_POST)) {
+        throw new RuleInvalidHttpMethodException(
+            PutPostRequestDto.EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD);
+      }
+      // `thenUseUrlPath` => just path
+      String urlWithPath = connectorDao.getUrlById(thenUseConnectorId) + thenUseUrlPath;
+      try {
+        new URI(urlWithPath);
+      } catch (URISyntaxException e) {
+        throw new RuleInvalidUrlException(
+            String.format(
+                "path [%s] concatenated as url [%s]: invalid format, please revise rule path or connector url",
+                thenUseUrlPath, urlWithPath));
+      }
+    }
+    po.setThenUseHttpMethod(thenUseHttpMethod);
+    po.setThenUseUrlPath(thenUseUrlPath);
+    // validate #4 => `setIfLogContentSatisfy`
+    RuleIf.parse(dto.getIfLogContentSatisfy(), dto.getIfLogCategoryEqual()); // validate
+    po.setIfLogContentSatisfy(dto.getIfLogContentSatisfy());
+    // already validated
+    po.setIfLogInstanceEqual(dto.getIfLogInstanceEqual());
+    po.setIfLogCategoryEqual(dto.getIfLogCategoryEqual());
+    po.setThenUseBodyTemplate(dto.getThenUseBodyTemplate());
+    po.setPriority(dto.getPriority());
+    po.setTerminate(dto.getTerminate());
+    po.setAnnotation(dto.getAnnotation());
+    // id
     if (id == null) {
       po.setId(IdGenerator.getInstance().generate());
     } else {
       po.setId(id);
     }
-    po.setName(dto.getName());
-    po.setIfLogInstanceEqual(dto.getIfLogInstanceEqual());
-    po.setIfLogCategoryEqual(dto.getIfLogCategoryEqual());
-    RuleIf.parse(dto.getIfLogContentSatisfy(), dto.getIfLogCategoryEqual()); // validate
-    po.setIfLogContentSatisfy(dto.getIfLogContentSatisfy());
-    po.setThenUseConnectorId(dto.getThenUseConnectorId());
-    po.setThenUseHttpMethod(dto.getThenUseHttpMethod());
-    po.setThenUseUrlPath(dto.getThenUseUrlPath());
-    po.setThenUseBodyTemplate(dto.getThenUseBodyTemplate());
-    po.setPriority(dto.getPriority());
-    po.setTerminate(dto.getTerminate());
-    po.setEnable(dto.getEnable());
-    po.setAnnotation(dto.getAnnotation());
   }
 
   @SuppressWarnings("Duplicates")
@@ -427,16 +494,5 @@ public class RuleJpaLocalDao implements RuleDao {
     item.setTerminate(rule.getTerminate());
     item.setEnable(rule.getEnable());
     item.setAnnotation(rule.getAnnotation());
-  }
-
-  public void validateName(String name) {
-    try {
-      Long.parseLong(name);
-      throw new RuleNameNumericalException(
-          "name: required, string with length in [1, "
-              + Constant.RULE_NAME_LENGTH
-              + "] which cannot be converted to long");
-    } catch (NumberFormatException ignored) {
-    }
   }
 }

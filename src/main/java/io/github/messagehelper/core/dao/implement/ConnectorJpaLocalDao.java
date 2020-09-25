@@ -40,13 +40,13 @@ import java.util.Map;
 
 @Service
 public class ConnectorJpaLocalDao implements ConnectorDao {
-  private static final int INSTANCE = 0;
-  private static final int CATEGORY = 1;
-  public static final String INSTANCE_EXCEPTION_MESSAGE =
+  private static final int INDEX_INSTANCE = 0;
+  private static final int INDEX_CATEGORY = 1;
+  public static final String EXCEPTION_MESSAGE_INSTANCE =
       String.format(
           "fetch => instance: required, a non \"%s\" string with length in [1, %d] which cannot be converted to long",
           Constant.CONNECTOR_INSTANCE_VIRTUAL, Constant.INSTANCE_LENGTH);
-  public static final String CATEGORY_EXCEPTION_MESSAGE =
+  public static final String EXCEPTION_MESSAGE_CATEGORY =
       String.format(
           "fetch => category: required, string with length in [1, %d]", Constant.CATEGORY_LENGTH);
 
@@ -266,15 +266,24 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   @Override
-  public boolean isExistent(Long id) {
-    return !(find(id) == null);
+  public boolean notExistent(Long id) {
+    return find(id) == null;
+  }
+
+  @Override
+  public String getUrlById(Long id) {
+    if (notExistent(id)) {
+      return "";
+    }
+    return find(id).getUrl();
   }
 
   @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
-    // cache
+    // convert and validate
     ConnectorPo po = new ConnectorPo();
     requestDtoToPo(null, dto, po);
+    // cache
     if (find(po.getInstance()) != null) {
       throw new ConnectorAlreadyExistentException(
           String.format("connector with instance [%s]: already existent", po.getInstance()));
@@ -373,13 +382,13 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
 
   @Override
   public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
-    // validate
+    // convert and validate
     if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
       throw new ConnectorVirtualException(String.format("connector with id [%d]: virtual", id));
     }
-    // cache
     ConnectorPo updatedPo = new ConnectorPo();
     requestDtoToPo(id, dto, updatedPo);
+    // cache
     ConnectorPo po = find(id);
     if (po == null) {
       throw new ConnectorNotFoundException(String.format("connector with id [%d]: not found", id));
@@ -671,22 +680,24 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private void requestDtoToPo(Long id, PutPostRequestDto dto, ConnectorPo po) {
+    String[] result = fetchAndValidate(dto.getUrl(), dto.getRpcToken());
+    po.setInstance(result[INDEX_INSTANCE]);
+    po.setCategory(result[INDEX_CATEGORY]);
+    po.setUrl(dto.getUrl());
+    po.setRpcToken(dto.getRpcToken());
     if (id == null) {
       po.setId(IdGenerator.getInstance().generate());
     } else {
       po.setId(id);
     }
-    String[] result = fetch(dto.getUrl(), dto.getRpcToken());
-    po.setInstance(result[INSTANCE]);
-    po.setCategory(result[CATEGORY]);
-    po.setUrl(dto.getUrl());
-    po.setRpcToken(dto.getRpcToken());
   }
 
-  private String[] fetch(String url, String rpcToken) {
+  private String[] fetchAndValidate(String url, String rpcToken) {
     String urlWithPath = url + "/rpc/status";
     HttpRequest request;
     try {
+      // validate both `url` and `urlWithPath`
+      new URI(url);
       request =
           HttpRequest.newBuilder()
               .uri(new URI(urlWithPath))
@@ -732,26 +743,27 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     String[] result = new String[2];
     JsonNode temp = jsonNode.get("instance");
     if (temp != null && temp.isTextual()) {
-      result[INSTANCE] = temp.asText();
-      if (result[INSTANCE].length() <= 0 || result[INSTANCE].length() > Constant.INSTANCE_LENGTH) {
-        throw new ConnectorInstanceInvalidFormatException(INSTANCE_EXCEPTION_MESSAGE);
+      result[INDEX_INSTANCE] = temp.asText();
+      if (result[INDEX_INSTANCE].length() <= 0
+          || result[INDEX_INSTANCE].length() > Constant.INSTANCE_LENGTH) {
+        throw new ConnectorInstanceInvalidFormatException(EXCEPTION_MESSAGE_INSTANCE);
       }
-      if (result[INSTANCE].equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
-        throw new ConnectorVirtualException(INSTANCE_EXCEPTION_MESSAGE);
+      if (result[INDEX_INSTANCE].equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
+        throw new ConnectorVirtualException(EXCEPTION_MESSAGE_INSTANCE);
       }
       try {
-        Long.parseLong(result[INSTANCE]);
-        throw new ConnectorInstanceNumericalException(INSTANCE_EXCEPTION_MESSAGE);
+        Long.parseLong(result[INDEX_INSTANCE]);
+        throw new ConnectorInstanceNumericalException(EXCEPTION_MESSAGE_INSTANCE);
       } catch (NumberFormatException ignored) {
       }
     } else {
-      throw new ConnectorInstanceInvalidFormatException(INSTANCE_EXCEPTION_MESSAGE);
+      throw new ConnectorInstanceInvalidFormatException(EXCEPTION_MESSAGE_INSTANCE);
     }
     temp = jsonNode.get("category");
     if (temp != null && temp.isTextual()) {
-      result[CATEGORY] = temp.asText();
+      result[INDEX_CATEGORY] = temp.asText();
     } else {
-      throw new ConnectorCategoryInvalidFormatException(CATEGORY_EXCEPTION_MESSAGE);
+      throw new ConnectorCategoryInvalidFormatException(EXCEPTION_MESSAGE_CATEGORY);
     }
     return result;
   }
