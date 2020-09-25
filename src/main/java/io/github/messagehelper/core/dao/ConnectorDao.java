@@ -12,9 +12,10 @@ public interface ConnectorDao {
 
   void executeRule(Rule rule, Log log);
 
-  ResponseEntity<String> executeDelegate(Long id, String method, String path, String body);
+  ResponseEntity<String> executeDelegate(Long id, String path, String contentType, String body);
 
-  ResponseEntity<String> executeDelegate(String instance, String method, String path, String body);
+  ResponseEntity<String> executeDelegate(
+      String instance, String path, String contentType, String body);
 
   boolean notExistent(Long id);
 

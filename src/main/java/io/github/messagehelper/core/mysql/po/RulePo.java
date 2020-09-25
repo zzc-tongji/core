@@ -32,16 +32,16 @@ public class RulePo implements Serializable {
   private Long thenUseConnectorId;
 
   @Column(
-      name = "then_use_http_method",
-      length = Constant.RULE_THEN_USE_HTTP_METHOD_LENGTH,
-      nullable = false)
-  private String thenUseHttpMethod;
-
-  @Column(
       name = "then_use_url_path",
       length = Constant.RULE_THEN_USE_URL_PATH_LENGTH,
       nullable = false)
   private String thenUseUrlPath;
+
+  @Column(
+      name = "then_use_header_content_type",
+      length = Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE,
+      nullable = false)
+  private String thenUseHeaderContentType;
 
   @Column(
       name = "then_use_body_template",
@@ -109,20 +109,20 @@ public class RulePo implements Serializable {
     this.thenUseConnectorId = ruleThenConnectorId;
   }
 
-  public String getThenUseHttpMethod() {
-    return thenUseHttpMethod;
-  }
-
-  public void setThenUseHttpMethod(String ruleThenMethod) {
-    this.thenUseHttpMethod = ruleThenMethod;
-  }
-
   public String getThenUseUrlPath() {
     return thenUseUrlPath;
   }
 
   public void setThenUseUrlPath(String ruleThenPath) {
     this.thenUseUrlPath = ruleThenPath;
+  }
+
+  public String getThenUseHeaderContentType() {
+    return thenUseHeaderContentType;
+  }
+
+  public void setThenUseHeaderContentType(String ruleThenMethod) {
+    this.thenUseHeaderContentType = ruleThenMethod;
   }
 
   public String getThenUseBodyTemplate() {

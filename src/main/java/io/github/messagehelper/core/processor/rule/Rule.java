@@ -13,8 +13,8 @@ public class Rule implements Comparable<Rule> {
     rule.ifLogContentSatisfy =
         RuleIf.parse(po.getIfLogContentSatisfy(), po.getIfLogCategoryEqual());
     rule.thenUseConnectorId = po.getThenUseConnectorId();
-    rule.thenUseHttpMethod = po.getThenUseHttpMethod();
     rule.thenUseUrlPath = po.getThenUseUrlPath();
+    rule.thenUseHeaderContentType = po.getThenUseHeaderContentType();
     rule.thenUseBodyTemplate = po.getThenUseBodyTemplate();
     rule.priority = po.getPriority();
     rule.terminate = po.getTerminate();
@@ -29,8 +29,8 @@ public class Rule implements Comparable<Rule> {
   private String ifLogCategoryEqual;
   private RuleIf ifLogContentSatisfy;
   private Long thenUseConnectorId;
-  private String thenUseHttpMethod;
   private String thenUseUrlPath;
+  private String thenUseHeaderContentType;
   private String thenUseBodyTemplate;
   private Integer priority;
   private Boolean terminate;
@@ -61,12 +61,12 @@ public class Rule implements Comparable<Rule> {
     return thenUseConnectorId;
   }
 
-  public String getThenUseHttpMethod() {
-    return thenUseHttpMethod;
-  }
-
   public String getThenUseUrlPath() {
     return thenUseUrlPath;
+  }
+
+  public String getThenUseHeaderContentType() {
+    return thenUseHeaderContentType;
   }
 
   public String getThenUseBodyTemplate() {

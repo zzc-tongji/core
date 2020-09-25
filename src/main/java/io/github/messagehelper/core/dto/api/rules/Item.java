@@ -7,8 +7,8 @@ public class Item {
   private String ifLogCategoryEqual;
   private String ifLogContentSatisfy;
   private Long thenUseConnectorId;
-  private String thenUseHttpMethod;
   private String thenUseUrlPath;
+  private String thenUseHeaderContentType;
   private String thenUseBodyTemplate;
   private Integer priority;
   private Boolean terminate;
@@ -63,20 +63,20 @@ public class Item {
     this.thenUseConnectorId = thenUseConnectorId;
   }
 
-  public String getThenUseHttpMethod() {
-    return thenUseHttpMethod;
-  }
-
-  public void setThenUseHttpMethod(String thenUseHttpMethod) {
-    this.thenUseHttpMethod = thenUseHttpMethod;
-  }
-
   public String getThenUseUrlPath() {
     return thenUseUrlPath;
   }
 
   public void setThenUseUrlPath(String thenUseUrlPath) {
     this.thenUseUrlPath = thenUseUrlPath;
+  }
+
+  public String getThenUseHeaderContentType() {
+    return thenUseHeaderContentType;
+  }
+
+  public void setThenUseHeaderContentType(String thenUseHeaderContentType) {
+    this.thenUseHeaderContentType = thenUseHeaderContentType;
   }
 
   public String getThenUseBodyTemplate() {

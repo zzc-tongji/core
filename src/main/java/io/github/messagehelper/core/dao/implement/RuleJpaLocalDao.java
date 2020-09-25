@@ -35,11 +35,6 @@ import java.util.List;
 
 @Service
 public class RuleJpaLocalDao implements RuleDao {
-  private static final String EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_HTTP_METHOD =
-      String.format(
-          "thenUseHttpMethod: required, string as value of header \"content-type\" with length in [1, %d]",
-          Constant.RULE_THEN_USE_URL_PATH_LENGTH);
-
   private RuleJpaRepository repository;
   private ConfigDao configDao;
   private ConnectorDao connectorDao;
@@ -364,8 +359,8 @@ public class RuleJpaLocalDao implements RuleDao {
     data.setIfLogCategoryEqual(po.getIfLogCategoryEqual());
     data.setIfLogContentSatisfy(po.getIfLogContentSatisfy());
     data.setThenUseConnectorId(po.getThenUseConnectorId());
-    data.setThenUseHttpMethod(po.getThenUseHttpMethod());
     data.setThenUseUrlPath(po.getThenUseUrlPath());
+    data.setThenUseHeaderContentType(po.getThenUseHeaderContentType());
     data.setThenUseBodyTemplate(po.getThenUseBodyTemplate());
     data.setPriority(po.getPriority());
     data.setTerminate(po.getTerminate());
@@ -394,24 +389,15 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     po.setThenUseConnectorId(thenUseConnectorId);
     po.setEnable(enable);
-    // validate `thenUseHttpMethod`
-    String thenUseHttpMethod = dto.getThenUseHttpMethod();
-    if (thenUseConnectorId.equals(0L)) {
-      // virtual connector: `thenUseHttpMethod` => value of request header "content-type"
-      try {
-        ContentType.parse(thenUseHttpMethod);
-      } catch (ParseException | UnsupportedCharsetException e) {
-        throw new RuleInvalidContentTypeException(
-            EXCEPTION_MESSAGE_VIRTUAL_CONNECTOR_THEN_USE_HTTP_METHOD);
-      }
-    } else {
-      // normal connector: `thenUseHttpMethod` => "GET" or "POST"
-      if (!thenUseHttpMethod.equals("GET") && !thenUseHttpMethod.equals("POST")) {
-        throw new RuleInvalidHttpMethodException(
-            PutPostRequestDto.EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD);
-      }
+    // validate `thenUseHeaderContentType`
+    String thenUseHeaderContentType = dto.getThenUseHeaderContentType();
+    try {
+      ContentType.parse(thenUseHeaderContentType);
+    } catch (ParseException | UnsupportedCharsetException e) {
+      throw new RuleInvalidContentTypeException(
+          PutPostRequestDto.EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE);
     }
-    po.setThenUseHttpMethod(thenUseHttpMethod);
+    po.setThenUseHeaderContentType(thenUseHeaderContentType);
     // validate `thenUseUrlPath`
     String thenUseUrlPath = dto.getThenUseUrlPath();
     String url = connectorDao.getUrlById(thenUseConnectorId) + thenUseUrlPath;
@@ -450,8 +436,8 @@ public class RuleJpaLocalDao implements RuleDao {
     po.setIfLogCategoryEqual(rule.getIfLogCategoryEqual());
     po.setIfLogContentSatisfy(rule.getIfLogContentSatisfy().toString());
     po.setThenUseConnectorId(rule.getThenUseConnectorId());
-    po.setThenUseHttpMethod(rule.getThenUseHttpMethod());
     po.setThenUseUrlPath(rule.getThenUseUrlPath());
+    po.setThenUseHeaderContentType(rule.getThenUseHeaderContentType());
     po.setThenUseBodyTemplate(rule.getThenUseBodyTemplate());
     po.setPriority(rule.getPriority());
     po.setTerminate(rule.getTerminate());
@@ -472,8 +458,8 @@ public class RuleJpaLocalDao implements RuleDao {
     item.setIfLogCategoryEqual(rule.getIfLogCategoryEqual());
     item.setIfLogContentSatisfy(rule.getIfLogContentSatisfy().toString());
     item.setThenUseConnectorId(rule.getThenUseConnectorId());
-    item.setThenUseHttpMethod(rule.getThenUseHttpMethod());
     item.setThenUseUrlPath(rule.getThenUseUrlPath());
+    item.setThenUseHeaderContentType(rule.getThenUseHeaderContentType());
     item.setThenUseBodyTemplate(rule.getThenUseBodyTemplate());
     item.setPriority(rule.getPriority());
     item.setTerminate(rule.getTerminate());

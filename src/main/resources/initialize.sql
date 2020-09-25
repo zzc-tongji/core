@@ -74,19 +74,19 @@ CREATE TABLE IF NOT EXISTS `log`
 -- [rule]
 CREATE TABLE IF NOT EXISTS `rule`
 (
-    `id`                     bigint(20)    NOT NULL,
-    `name`                   varchar(256)  NOT NULL,
-    `if_log_instance_equal`  varchar(64)   NOT NULL,
-    `if_log_category_equal`  varchar(256)  NOT NULL,
-    `if_log_content_satisfy` varchar(1024) NOT NULL,
-    `then_use_connector_id`  bigint(20)    NOT NULL,
-    `then_use_http_method`   varchar(64)   NOT NULL,
-    `then_use_url_path`      varchar(1024) NOT NULL,
-    `then_use_body_template` varchar(4096) NOT NULL,
-    `priority`               int(11)       NOT NULL,
-    `terminate`              bit(1)        NOT NULL,
-    `enable`                 bit(1)        NOT NULL,
-    `annotation`             varchar(1024) NOT NULL,
+    `id`                           bigint(20)    NOT NULL,
+    `name`                         varchar(256)  NOT NULL,
+    `if_log_instance_equal`        varchar(64)   NOT NULL,
+    `if_log_category_equal`        varchar(256)  NOT NULL,
+    `if_log_content_satisfy`       varchar(1024) NOT NULL,
+    `then_use_connector_id`        bigint(20)    NOT NULL,
+    `then_use_url_path`            varchar(1024) NOT NULL,
+    `then_use_header_content_type` varchar(64)   NOT NULL,
+    `then_use_body_template`       varchar(4096) NOT NULL,
+    `priority`                     int(11)       NOT NULL,
+    `terminate`                    bit(1)        NOT NULL,
+    `enable`                       bit(1)        NOT NULL,
+    `annotation`                   varchar(1024) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `UK_g0aibm7vybna15mqfxis5nnf1` (`name`)
 ) ENGINE = InnoDB

@@ -119,44 +119,26 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     if (po.getId().equals(0L)) {
       // virtual connector
       executeWebhookHelper(
-          rule.getThenUseUrlPath(), // => URL
-          rule.getThenUseHttpMethod(), // => request header "content-type"
-          RuleThen.fill(rule.getThenUseBodyTemplate(), log)); // => request body
-      // If "request body" is an empty string, use GET method, otherwise, use POST method.
+          rule.getThenUseUrlPath(),
+          rule.getThenUseHeaderContentType(),
+          RuleThen.fill(rule.getThenUseBodyTemplate(), log));
     } else {
       // normal connector
       executeHelper(
           po,
-          rule.getThenUseHttpMethod(),
           rule.getThenUseUrlPath(),
+          rule.getThenUseHeaderContentType(),
           RuleThen.fill(rule.getThenUseBodyTemplate(), log));
     }
+    // If request header content-type" is an empty string, use GET method,
+    // otherwise, use POST method.
   }
 
   @Override
   @SuppressWarnings("Duplicates")
-  public ResponseEntity<String> executeDelegate(Long id, String method, String path, String body) {
-    if (id.equals(Constant.CONNECTOR_ID_VIRTUAL)) {
-      logInsertDao.insert(
-          configDao.load("core.instance"),
-          Constant.LOG_LEVEL_WARN,
-          "core.delegate.failure.not-allowed",
-          ObjectMapperSingleton.getInstance()
-              .getNodeFactory()
-              .objectNode()
-              .put("requestUrl", path)
-              .put("requestMethod", method)
-              .put("requestBody", body)
-              .toString());
-      return ResponseEntity.status(400)
-          .header("content-type", "application/json;charset=utf-8")
-          .body(
-              ObjectMapperSingleton.getInstance()
-                  .getNodeFactory()
-                  .objectNode()
-                  .put("error", String.format("connector with id [%d]: not allowed", id))
-                  .toString());
-    }
+  public ResponseEntity<String> executeDelegate(
+      Long id, String path, String contentType, String body) {
+    String method = contentType.length() > 0 ? "POST" : "GET";
     ConnectorPo po = find(id);
     if (po == null) {
       logInsertDao.insert(
@@ -166,8 +148,9 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
-              .put("requestUrl", path)
+              .put("requestPath", path)
               .put("requestMethod", method)
+              .put("requestHeaderContentType", contentType)
               .put("requestBody", body)
               .toString());
       return ResponseEntity.status(400)
@@ -191,38 +174,18 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .put("connectorId", po.getId())
             .put("requestUrl", po.getUrl() + path)
             .put("requestMethod", method)
+            .put("requestHeaderContentType", contentType)
             .put("requestBody", body)
             .toString());
     // response
-    return executeHelper(po, method, path, body);
+    return executeHelper(po, path, contentType, body);
   }
 
   @Override
   @SuppressWarnings("Duplicates")
   public ResponseEntity<String> executeDelegate(
-      String instance, String method, String path, String body) {
-    if (instance.equals(Constant.CONNECTOR_INSTANCE_VIRTUAL)) {
-      logInsertDao.insert(
-          configDao.load("core.instance"),
-          Constant.LOG_LEVEL_WARN,
-          "core.delegate.failure.not-allowed",
-          ObjectMapperSingleton.getInstance()
-              .getNodeFactory()
-              .objectNode()
-              .put("requestUrl", path)
-              .put("requestMethod", method)
-              .put("requestBody", body)
-              .toString());
-      return ResponseEntity.status(400)
-          .header("content-type", "application/json;charset=utf-8")
-          .body(
-              ObjectMapperSingleton.getInstance()
-                  .getNodeFactory()
-                  .objectNode()
-                  .put(
-                      "error", String.format("connector with instance [%s]: not allowed", instance))
-                  .toString());
-    }
+      String instance, String path, String contentType, String body) {
+    String method = contentType.length() > 0 ? "POST" : "GET";
     ConnectorPo po = find(instance);
     if (po == null) {
       // log
@@ -233,8 +196,9 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
-              .put("requestUrl", path)
+              .put("requestPath", path)
               .put("requestMethod", method)
+              .put("requestHeaderContentType", contentType)
               .put("requestBody", body)
               .toString());
       // response
@@ -259,10 +223,11 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .put("connectorId", po.getId())
             .put("requestUrl", po.getUrl() + path)
             .put("requestMethod", method)
+            .put("requestHeaderContentType", contentType)
             .put("requestBody", body)
             .toString());
     // response
-    return executeHelper(po, method, path, body);
+    return executeHelper(po, path, contentType, body);
   }
 
   @Override
@@ -470,9 +435,10 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private ResponseEntity<String> executeHelper(
-      ConnectorPo po, String requestMethod, String urlPath, String requestBody) {
-    String url = po.getUrl() + urlPath;
-    String requestBodyWithToken = insertToken(requestBody, po.getRpcToken());
+      ConnectorPo po, String path, String contentType, String body) {
+    String url = po.getUrl() + path;
+    String method = contentType.length() > 0 ? "POST" : "GET";
+    String bodyWithToken = insertToken(body, po.getRpcToken());
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
@@ -482,17 +448,20 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .getNodeFactory()
             .objectNode()
             .put("requestUrl", url)
-            .put("requestMethod", requestMethod)
-            .put("requestBody", requestBodyWithToken)
+            .put("requestMethod", method)
+            .put("requestHeaderContentType", contentType)
+            .put("requestBody", bodyWithToken)
             .toString());
     HttpRequest request;
     try {
       request =
-          HttpRequest.newBuilder()
-              .uri(new URI(url))
-              .headers("content-type", "application/json;charset=utf-8")
-              .method(requestMethod, HttpRequest.BodyPublishers.ofString(requestBodyWithToken))
-              .build();
+          contentType.length() > 0
+              ? HttpRequest.newBuilder()
+                  .uri(new URI(url))
+                  .headers("content-type", contentType)
+                  .POST(HttpRequest.BodyPublishers.ofString(bodyWithToken))
+                  .build()
+              : HttpRequest.newBuilder().uri(new URI(url)).GET().build();
     } catch (URISyntaxException e) {
       // log
       logInsertDao.insert(
@@ -503,8 +472,9 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .getNodeFactory()
               .objectNode()
               .put("requestUrl", url)
-              .put("requestMethod", requestMethod)
-              .put("requestBody", requestBodyWithToken)
+              .put("requestMethod", method)
+              .put("requestHeaderContentType", contentType)
+              .put("requestBody", bodyWithToken)
               .toString());
       // response
       return ResponseEntity.status(400)
@@ -529,8 +499,9 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .getNodeFactory()
               .objectNode()
               .put("requestUrl", url)
-              .put("requestMethod", requestMethod)
-              .put("requestBody", requestBodyWithToken)
+              .put("requestMethod", method)
+              .put("requestHeaderContentType", contentType)
+              .put("requestBody", bodyWithToken)
               .toString());
       // response
       return ResponseEntity.status(400)
@@ -553,8 +524,9 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .getNodeFactory()
             .objectNode()
             .put("requestUrl", url)
-            .put("requestMethod", requestMethod)
-            .put("requestBody", requestBodyWithToken)
+            .put("requestMethod", method)
+            .put("requestHeaderContentType", contentType)
+            .put("requestBody", bodyWithToken)
             .put("responseStatus", statusCode)
             .put("responseBody", responseBody);
     String jsonString = objectNode.toString();
@@ -585,16 +557,18 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private void executeWebhookHelper(String url, String contentType, String body) {
-    String requestMethod = body.length() > 0 ? "POST" : "GET";
+    String requestMethod = contentType.length() > 0 ? "POST" : "GET";
     // [webhook-connector] request
     HttpRequest request;
     try {
       request =
-          HttpRequest.newBuilder()
-              .uri(new URI(url))
-              .headers("content-type", contentType)
-              .method(requestMethod, HttpRequest.BodyPublishers.ofString(body))
-              .build();
+          contentType.length() > 0
+              ? HttpRequest.newBuilder()
+                  .uri(new URI(url))
+                  .headers("content-type", contentType)
+                  .POST(HttpRequest.BodyPublishers.ofString(body))
+                  .build()
+              : HttpRequest.newBuilder().uri(new URI(url)).GET().build();
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
@@ -608,6 +582,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .objectNode()
             .put("requestUrl", url)
             .put("requestMethod", requestMethod)
+            .put("requestHeaderContentType", contentType)
             .put("requestBody", body)
             .toString());
     // [webhook-connector] response

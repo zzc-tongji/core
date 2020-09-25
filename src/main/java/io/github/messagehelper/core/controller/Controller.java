@@ -169,9 +169,9 @@ public class Controller {
       @RequestHeader(name = "api-token", required = false) String headerApiToken) {
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
-      return connectorDao.executeDelegate(Long.parseLong(idOrInstance), "GET", path, "");
+      return connectorDao.executeDelegate(Long.parseLong(idOrInstance), path, "", "");
     } catch (NumberFormatException e) {
-      return connectorDao.executeDelegate(idOrInstance, "GET", path, "");
+      return connectorDao.executeDelegate(idOrInstance, path, "", "");
     }
   }
 
@@ -180,6 +180,7 @@ public class Controller {
   public ResponseEntity<String> apiConnectorsDelegatePost(
       @PathVariable("idOrInstance") String idOrInstance,
       @RequestParam(name = "path", required = false, defaultValue = "") String path,
+      @RequestHeader(name = "content-type") String headerContentType,
       @RequestHeader(name = "api-token", required = false) String headerApiToken,
       @RequestBody(required = false) String request) {
     if (request == null) {
@@ -187,9 +188,10 @@ public class Controller {
     }
     tokenDao.authenticate(new String[] {headerApiToken});
     try {
-      return connectorDao.executeDelegate(Long.parseLong(idOrInstance), "POST", path, request);
+      return connectorDao.executeDelegate(
+          Long.parseLong(idOrInstance), path, headerContentType, request);
     } catch (NumberFormatException e) {
-      return connectorDao.executeDelegate(idOrInstance, "POST", path, request);
+      return connectorDao.executeDelegate(idOrInstance, path, headerContentType, request);
     }
   }
 

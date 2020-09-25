@@ -20,10 +20,12 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
       "ifLogContentSatisfy: required, JSON string with length in [1, "
           + Constant.RULE_IF_LOG_CONTENT_SATISFY_LENGTH
           + "]";
-  public static final String EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD =
-      "thenUseHttpMethod: required, string in {\"GET\", \"POST\"}";
   private static final String EXCEPTION_MESSAGE_THEN_USE_CONNECTOR_ID =
       "thenUseConnectorId: required, long";
+  public static final String EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE =
+      "thenUseHeaderContentType: required, value of header \"content-type\" as string with length in [0, "
+          + Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE
+          + "]";
   private static final String EXCEPTION_MESSAGE_THEN_USE_URL_PATH =
       "thenUseUrlPath: required, string with length in [1, "
           + Constant.RULE_THEN_USE_URL_PATH_LENGTH
@@ -66,15 +68,18 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
   @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_CONNECTOR_ID)
   private Long thenUseConnectorId;
 
-  @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_HTTP_METHOD)
-  private String thenUseHttpMethod;
-
   @Length(
       min = 1,
       max = Constant.RULE_THEN_USE_URL_PATH_LENGTH,
       message = EXCEPTION_MESSAGE_THEN_USE_URL_PATH)
   @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_URL_PATH)
   private String thenUseUrlPath;
+
+  @Length(
+      max = Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE,
+      message = EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE)
+  @NotNull(message = EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE)
+  private String thenUseHeaderContentType;
 
   @Length(
       min = 1,
@@ -137,20 +142,20 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
     this.thenUseConnectorId = thenUseConnectorId;
   }
 
-  public String getThenUseHttpMethod() {
-    return thenUseHttpMethod;
-  }
-
-  public void setThenUseHttpMethod(String thenUseHttpMethod) {
-    this.thenUseHttpMethod = thenUseHttpMethod;
-  }
-
   public String getThenUseUrlPath() {
     return thenUseUrlPath;
   }
 
   public void setThenUseUrlPath(String thenUseUrlPath) {
     this.thenUseUrlPath = thenUseUrlPath;
+  }
+
+  public String getThenUseHeaderContentType() {
+    return thenUseHeaderContentType;
+  }
+
+  public void setThenUseHeaderContentType(String thenUseHeaderContentType) {
+    this.thenUseHeaderContentType = thenUseHeaderContentType;
   }
 
   public String getThenUseBodyTemplate() {
