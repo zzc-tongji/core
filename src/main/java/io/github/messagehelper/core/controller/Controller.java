@@ -57,8 +57,8 @@ public class Controller {
   @PostMapping(value = "/api/cache")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void apiCachePost(
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.cache.PostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
     apiTokenDao.refreshCache();
@@ -73,8 +73,9 @@ public class Controller {
   @GetMapping(value = "/api/configs")
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetAllResponseDto>
       configsGetALL(
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
@@ -85,9 +86,11 @@ public class Controller {
   public ResponseEntity<io.github.messagehelper.core.dto.api.configs.GetPutResponseDto>
       apiConfigsGet(
           @PathVariable("key") String key,
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
-    apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
+    apiTokenDao.authenticate(
+        new String[] {headerApiToken, queryStringApiToken == null ? "1" : "2"});
     return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(configDao.read(key));
@@ -96,8 +99,8 @@ public class Controller {
   @PutMapping(value = "/api/configs/{key}")
   public io.github.messagehelper.core.dto.api.configs.GetPutResponseDto apiConfigsPut(
       @PathVariable("key") String key,
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.configs.PutRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
     return configDao.update(key, dto);
@@ -108,8 +111,9 @@ public class Controller {
   @GetMapping(value = "/api/connectors")
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto>
       apiConnectorsGetAll(
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
@@ -120,8 +124,9 @@ public class Controller {
   public ResponseEntity<io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto>
       apiConnectorsGet(
           @PathVariable("idOrInstance") String idOrInstance,
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     try {
       return ResponseEntity.status(HttpStatus.OK)
@@ -138,8 +143,9 @@ public class Controller {
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
       apiConnectorsPut(
           @PathVariable("id") String id,
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
           @RequestBody @Validated
               io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
@@ -153,8 +159,9 @@ public class Controller {
   @PostMapping(value = "/api/connectors")
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
       apiConnectorsPost(
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
           @RequestBody @Validated
               io.github.messagehelper.core.dto.api.connectors.PutPostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
@@ -165,8 +172,9 @@ public class Controller {
   public io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto
       apiConnectorsDelete(
           @PathVariable("id") String id,
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     try {
       return connectorDao.delete(Long.parseLong(id));
@@ -181,9 +189,9 @@ public class Controller {
   @GetMapping(value = "/api/connectors/{idOrInstance}/delegate")
   public ResponseEntity<String> apiConnectorsDelegateGet(
       @PathVariable("idOrInstance") String idOrInstance,
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestParam(name = "path", required = false, defaultValue = "") String path,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestParam(name = "path", defaultValue = "") String path,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     try {
       return connectorDao.executeDelegate(Long.parseLong(idOrInstance), path, "", "");
@@ -196,17 +204,18 @@ public class Controller {
   @PostMapping(value = "/api/connectors/{idOrInstance}/delegate")
   public ResponseEntity<String> apiConnectorsDelegatePost(
       @PathVariable("idOrInstance") String idOrInstance,
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestParam(name = "path", required = false, defaultValue = "") String path,
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestParam(name = "path", defaultValue = "") String path,
       @RequestHeader(name = "content-type") String headerContentType,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @RequestBody(required = false) String request) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     try {
       return connectorDao.executeDelegate(
           Long.parseLong(idOrInstance), path, headerContentType, request == null ? "" : request);
     } catch (NumberFormatException e) {
-      return connectorDao.executeDelegate(idOrInstance, path, headerContentType, request);
+      return connectorDao.executeDelegate(
+          idOrInstance, path, headerContentType, request == null ? "" : request);
     }
   }
 
@@ -229,8 +238,8 @@ public class Controller {
   @DeleteMapping(value = "/api/logout")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void apiLogoutPost(
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.revoke(headerApiToken);
     apiTokenDao.revoke(queryStringApiToken);
   }
@@ -277,8 +286,9 @@ public class Controller {
   @GetMapping(value = "/api/rules")
   public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetAllResponseDto>
       apiRulesGetAll(
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
@@ -289,8 +299,9 @@ public class Controller {
   public ResponseEntity<io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto>
       apiRulesGet(
           @PathVariable("idOrName") String idOrName,
-          @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-          @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken) {
+          @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
+              String queryStringApiToken,
+          @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     try {
       return ResponseEntity.status(HttpStatus.OK)
@@ -306,8 +317,8 @@ public class Controller {
   @PutMapping(value = "/api/rules/{id}")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto apiRulePut(
       @PathVariable("id") String id,
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
     try {
@@ -319,8 +330,8 @@ public class Controller {
 
   @PostMapping(value = "/api/rules")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto apiRulePost(
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.rules.PutPostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
     return ruleDao.create(dto);
@@ -328,8 +339,8 @@ public class Controller {
 
   @DeleteMapping(value = "/api/rules/{id}")
   public io.github.messagehelper.core.dto.api.rules.GetPutPostDeleteResponseDto apiRuleDelete(
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @PathVariable("id") String id) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     try {
@@ -343,8 +354,8 @@ public class Controller {
   @PostMapping(value = "/api/webhooks")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void apiWebhooksPost(
-      @RequestParam(name = API_TOKEN_QUERY_STRING, required = false) String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, required = false) String headerApiToken,
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @RequestBody @Validated io.github.messagehelper.core.dto.api.webhooks.PostRequestDto dto) {
     apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
     processorDao.startWithWebhook(dto);
