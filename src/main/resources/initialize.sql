@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `config`
     PRIMARY KEY (`item_key`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+  COLLATE = utf8mb4_unicode_ci;
 
 -- [config] API document
 --
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `connector`
     UNIQUE KEY `UK_ca0pclol2sc0l7fvh7txq94r7` (`instance`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+  COLLATE = utf8mb4_unicode_ci;
 
 -- [log]
 CREATE TABLE IF NOT EXISTS `log`
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `log`
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+  COLLATE = utf8mb4_unicode_ci;
 
 -- [rule]
 CREATE TABLE IF NOT EXISTS `rule`
@@ -91,10 +91,10 @@ CREATE TABLE IF NOT EXISTS `rule`
     UNIQUE KEY `UK_g0aibm7vybna15mqfxis5nnf1` (`name`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
-
+  COLLATE = utf8mb4_unicode_ci;
 
 -- [token]
+
 CREATE TABLE IF NOT EXISTS `token`
 (
     `token`                char(32)   NOT NULL,
@@ -102,4 +102,4 @@ CREATE TABLE IF NOT EXISTS `token`
     PRIMARY KEY (`token`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+  COLLATE = utf8mb4_unicode_ci;
