@@ -28,7 +28,7 @@ public class Condition {
       throw new RuleIfInvalidContentException(
           PutPostRequestDto.EXCEPTION_MESSAGE_IF_LOG_CONTENT_SATISFY);
     }
-    ArrayNode output = ObjectMapperSingleton.getInstance().createArrayNode();
+    ArrayNode output = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
     Iterator<JsonNode> iterator = input.elements();
     //
     JsonNode inputNode;
@@ -40,7 +40,7 @@ public class Condition {
     while (iterator.hasNext()) {
       // input
       inputNode = iterator.next();
-      outputNode = ObjectMapperSingleton.getInstance().createObjectNode();
+      outputNode = ObjectMapperSingleton.getInstance().getNodeFactory().objectNode();
       // .path
       temp = inputNode.get("path");
       if (temp != null && temp.isTextual()) {

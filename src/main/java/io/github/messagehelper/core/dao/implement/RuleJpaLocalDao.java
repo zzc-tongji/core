@@ -17,6 +17,7 @@ import io.github.messagehelper.core.processor.rule.Rule;
 import io.github.messagehelper.core.processor.rule._if.Condition;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
+import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 import org.apache.http.ParseException;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
@@ -117,9 +118,13 @@ public class RuleJpaLocalDao implements RuleDao {
               configDao.load("core.instance"),
               Constant.LOG_LEVEL_INFO,
               "core.rule.hit",
-              String.format(
-                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
-                  rule.getName(), rule.getId(), log.getId()));
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("ruleName", rule.getName())
+                  .put("ruleId", rule.getId())
+                  .put("logId", log.getId())
+                  .toString());
           // execute rule
           connectorDao.executeRule(rule, log);
           // terminate or not
@@ -132,18 +137,26 @@ public class RuleJpaLocalDao implements RuleDao {
               configDao.load("core.instance"),
               Constant.LOG_LEVEL_VERB,
               "core.rule.miss.instance",
-              String.format(
-                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
-                  rule.getName(), rule.getId(), log.getId()));
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("ruleName", rule.getName())
+                  .put("ruleId", rule.getId())
+                  .put("logId", log.getId())
+                  .toString());
           break;
         case Rule.MISS_CATEGORY:
           logInsertDao.insert(
               configDao.load("core.instance"),
               Constant.LOG_LEVEL_VERB,
               "core.rule.miss.category",
-              String.format(
-                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
-                  rule.getName(), rule.getId(), log.getId()));
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("ruleName", rule.getName())
+                  .put("ruleId", rule.getId())
+                  .put("logId", log.getId())
+                  .toString());
           break;
         case Rule.MISS_CONTENT_FORMAT:
           // log
@@ -151,18 +164,27 @@ public class RuleJpaLocalDao implements RuleDao {
               configDao.load("core.instance"),
               Constant.LOG_LEVEL_WARN,
               "core.rule.miss.content.format",
-              String.format(
-                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
-                  rule.getName(), rule.getId(), log.getId()));
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("ruleName", rule.getName())
+                  .put("ruleId", rule.getId())
+                  .put("logId", log.getId())
+                  .toString());
           break;
         default:
           logInsertDao.insert(
               configDao.load("core.instance"),
               Constant.LOG_LEVEL_VERB,
               "core.rule.miss.content",
-              String.format(
-                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d,\"conditionNumber\":%d}",
-                  rule.getName(), rule.getId(), log.getId(), match));
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("ruleName", rule.getName())
+                  .put("ruleId", rule.getId())
+                  .put("logId", log.getId())
+                  .put("conditionNumber", match)
+                  .toString());
           break;
       }
       if (breakFor) {
