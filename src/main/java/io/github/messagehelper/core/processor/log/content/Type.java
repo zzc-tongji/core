@@ -10,7 +10,7 @@ public enum Type {
   ARRAY(1 << Short.SIZE + 5),
   NULL_OBJECT_ARRAY(NULL.value | OBJECT.value | STRING.value);
 
-  private int value;
+  private final int value;
 
   Type(int value) {
     this.value = value;

@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Rule implements Comparable<Rule> {
+  public static final int HIT = 0;
+  public static final int MISS_INSTANCE = -1;
+  public static final int MISS_CATEGORY = -2;
+  public static final int MISS_CONTENT_FORMAT = Integer.MAX_VALUE;
+
   public static Rule parse(RulePo po) {
     Rule rule = new Rule();
     rule.id = po.getId();
@@ -98,13 +103,15 @@ public class Rule implements Comparable<Rule> {
     return this.priority - o.priority;
   }
 
-  public boolean satisfy(Log log) {
+  public int satisfy(Log log) {
     if (!log.getInstance().equals(ifLogInstanceEqual)) {
-      return false;
+      return MISS_INSTANCE;
     }
     if (!log.getCategory().equals(ifLogCategoryEqual)) {
-      return false;
+      return MISS_CATEGORY;
     }
+    int index = 0;
+    int skip = 0;
     Map<String, Unit> content = log.getContent();
     Unit unit;
     for (Condition condition : ifLogContentSatisfy) {
@@ -112,6 +119,7 @@ public class Rule implements Comparable<Rule> {
         // `condition.path` is undefined in `log.content`.
         //
         // => skip (not consider)
+        skip += 1;
         continue;
       }
       unit = content.get(condition.getPath());
@@ -123,13 +131,19 @@ public class Rule implements Comparable<Rule> {
         // but `condition.operator` is `GREATER_THAN` (which is only suitable for number).
         //
         // => skip (not consider)
+        skip += 1;
         continue;
       }
       if (!condition.meet(unit)) {
-        return false;
+        return index + 1;
       }
+      index += 1;
     }
-    return true;
+    if (skip >= content.size()) {
+      // If `log.content` skips all conditions, `log` will not satisfy the rule.
+      return MISS_CONTENT_FORMAT;
+    }
+    return HIT;
   }
 
   private Rule() {}

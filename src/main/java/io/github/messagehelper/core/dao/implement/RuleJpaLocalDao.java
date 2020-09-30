@@ -108,31 +108,69 @@ public class RuleJpaLocalDao implements RuleDao {
         continue;
       }
       // match rule
-      if (rule.satisfy(log)) {
-        // log
-        logInsertDao.insert(
-            configDao.load("core.instance"),
-            Constant.LOG_LEVEL_INFO,
-            "core.rule.hit",
-            String.format(
-                "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
-                rule.getName(), rule.getId(), log.getId()));
-        // execute rule
-        connectorDao.executeRule(rule, log);
-        // terminate or not
-        if (rule.getTerminate()) {
+      boolean breakFor = false;
+      int match = rule.satisfy(log);
+      switch (match) {
+        case Rule.HIT:
+          // log
+          logInsertDao.insert(
+              configDao.load("core.instance"),
+              Constant.LOG_LEVEL_INFO,
+              "core.rule.hit",
+              String.format(
+                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
+                  rule.getName(), rule.getId(), log.getId()));
+          // execute rule
+          connectorDao.executeRule(rule, log);
+          // terminate or not
+          if (rule.getTerminate()) {
+            breakFor = true;
+          }
           break;
-        }
+        case Rule.MISS_INSTANCE:
+          logInsertDao.insert(
+              configDao.load("core.instance"),
+              Constant.LOG_LEVEL_VERB,
+              "core.rule.miss.instance",
+              String.format(
+                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
+                  rule.getName(), rule.getId(), log.getId()));
+          break;
+        case Rule.MISS_CATEGORY:
+          logInsertDao.insert(
+              configDao.load("core.instance"),
+              Constant.LOG_LEVEL_VERB,
+              "core.rule.miss.category",
+              String.format(
+                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
+                  rule.getName(), rule.getId(), log.getId()));
+          break;
+        case Rule.MISS_CONTENT_FORMAT:
+          // log
+          logInsertDao.insert(
+              configDao.load("core.instance"),
+              Constant.LOG_LEVEL_WARN,
+              "core.rule.miss.content.format",
+              String.format(
+                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d}",
+                  rule.getName(), rule.getId(), log.getId()));
+          break;
+        default:
+          logInsertDao.insert(
+              configDao.load("core.instance"),
+              Constant.LOG_LEVEL_VERB,
+              "core.rule.miss.content",
+              String.format(
+                  "{\"ruleName\":\"%s\",\"ruleId\":%d,\"logId\":%d,\"conditionNumber\":%d}",
+                  rule.getName(), rule.getId(), log.getId(), match));
+          break;
+      }
+      if (breakFor) {
+        break;
       }
     }
     // UNLOCK
     lock.readDecrease();
-    // log
-    logInsertDao.insert(
-        configDao.load("core.instance"),
-        Constant.LOG_LEVEL_VERB,
-        "core.rule.miss",
-        String.format("{\"logId\":%d}", log.getId()));
   }
 
   @Override
@@ -152,7 +190,7 @@ public class RuleJpaLocalDao implements RuleDao {
       refreshCache();
       // log
       logInsertDao.insert(
-          configDao.load("core.instance"), Constant.LOG_LEVEL_INFO, "core.rule.auto-disable", "{}");
+          configDao.load("core.instance"), Constant.LOG_LEVEL_WARN, "core.rule.auto-disable", "{}");
     }
   }
 

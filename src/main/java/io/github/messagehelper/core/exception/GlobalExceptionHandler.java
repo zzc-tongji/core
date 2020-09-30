@@ -306,7 +306,7 @@ public class GlobalExceptionHandler {
 
   private void develop(Throwable t) {
     if (debug) {
-      logger.error(ThrowableTool.getInstance().convertToString(t, 3));
+      logger.warn(ThrowableTool.getInstance().convertToString(t, 3));
     }
   }
 }
