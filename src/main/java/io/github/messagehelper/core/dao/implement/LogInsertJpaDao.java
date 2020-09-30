@@ -21,8 +21,8 @@ public class LogInsertJpaDao implements LogInsertDao {
     // database
     LogPo po = new LogPo();
     po.setId(IdGenerator.getInstance().generate());
-    po.setInstance(instance);
     po.setLevel(level);
+    po.setInstance(instance);
     po.setCategory(category);
     po.setTimestampMs(System.currentTimeMillis());
     po.setContent(content);
@@ -35,8 +35,8 @@ public class LogInsertJpaDao implements LogInsertDao {
     LogPo po = new LogPo();
     po.setId(dto.getId());
     po.setInstance(dto.getInstance());
-    po.setLevel(dto.getLevel());
     po.setCategory(dto.getCategory());
+    po.setLevel(dto.getLevel());
     po.setTimestampMs(dto.getTimestampMs());
     po.setContent(dto.getContent());
     repository.save(po);

@@ -110,8 +110,8 @@ public class LogReadJpaDao implements LogReadDao {
       log = new Item();
       log.setId(po.getId());
       log.setInstance(po.getInstance());
-      log.setLevel(po.getLevel());
       log.setCategory(po.getCategory());
+      log.setLevel(po.getLevel());
       log.setTimestampMs(po.getTimestampMs());
       log.setContent(po.getContent());
       logList.add(log);

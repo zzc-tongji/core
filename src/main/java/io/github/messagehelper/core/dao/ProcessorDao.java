@@ -4,4 +4,6 @@ public interface ProcessorDao {
   void start(io.github.messagehelper.core.dto.rpc.log.PostRequestDto dto);
 
   void startWithWebhook(io.github.messagehelper.core.dto.api.webhooks.PostRequestDto dto);
+
+  void startWithWebhook(String instance, String category, String level, String content);
 }

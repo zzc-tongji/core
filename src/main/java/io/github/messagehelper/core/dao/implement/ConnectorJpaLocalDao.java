@@ -3,10 +3,7 @@ package io.github.messagehelper.core.dao.implement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.messagehelper.core.dao.ConfigDao;
-import io.github.messagehelper.core.dao.ConnectorDao;
-import io.github.messagehelper.core.dao.LogInsertDao;
-import io.github.messagehelper.core.dao.RuleDao;
+import io.github.messagehelper.core.dao.*;
 import io.github.messagehelper.core.dto.api.connectors.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.messagehelper.core.dto.api.connectors.Item;
@@ -51,6 +48,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   private final ConfigDao configDao;
   private final LogInsertDao logInsertDao;
   private final RuleDao ruleDao;
+  private final ProcessorDao processorDao;
   private final Map<Long, ConnectorPo> connectorMapById;
   private final Map<String, ConnectorPo> connectorMapByInstance;
   private final Lock lock;
@@ -59,12 +57,14 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       @Autowired ConnectorJpaRepository repository,
       @Autowired ConfigDao configDao,
       @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao,
-      @Autowired @Lazy RuleDao ruleDao) {
+      @Autowired @Lazy RuleDao ruleDao,
+      @Autowired @Lazy ProcessorDao processorDao) {
     // initialize
     this.repository = repository;
     this.configDao = configDao;
     this.logInsertDao = logInsertDao;
     this.ruleDao = ruleDao;
+    this.processorDao = processorDao;
     connectorMapById = new HashMap<>();
     connectorMapByInstance = new HashMap<>();
     lock = new Lock();
@@ -570,10 +570,10 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       throw new RuntimeException(e);
     }
     // [webhook-connector] log
-    logInsertDao.insert(
+    processorDao.startWithWebhook(
         configDao.load("core.instance"),
-        Constant.LOG_LEVEL_INFO,
         "webhook-connector.send.request",
+        Constant.LOG_LEVEL_INFO,
         ObjectMapperSingleton.getInstance()
             .getNodeFactory()
             .objectNode()
@@ -589,10 +589,10 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           HttpClientSingleton.getInstance().send(request, HttpResponse.BodyHandlers.ofString());
     } catch (IOException e) {
       // [webhook-connector] log
-      logInsertDao.insert(
+      processorDao.startWithWebhook(
           configDao.load("core.instance"),
-          Constant.LOG_LEVEL_WARN,
           "webhook-connector.send.response.failure.cannot-connect",
+          Constant.LOG_LEVEL_WARN,
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
@@ -606,10 +606,10 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       throw new RuntimeException(e);
     }
     // [webhook-connector] log
-    logInsertDao.insert(
+    processorDao.startWithWebhook(
         configDao.load("core.instance"),
-        Constant.LOG_LEVEL_INFO,
         "webhook-connector.send.response",
+        Constant.LOG_LEVEL_INFO,
         ObjectMapperSingleton.getInstance()
             .getNodeFactory()
             .objectNode()

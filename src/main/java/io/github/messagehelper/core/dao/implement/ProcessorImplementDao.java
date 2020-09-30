@@ -41,8 +41,8 @@ public class ProcessorImplementDao implements ProcessorDao {
         new io.github.messagehelper.core.dto.rpc.log.PostRequestDto();
     logDto.setId(IdGenerator.getInstance().generate());
     logDto.setInstance(configDao.load("core.instance"));
-    logDto.setLevel(Constant.LOG_LEVEL_INFO);
     logDto.setCategory("webhook-connector.receive");
+    logDto.setLevel(Constant.LOG_LEVEL_INFO);
     logDto.setTimestampMs(System.currentTimeMillis());
     ObjectNode objectNode =
         ObjectMapperSingleton.getInstance()
@@ -52,6 +52,22 @@ public class ProcessorImplementDao implements ProcessorDao {
             .put("value2", dto.getValue2())
             .put("value3", dto.getValue3());
     logDto.setContent(objectNode.toString());
+    logDto.setRpcToken("");
+    // start
+    start(logDto);
+  }
+
+  @Override
+  public void startWithWebhook(String instance, String category, String level, String content) {
+    // convert
+    io.github.messagehelper.core.dto.rpc.log.PostRequestDto logDto =
+        new io.github.messagehelper.core.dto.rpc.log.PostRequestDto();
+    logDto.setId(IdGenerator.getInstance().generate());
+    logDto.setInstance(instance);
+    logDto.setCategory(category);
+    logDto.setLevel(level);
+    logDto.setTimestampMs(System.currentTimeMillis());
+    logDto.setContent(content);
     logDto.setRpcToken("");
     // start
     start(logDto);
