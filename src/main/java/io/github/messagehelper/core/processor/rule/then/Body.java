@@ -57,11 +57,14 @@ public class Body {
   private static String replaceHelper(
       String input, String regex, String replacement, boolean jsonEscape) {
     StringBuilder stringBuilder = new StringBuilder();
+    String temp;
     if (jsonEscape) {
       JsonStringEncoder.getInstance().quoteAsString(replacement, stringBuilder);
-      replacement = stringBuilder.toString().replace("\\", "\\\\");
+      temp = stringBuilder.toString().replace("\\", "\\\\");
+    } else {
+      temp = replacement.replace("\\", "\\\\");
     }
     // https://www.cnblogs.com/iyangyuan/p/4809582.html
-    return input.replaceAll(regex, replacement);
+    return input.replaceAll(regex, temp);
   }
 }
