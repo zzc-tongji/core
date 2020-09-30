@@ -123,11 +123,7 @@ public class Condition {
       }
       index += 1;
     }
-    try {
-      return ObjectMapperSingleton.getInstance().writeValueAsString(node);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
+    return node.toString();
   }
 
   private static String operatorMessage(int index) {
