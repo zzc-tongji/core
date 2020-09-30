@@ -212,7 +212,7 @@ public class RuleJpaLocalDao implements RuleDao {
       refreshCache();
       // log
       logInsertDao.insert(
-          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_WARN, "{}");
+          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_WARN, "");
     }
   }
 
@@ -248,7 +248,7 @@ public class RuleJpaLocalDao implements RuleDao {
       refreshCache();
       // log
       logInsertDao.insert(
-          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_INFO, "{}");
+          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_INFO, "");
     }
   }
 

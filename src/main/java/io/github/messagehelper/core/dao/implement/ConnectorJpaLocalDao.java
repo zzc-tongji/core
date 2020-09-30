@@ -622,7 +622,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .toString());
     // log
     logInsertDao.insert(
-        configDao.load("core.instance"), "core.executor.virtual", Constant.LOG_LEVEL_INFO, "{}");
+        configDao.load("core.instance"), "core.executor.virtual", Constant.LOG_LEVEL_INFO, "");
   }
 
   private String insertToken(String requestBody, String token) {
