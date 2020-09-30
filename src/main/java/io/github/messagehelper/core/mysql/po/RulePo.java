@@ -43,8 +43,8 @@ public class RulePo implements Serializable {
       nullable = false)
   private String thenUseHeaderContentType;
 
-  @Column(name = "then_use_header_json", nullable = false)
-  private Boolean thenUseHeaderJson;
+  @Column(name = "then_use_body_json", nullable = false)
+  private Boolean thenUseBodyJson;
 
   @Column(
       name = "then_use_body_template",
@@ -128,12 +128,12 @@ public class RulePo implements Serializable {
     this.thenUseHeaderContentType = ruleThenMethod;
   }
 
-  public Boolean getThenUseHeaderJson() {
-    return thenUseHeaderJson;
+  public Boolean getThenUseBodyJson() {
+    return thenUseBodyJson;
   }
 
-  public void setThenUseHeaderJson(Boolean thenUseHeaderJson) {
-    this.thenUseHeaderJson = thenUseHeaderJson;
+  public void setThenUseBodyJson(Boolean thenUseBodyJson) {
+    this.thenUseBodyJson = thenUseBodyJson;
   }
 
   public String getThenUseBodyTemplate() {

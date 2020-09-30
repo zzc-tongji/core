@@ -24,7 +24,7 @@ public class Rule implements Comparable<Rule> {
     rule.thenUseConnectorId = po.getThenUseConnectorId();
     rule.thenUseUrlPath = po.getThenUseUrlPath();
     rule.thenUseHeaderContentType = po.getThenUseHeaderContentType();
-    rule.thenUseHeaderJson = po.getThenUseHeaderJson();
+    rule.thenUseBodyJson = po.getThenUseBodyJson();
     rule.thenUseBodyTemplate = po.getThenUseBodyTemplate();
     rule.priority = po.getPriority();
     rule.terminate = po.getTerminate();
@@ -41,7 +41,7 @@ public class Rule implements Comparable<Rule> {
   private Long thenUseConnectorId;
   private String thenUseUrlPath;
   private String thenUseHeaderContentType;
-  private Boolean thenUseHeaderJson;
+  private Boolean thenUseBodyJson;
   private String thenUseBodyTemplate;
   private Integer priority;
   private Boolean terminate;
@@ -80,8 +80,8 @@ public class Rule implements Comparable<Rule> {
     return thenUseHeaderContentType;
   }
 
-  public Boolean getThenUseHeaderJson() {
-    return thenUseHeaderJson;
+  public Boolean getThenUseBodyJson() {
+    return thenUseBodyJson;
   }
 
   public String getThenUseBodyTemplate() {

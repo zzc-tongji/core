@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `rule`
     `then_use_connector_id`        bigint(20)    NOT NULL,
     `then_use_url_path`            varchar(1024) NOT NULL,
     `then_use_header_content_type` varchar(64)   NOT NULL,
-    `then_use_header_json`         bit(1)        NOT NULL,
+    `then_use_body_json`         bit(1)        NOT NULL,
     `then_use_body_template`       varchar(4096) NOT NULL,
     `priority`                     int(11)       NOT NULL,
     `terminate`                    bit(1)        NOT NULL,
