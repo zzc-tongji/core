@@ -37,6 +37,7 @@ public class Condition {
     Operator operator;
     ObjectNode outputNode;
     int index = 0;
+    String tt;
     while (iterator.hasNext()) {
       // input
       inputNode = iterator.next();
@@ -67,11 +68,24 @@ public class Condition {
                 String.format(
                     "ifLogContentSatisfy[%d].detail: required, %s",
                     index, detailMessage(operator)));
-          } else if (temp.isBoolean() && operator.suit(Type.BOOLEAN)) {
-            outputNode.put("detail", output.asBoolean());
-          } else if (temp.isDouble() && operator.suit(Type.DOUBLE)) {
+          }
+          if (operator.equals(Operator.IS)) {
+            if (temp.isTextual()) {
+              string = output.asText();
+              try {
+                if (Type.valueOf(string).equals(Type.ALL)) {
+                  throw new RuleIfInvalidContentException(detailMessageForOperatorIs(index));
+                }
+              } catch (IllegalArgumentException e) {
+                throw new RuleIfInvalidContentException(detailMessageForOperatorIs(index));
+              }
+              outputNode.put("detail", output.asText());
+            } else {
+              throw new RuleIfInvalidContentException(detailMessageForOperatorIs(index));
+            }
+          } else if (operator.suit(Type.NUMBER) && temp.isDouble()) {
             outputNode.put("detail", output.asDouble());
-          } else if (temp.isTextual() && operator.suit(Type.STRING)) {
+          } else if (operator.suit(Type.STRING) && temp.isTextual()) {
             outputNode.put("detail", output.asText());
           } else {
             throw new RuleIfInvalidContentException(
@@ -116,7 +130,7 @@ public class Condition {
     while (iterator.hasNext()) {
       current = iterator.next();
       condition = conditionList.get(index);
-      if (condition.getOperator().suit(Type.DOUBLE)) {
+      if (condition.getOperator().suit(Type.NUMBER)) {
         ((ObjectNode) current).put("detail", condition.detailAsDouble());
       } else if (condition.getOperator().suit(Type.STRING)) {
         ((ObjectNode) current).put("detail", condition.detailAsString());
@@ -141,15 +155,28 @@ public class Condition {
   }
 
   private static String detailMessage(Operator operator) {
-    if (operator.suit(Type.BOOLEAN)) {
-      return "boolean";
-    } else if (operator.suit(Type.DOUBLE)) {
+    if (operator.suit(Type.NUMBER)) {
       return "number";
-    } else if (operator.suit(Type.STRING)) {
+    } else { // operator.suit(Type.STRING)
       return "string";
-    } else {
-      return "";
     }
+  }
+
+  private static String detailMessageForOperatorIs(int index) {
+    StringBuilder builder = new StringBuilder();
+    builder.append("ifLogContentSatisfy[");
+    builder.append(index);
+    builder.append("].detail: required, string in {");
+    for (Type t : Type.values()) {
+      if (t.equals(Type.ALL)) {
+        continue;
+      }
+      builder.append("\"");
+      builder.append(t);
+      builder.append("\", ");
+    }
+    builder.append("}");
+    return builder.toString();
   }
 
   private static Condition helper(JsonNode node) {
@@ -217,18 +244,8 @@ public class Condition {
         return unit.valueAsString().length() <= 0;
       case NOT_EMPTY:
         return unit.valueAsString().length() > 0;
-      case NULL:
-        return unit.valueIsNull();
-      case NOT_NULL:
-        return !unit.valueIsNull();
-      case OBJECT:
-        return unit.valueIsObject();
-      case NOT_OBJECT:
-        return !unit.valueIsObject();
-      case ARRAY:
-        return unit.valueIsArray();
-      default: // NOT_ARRAY
-        return !unit.valueIsArray();
+      default: // IS
+        return unit.getType().name().equals(detailAsString());
     }
   }
 

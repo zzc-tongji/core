@@ -31,7 +31,7 @@ public class Unit {
       return;
     }
     if (node.isNumber()) {
-      result.put(path.toString(), new Unit(path.toString(), Type.DOUBLE, node.asDouble()));
+      result.put(path.toString(), new Unit(path.toString(), Type.NUMBER, node.asDouble()));
       return;
     }
     if (node.isTextual()) {
@@ -127,8 +127,8 @@ public class Unit {
   }
 
   public Double valueAsDouble() {
-    if (!type.equals(Type.DOUBLE)) {
-      throw new RuntimeException(message(Type.DOUBLE));
+    if (!type.equals(Type.NUMBER)) {
+      throw new RuntimeException(message(Type.NUMBER));
     }
     return (Double) value;
   }
@@ -140,27 +140,6 @@ public class Unit {
     return (String) value;
   }
 
-  public boolean valueIsNull() {
-    if ((type.getValue() & Type.NULL_OBJECT_ARRAY.getValue()) != 0) {
-      throw new RuntimeException(message(Type.NULL));
-    }
-    return type.equals(Type.NULL);
-  }
-
-  public boolean valueIsObject() {
-    if ((type.getValue() & Type.NULL_OBJECT_ARRAY.getValue()) != 0) {
-      throw new RuntimeException(message(Type.OBJECT));
-    }
-    return type.equals(Type.OBJECT);
-  }
-
-  public boolean valueIsArray() {
-    if ((type.getValue() & Type.NULL_OBJECT_ARRAY.getValue()) != 0) {
-      throw new RuntimeException(message(Type.ARRAY));
-    }
-    return type.equals(Type.ARRAY);
-  }
-
   public String valueToString() {
     return value.toString();
   }
@@ -169,7 +148,7 @@ public class Unit {
     switch (type) {
       case BOOLEAN:
         return "invalid type, use `valueAsBoolean` instead";
-      case DOUBLE:
+      case NUMBER:
         return "invalid type, use `valueAsDouble instead`";
       case STRING:
         return "invalid type. use `valueAsString instead`";

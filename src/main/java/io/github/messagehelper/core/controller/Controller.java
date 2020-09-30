@@ -3,6 +3,7 @@ package io.github.messagehelper.core.controller;
 import io.github.messagehelper.core.dao.*;
 import io.github.messagehelper.core.dto.api.logs.Constant;
 import io.github.messagehelper.core.exception.IdNotNumericalException;
+import io.github.messagehelper.core.processor.rule._if.Operator;
 import io.github.messagehelper.core.utils.DisableCacheHeader;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -270,6 +271,17 @@ public class Controller {
     return ResponseEntity.status(HttpStatus.OK)
         .headers(DisableCacheHeader.getInstance())
         .body(logReadDao.readAdvance(request));
+  }
+
+  // "/api/operators"
+  @GetMapping(value = "/api/operators")
+  public ResponseEntity<String> apiOperatorsGet(
+      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
+      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
+    apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
+    return ResponseEntity.status(HttpStatus.OK)
+        .headers(DisableCacheHeader.getInstance())
+        .body(Operator.DTO);
   }
 
   // "/api/register"
