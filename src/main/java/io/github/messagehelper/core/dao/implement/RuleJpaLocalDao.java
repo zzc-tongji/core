@@ -36,6 +36,11 @@ import java.util.List;
 
 @Service
 public class RuleJpaLocalDao implements RuleDao {
+  private static final String EXCEPTION_MESSAGE_CORE_INSTANCE =
+      String.format(
+          "value of \"core.instance\": required, string with length in [1, %s] which cannot be any `ifLogInstanceEqual` in rules",
+          Constant.INSTANCE_LENGTH);
+
   private final RuleJpaRepository repository;
   private final ConfigDao configDao;
   private final ConnectorDao connectorDao;
@@ -212,7 +217,7 @@ public class RuleJpaLocalDao implements RuleDao {
       refreshCache();
       // log
       logInsertDao.insert(
-          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_WARN, "");
+          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_INFO, "");
     }
   }
 
@@ -253,6 +258,41 @@ public class RuleJpaLocalDao implements RuleDao {
   }
 
   @Override
+  public void updateCoreInstance(String before, String after) {
+    if (after.length() > Constant.INSTANCE_LENGTH) {
+      throw new ConfigCoreInstanceException(EXCEPTION_MESSAGE_CORE_INSTANCE);
+    }
+    if (findOneByIfLogInstanceEqual(after) != null) {
+      throw new ConfigCoreInstanceException(EXCEPTION_MESSAGE_CORE_INSTANCE);
+    }
+    boolean cache = false;
+    for (Rule rule : ruleList) {
+      if (rule.getIfLogInstanceEqual().equals(before)) {
+        RulePo po = new RulePo();
+        ruleToPo(rule, po);
+        po.setIfLogInstanceEqual(after);
+        repository.save(po);
+        cache = true;
+      }
+    }
+    if (cache) {
+      refreshCache();
+      // log
+      logInsertDao.insert(
+          configDao.load("core.instance"),
+          "core.rule.update-core-instance",
+          Constant.LOG_LEVEL_INFO,
+          ObjectMapperSingleton.getInstance()
+              .getNodeFactory()
+              .objectNode()
+              .put("before", before)
+              .put("after", after)
+              .toString());
+    }
+  }
+
+  @SuppressWarnings("Duplicates")
+  @Override
   public GetPutPostDeleteResponseDto create(PutPostRequestDto dto) {
     // validate and convert
     RulePo po = new RulePo();
@@ -261,6 +301,10 @@ public class RuleJpaLocalDao implements RuleDao {
     if (find(po.getName()) != null) {
       throw new RuleAlreadyExistentException(
           String.format("rule with name [%s]: already existent", dto.getName()));
+    }
+    if (dto.getIfLogCategoryEqual().equals(configDao.load("core.instance"))) {
+      throw new RuleIfInvalidInstanceException(
+          PutPostRequestDto.EXCEPTION_MESSAGE_IF_LOG_INSTANCE_EQUAL);
     }
     // database
     repository.save(po);
@@ -330,6 +374,7 @@ public class RuleJpaLocalDao implements RuleDao {
     return responseDto;
   }
 
+  @SuppressWarnings("Duplicates")
   @Override
   public GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto) {
     // convert and validate
@@ -346,6 +391,10 @@ public class RuleJpaLocalDao implements RuleDao {
         throw new RuleAlreadyExistentException(
             String.format("rule with name [%s]: already existent", po.getName()));
       }
+    }
+    if (po.getIfLogCategoryEqual().equals(configDao.load("core.instance"))) {
+      throw new RuleIfInvalidInstanceException(
+          PutPostRequestDto.EXCEPTION_MESSAGE_IF_LOG_INSTANCE_EQUAL);
     }
     // database
     repository.save(po);
@@ -396,6 +445,31 @@ public class RuleJpaLocalDao implements RuleDao {
     Rule rule = null;
     for (Rule item : ruleList) {
       if (item.getName().equals(name)) {
+        rule = item;
+        break;
+      }
+    }
+    // UNLOCK
+    lock.readDecrease();
+    //
+    return rule;
+  }
+
+  private Rule findOneByIfLogInstanceEqual(String ifLogInstanceEqual) {
+    // CHECK
+    while (lock.isWriteLocked()) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // LOCK
+    lock.readIncrease();
+    // DO
+    Rule rule = null;
+    for (Rule item : ruleList) {
+      if (item.getIfLogInstanceEqual().equals(ifLogInstanceEqual)) {
         rule = item;
         break;
       }

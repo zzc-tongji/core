@@ -14,6 +14,8 @@ public interface RuleDao {
 
   void fix();
 
+  void updateCoreInstance(String before, String after);
+
   //
 
   GetPutPostDeleteResponseDto create(PutPostRequestDto dto);

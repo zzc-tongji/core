@@ -8,16 +8,18 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 public class PutPostRequestDto extends ApiTokenRequestDto {
-  public static final String EXCEPTION_MESSAGE_IF_LOG_CONTENT_SATISFY =
-      "ifLogContentSatisfy: required, JSON string as array with length in [1, "
-          + Constant.RULE_IF_LOG_CONTENT_SATISFY_LENGTH
-          + "]";
   public static final String EXCEPTION_MESSAGE_NAME =
       "name: required, string with length in [1, "
           + Constant.RULE_NAME_LENGTH
           + "] which cannot be converted to long";
-  private static final String EXCEPTION_MESSAGE_IF_LOG_INSTANCE_EQUAL =
-      "ifLogInstanceEqual: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]";
+  public static final String EXCEPTION_MESSAGE_IF_LOG_INSTANCE_EQUAL =
+      "ifLogInstanceEqual: required, string with length in [1, "
+          + Constant.INSTANCE_LENGTH
+          + "] which cannot be \"core.instance\" in config";
+  public static final String EXCEPTION_MESSAGE_IF_LOG_CONTENT_SATISFY =
+      "ifLogContentSatisfy: required, JSON string as array with length in [1, "
+          + Constant.RULE_IF_LOG_CONTENT_SATISFY_LENGTH
+          + "]";
   private static final String EXCEPTION_MESSAGE_IF_LOG_CATEGORY_EQUAL =
       "ifLogCategoryEqual: required, string with length in [1, " + Constant.CATEGORY_LENGTH + "]";
   private static final String EXCEPTION_MESSAGE_THEN_USE_CONNECTOR_ID =

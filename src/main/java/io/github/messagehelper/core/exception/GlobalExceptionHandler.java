@@ -63,10 +63,10 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
-  @ExceptionHandler(value = ConfigHiddenException.class)
+  @ExceptionHandler(value = ConfigCoreInstanceException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public HttpClientErrorResponseDto handle(ConfigHiddenException e) {
+  public HttpClientErrorResponseDto handle(ConfigCoreInstanceException e) {
     develop(e);
     return new HttpClientErrorResponseDto(e);
   }
@@ -267,6 +267,14 @@ public class GlobalExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public HttpClientErrorResponseDto handle(RuleIfInvalidContentException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = RuleIfInvalidInstanceException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(RuleIfInvalidInstanceException e) {
     develop(e);
     return new HttpClientErrorResponseDto(e);
   }

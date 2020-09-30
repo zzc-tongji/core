@@ -1,18 +1,19 @@
 package io.github.messagehelper.core.dao.implement;
 
 import io.github.messagehelper.core.dao.ConfigDao;
+import io.github.messagehelper.core.dao.RuleDao;
 import io.github.messagehelper.core.dto.api.configs.GetAllResponseDto;
 import io.github.messagehelper.core.dto.api.configs.GetPutResponseDto;
 import io.github.messagehelper.core.dto.api.configs.Item;
 import io.github.messagehelper.core.dto.api.configs.PutRequestDto;
-import io.github.messagehelper.core.exception.ConfigHiddenException;
+import io.github.messagehelper.core.exception.ConfigCoreInstanceException;
 import io.github.messagehelper.core.exception.ConfigNotFoundException;
-import io.github.messagehelper.core.exception.ConfigReadOnlyException;
 import io.github.messagehelper.core.mysql.po.ConfigPo;
 import io.github.messagehelper.core.mysql.repository.ConfigJpaRepository;
 import io.github.messagehelper.core.utils.ConfigMapSingleton;
 import io.github.messagehelper.core.utils.Lock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -23,11 +24,14 @@ import java.util.Map;
 @Service
 public class ConfigJpaLocalDao implements ConfigDao {
   private final ConfigJpaRepository repository;
+  private final RuleDao ruleDao;
   private final Map<String, ConfigPo> configMap;
   private final Lock lock;
 
-  public ConfigJpaLocalDao(@Autowired ConfigJpaRepository repository) {
+  public ConfigJpaLocalDao(
+      @Autowired ConfigJpaRepository repository, @Autowired @Lazy RuleDao ruleDao) {
     this.repository = repository;
+    this.ruleDao = ruleDao;
     configMap = new HashMap<>();
     lock = new Lock();
     //
@@ -89,7 +93,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   @Override
   public GetPutResponseDto read(String key) {
     // cache
-    ConfigPo po = readUpdateHelper(key, false);
+    ConfigPo po = readUpdateHelper(key);
     // response
     GetPutResponseDto responseDto = new GetPutResponseDto();
     poToResponseDto(po, responseDto);
@@ -121,16 +125,21 @@ public class ConfigJpaLocalDao implements ConfigDao {
   @Override
   public GetPutResponseDto update(String key, PutRequestDto dto) {
     // cache
-    readUpdateHelper(key, true);
+    ConfigPo po = readUpdateHelper(key);
+    String value = dto.getValue();
+    // disable corresponding rules
+    if (key.equals("core.instance")) {
+      ruleDao.updateCoreInstance(po.getValue(), value);
+    }
     // database
-    ConfigPo po = new ConfigPo();
-    po.setKey(key);
-    po.setValue(dto.getValue());
-    repository.save(po);
+    ConfigPo updatedPo = new ConfigPo();
+    updatedPo.setKey(key);
+    updatedPo.setValue(value);
+    repository.save(updatedPo);
     refreshCache();
     // response
     GetPutResponseDto responseDto = new GetPutResponseDto();
-    poToResponseDto(po, responseDto);
+    poToResponseDto(updatedPo, responseDto);
     return responseDto;
   }
 
@@ -178,14 +187,9 @@ public class ConfigJpaLocalDao implements ConfigDao {
     data.setValue(po.getValue());
   }
 
-  private ConfigPo readUpdateHelper(String key, boolean updateAsTrue) {
+  private ConfigPo readUpdateHelper(String key) {
     if (key.equals("core.api-password-hash") || key.equals("core.api-password-salt")) {
-      throw new ConfigHiddenException(String.format("key [%s]: hidden", key));
-    }
-    if (updateAsTrue) {
-      if (key.equals("core.instance") || key.equals("core.rpc-token")) {
-        throw new ConfigReadOnlyException(String.format("key [%s]: read only", key));
-      }
+      throw new ConfigCoreInstanceException(String.format("key [%s]: hidden", key));
     }
     ConfigPo po = find(key);
     if (po == null) {
