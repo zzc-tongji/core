@@ -125,6 +125,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           po,
           rule.getThenUseUrlPath(),
           rule.getThenUseHeaderContentType(),
+          rule.getThenUseBodyJson(),
           Body.fill(rule.getThenUseBodyTemplate(), log, rule.getThenUseBodyJson()));
     }
     // If request header content-type" is an empty string, use GET method,
@@ -175,7 +176,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .put("requestBody", body)
             .toString());
     // response
-    return executeHelper(po, path, contentType, body);
+    return executeHelper(
+        po, path, contentType, contentType.toLowerCase().contains("application/json"), body);
   }
 
   @Override
@@ -224,7 +226,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .put("requestBody", body)
             .toString());
     // response
-    return executeHelper(po, path, contentType, body);
+    return executeHelper(
+        po, path, contentType, contentType.toLowerCase().contains("application/json"), body);
   }
 
   @Override
@@ -432,10 +435,10 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private ResponseEntity<String> executeHelper(
-      ConnectorPo po, String path, String contentType, String body) {
+      ConnectorPo po, String path, String contentType, boolean bodyJson, String body) {
     String url = po.getUrl() + path;
     String method = contentType.length() > 0 ? "POST" : "GET";
-    String bodyWithToken = insertToken(body, po.getRpcToken());
+    String bodyWithToken = bodyJson ? insertToken(body, po.getRpcToken()) : body;
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
