@@ -135,14 +135,14 @@ public class Condition {
   private static Condition helper(JsonNode node) {
     String path = node.get("path").asText();
     Operator operator = Operator.valueOf(node.get("operator").asText());
-    Object detail = null;
+    Object detail;
     JsonNode temp = node.get("detail");
-    if (temp.isBoolean() && operator.suit(Type.BOOLEAN)) {
-      detail = temp.asBoolean();
-    } else if (temp.isDouble() && operator.suit(Type.DOUBLE)) {
+    if (temp.isDouble()) {
       detail = temp.asDouble();
-    } else if (temp.isTextual() && operator.suit(Type.STRING)) {
+    } else if (temp.isTextual()) {
       detail = temp.asText();
+    } else {
+      detail = null;
     }
     return new Condition(path, operator, detail);
   }
@@ -214,14 +214,14 @@ public class Condition {
 
   private Double detailAsDouble() {
     if (!(detail instanceof Double)) {
-      throw new RuntimeException("Type of `detail` should be `Double`.");
+      throw new RuntimeException("`detail` should be `Double`.");
     }
     return (Double) detail;
   }
 
   private String detailAsString() {
     if (!(detail instanceof String)) {
-      throw new RuntimeException("Type of `detail` should be `String`.");
+      throw new RuntimeException("`detail` should be `String`.");
     }
     return (String) detail;
   }
