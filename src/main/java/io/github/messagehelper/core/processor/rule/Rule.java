@@ -2,6 +2,11 @@ package io.github.messagehelper.core.processor.rule;
 
 import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.processor.log.Log;
+import io.github.messagehelper.core.processor.log.content.Unit;
+import io.github.messagehelper.core.processor.rule._if.Condition;
+
+import java.util.List;
+import java.util.Map;
 
 public class Rule implements Comparable<Rule> {
   public static Rule parse(RulePo po) {
@@ -10,8 +15,7 @@ public class Rule implements Comparable<Rule> {
     rule.name = po.getName();
     rule.ifLogInstanceEqual = po.getIfLogInstanceEqual();
     rule.ifLogCategoryEqual = po.getIfLogCategoryEqual();
-    rule.ifLogContentSatisfy =
-        RuleIf.parse(po.getIfLogContentSatisfy(), po.getIfLogCategoryEqual());
+    rule.ifLogContentSatisfy = Condition.toList(po.getIfLogContentSatisfy());
     rule.thenUseConnectorId = po.getThenUseConnectorId();
     rule.thenUseUrlPath = po.getThenUseUrlPath();
     rule.thenUseHeaderContentType = po.getThenUseHeaderContentType();
@@ -27,7 +31,7 @@ public class Rule implements Comparable<Rule> {
   private String name;
   private String ifLogInstanceEqual;
   private String ifLogCategoryEqual;
-  private RuleIf ifLogContentSatisfy;
+  private List<Condition> ifLogContentSatisfy;
   private Long thenUseConnectorId;
   private String thenUseUrlPath;
   private String thenUseHeaderContentType;
@@ -53,7 +57,7 @@ public class Rule implements Comparable<Rule> {
     return ifLogCategoryEqual;
   }
 
-  public RuleIf getIfLogContentSatisfy() {
+  public List<Condition> getIfLogContentSatisfy() {
     return ifLogContentSatisfy;
   }
 
@@ -101,7 +105,31 @@ public class Rule implements Comparable<Rule> {
     if (!log.getCategory().equals(ifLogCategoryEqual)) {
       return false;
     }
-    return ifLogContentSatisfy.satisfy(log);
+    Map<String, Unit> content = log.getContent();
+    Unit unit;
+    for (Condition condition : ifLogContentSatisfy) {
+      if (content.get(condition.getPath()) == null) {
+        // `condition.path` is undefined in `log.content`.
+        //
+        // => skip (not consider)
+        continue;
+      }
+      unit = content.get(condition.getPath());
+      if (!condition.getOperator().suit(unit.getType())) {
+        // `condition.operator` is not suitable for the type of the value
+        // of the corresponding path in `log.content`.
+        //
+        // For example, the type of the value of `log.content.path.example` is string,
+        // but `condition.operator` is `GREATER_THAN` (which is only suitable for number).
+        //
+        // => skip (not consider)
+        continue;
+      }
+      if (!condition.meet(unit)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private Rule() {}

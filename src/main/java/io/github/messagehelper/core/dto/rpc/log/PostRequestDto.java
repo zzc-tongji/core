@@ -8,7 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class PostRequestDto extends RpcTokenRequestDto {
-
+  public static final String EXCEPTION_MESSAGE_CONTENT =
+      "content: required, string with length in [1, " + Constant.LOG_CONTENT_LENGTH + "]";
   private static final String EXCEPTION_MESSAGE_ID = "id: required, long";
   private static final String EXCEPTION_MESSAGE_INSTANCE =
       "instance: required, string with length in [1, " + Constant.INSTANCE_LENGTH + "]";
@@ -27,10 +28,7 @@ public class PostRequestDto extends RpcTokenRequestDto {
           + Constant.LOG_LEVEL_SILL
           + "\"}";
   private static final String EXCEPTION_MESSAGE_TIMESTAMP_MS = "timestampMs: required, long";
-  private static final String EXCEPTION_MESSAGE_CONTENT =
-      "content: required, string with length in [1, " + Constant.LOG_CONTENT_LENGTH + "]";
-  private static final String EXCEPTION_MESSAGE_RPC_TOKEN =
-      "rpcToken: required, string with length in [1, " + Constant.CONFIG_VALUE_LENGTH + "]";
+
   private static final String REGEXP_LEVEL =
       "^("
           + Constant.LOG_LEVEL_ERR

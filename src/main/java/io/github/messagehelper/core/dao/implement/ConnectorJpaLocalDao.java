@@ -17,7 +17,7 @@ import io.github.messagehelper.core.mysql.po.ConnectorPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.Rule;
-import io.github.messagehelper.core.processor.rule.RuleThen;
+import io.github.messagehelper.core.processor.rule.then.RuleThen;
 import io.github.messagehelper.core.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,12 +47,12 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       String.format(
           "fetch => category: required, string with length in [1, %d]", Constant.CATEGORY_LENGTH);
 
-  private ConnectorJpaRepository repository;
-  private ConfigDao configDao;
-  private LogInsertDao logInsertDao;
-  private RuleDao ruleDao;
-  private Map<Long, ConnectorPo> connectorMapById;
-  private Map<String, ConnectorPo> connectorMapByInstance;
+  private final ConnectorJpaRepository repository;
+  private final ConfigDao configDao;
+  private final LogInsertDao logInsertDao;
+  private final RuleDao ruleDao;
+  private final Map<Long, ConnectorPo> connectorMapById;
+  private final Map<String, ConnectorPo> connectorMapByInstance;
   private final Lock lock;
 
   public ConnectorJpaLocalDao(

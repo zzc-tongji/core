@@ -14,7 +14,7 @@ import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.Rule;
-import io.github.messagehelper.core.processor.rule.RuleIf;
+import io.github.messagehelper.core.processor.rule._if.Condition;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
 import org.apache.http.ParseException;
@@ -35,11 +35,11 @@ import java.util.List;
 
 @Service
 public class RuleJpaLocalDao implements RuleDao {
-  private RuleJpaRepository repository;
-  private ConfigDao configDao;
-  private ConnectorDao connectorDao;
-  private LogInsertDao logInsertDao;
-  private List<Rule> ruleList;
+  private final RuleJpaRepository repository;
+  private final ConfigDao configDao;
+  private final ConnectorDao connectorDao;
+  private final LogInsertDao logInsertDao;
+  private final List<Rule> ruleList;
   private final Lock lock;
   private final Logger logger;
 
@@ -409,7 +409,7 @@ public class RuleJpaLocalDao implements RuleDao {
     try {
       ContentType.parse(thenUseHeaderContentType);
     } catch (ParseException | UnsupportedCharsetException e) {
-      throw new RuleInvalidContentTypeException(
+      throw new RuleThenInvalidContentTypeException(
           PutPostRequestDto.EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE);
     }
     po.setThenUseHeaderContentType(thenUseHeaderContentType);
@@ -419,15 +419,14 @@ public class RuleJpaLocalDao implements RuleDao {
     try {
       new URI(url);
     } catch (URISyntaxException e) {
-      throw new RuleInvalidUrlException(
+      throw new RuleThenInvalidUrlException(
           String.format(
               "path [%s] concatenated as url [%s]: invalid format, please revise rule path or connector url",
               thenUseUrlPath, url));
     }
     po.setThenUseUrlPath(thenUseUrlPath);
     // validate `setIfLogContentSatisfy`
-    RuleIf.parse(dto.getIfLogContentSatisfy(), dto.getIfLogCategoryEqual()); // validate
-    po.setIfLogContentSatisfy(dto.getIfLogContentSatisfy());
+    po.setIfLogContentSatisfy(Condition.validateList(dto.getIfLogContentSatisfy()));
     // already validated
     po.setIfLogInstanceEqual(dto.getIfLogInstanceEqual());
     po.setIfLogCategoryEqual(dto.getIfLogCategoryEqual());

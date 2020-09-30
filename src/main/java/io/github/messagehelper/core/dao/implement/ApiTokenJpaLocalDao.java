@@ -25,9 +25,9 @@ import java.util.Map;
 
 @Service
 public class ApiTokenJpaLocalDao implements ApiTokenDao {
-  private TokenJpaRepository repository;
-  private ConfigDao configDao;
-  private Map<String, TokenPo> tokenMap;
+  private final TokenJpaRepository repository;
+  private final ConfigDao configDao;
+  private final Map<String, TokenPo> tokenMap;
   private final Lock lock;
   private final Long lifetimeMs;
   private final MessageDigest messageDigest;
@@ -216,7 +216,10 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
         .equals(configDao.load("core.api-password-hash"))) {
       throw new PasswordInvalidException("password: not valid");
     }
-    String token = String.format("token%d", IdGenerator.getInstance().generateNegative());
+    String token;
+    do {
+      token = String.format("token%d", IdGenerator.getInstance().generateNegative());
+    } while (find(token) == null);
     Long expiredTimestampMs = permanent ? 0 : System.currentTimeMillis() + lifetimeMs;
     // database
     TokenPo po = new TokenPo();

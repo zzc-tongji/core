@@ -94,7 +94,6 @@ CREATE TABLE IF NOT EXISTS `rule`
   COLLATE = utf8mb4_unicode_ci;
 
 -- [token]
-
 CREATE TABLE IF NOT EXISTS `token`
 (
     `token`                char(32)   NOT NULL,

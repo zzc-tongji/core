@@ -1,10 +1,11 @@
-package io.github.messagehelper.core.processor.rule;
+package io.github.messagehelper.core.processor.rule.then;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import io.github.messagehelper.core.processor.log.Log;
-import io.github.messagehelper.core.processor.log.content.Content;
+import io.github.messagehelper.core.processor.log.content.Unit;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 public class RuleThen {
   private static final StringBuilder BUILDER = new StringBuilder();
@@ -19,7 +20,8 @@ public class RuleThen {
       if (!field.getName().equals("content")) {
         field.setAccessible(true);
         try {
-          output = output.replaceAll(generateLogRegex(field.getName()), field.get(log).toString());
+          output =
+              replaceHelper(output, generateLogRegex(field.getName()), field.get(log).toString());
         } catch (IllegalAccessException ignored) {
         } finally {
           field.setAccessible(false);
@@ -27,17 +29,9 @@ public class RuleThen {
       }
     }
     // log.content
-    Content content = log.getContent();
-    for (Field field : content.getClass().getDeclaredFields()) {
-      field.setAccessible(true);
-      try {
-        output =
-            replaceHelper(
-                output, generateContentRegex(field.getName()), field.get(content).toString());
-      } catch (IllegalAccessException ignored) {
-      } finally {
-        field.setAccessible(false);
-      }
+    Map<String, Unit> content = log.getContent();
+    for (Unit unit : content.values()) {
+      output = replaceHelper(output, generateContentRegex(unit.getPath()), unit.valueToString());
     }
     return output;
   }

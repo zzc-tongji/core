@@ -247,26 +247,34 @@ public class GlobalExceptionHandler {
     return new HttpClientErrorResponseDto(e);
   }
 
-  @ExceptionHandler(value = RuleInvalidContentTypeException.class)
+  @ExceptionHandler(value = RuleThenInvalidContentTypeException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public HttpClientErrorResponseDto handle(RuleInvalidContentTypeException e) {
+  public HttpClientErrorResponseDto handle(RuleThenInvalidContentTypeException e) {
     develop(e);
     return new HttpClientErrorResponseDto(e);
   }
 
-  @ExceptionHandler(value = RuleInvalidHttpMethodException.class)
+  @ExceptionHandler(value = RuleThenInvalidHttpMethodException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public HttpClientErrorResponseDto handle(RuleInvalidHttpMethodException e) {
+  public HttpClientErrorResponseDto handle(RuleThenInvalidHttpMethodException e) {
     develop(e);
     return new HttpClientErrorResponseDto(e);
   }
 
-  @ExceptionHandler(value = RuleInvalidUrlException.class)
+  @ExceptionHandler(value = RuleIfInvalidContentException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public HttpClientErrorResponseDto handle(RuleInvalidUrlException e) {
+  public HttpClientErrorResponseDto handle(RuleIfInvalidContentException e) {
+    develop(e);
+    return new HttpClientErrorResponseDto(e);
+  }
+
+  @ExceptionHandler(value = RuleThenInvalidUrlException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public HttpClientErrorResponseDto handle(RuleThenInvalidUrlException e) {
     develop(e);
     return new HttpClientErrorResponseDto(e);
   }
