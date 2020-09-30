@@ -186,7 +186,7 @@ public class Condition {
         try {
           return unit.valueAsString().matches(detailAsString());
         } catch (PatternSyntaxException e) {
-          // TODO
+          // If regex is invalid, treat it as "^.*$" (match everything).
           return true;
         }
       case CONTAIN:
