@@ -126,15 +126,16 @@ public class ConfigJpaLocalDao implements ConfigDao {
   public GetPutResponseDto update(String key, PutRequestDto dto) {
     // cache
     ConfigPo po = readUpdateHelper(key);
-    String value = dto.getValue();
-    // disable corresponding rules
-    if (key.equals("core.instance")) {
-      ruleDao.updateCoreInstance(po.getValue(), value);
+    String value = po.getValue();
+    String updatedValue = dto.getValue();
+    // update corresponding rules
+    if (key.equals("core.instance") && !value.equals(updatedValue)) {
+      ruleDao.updateCoreInstance(value, updatedValue);
     }
     // database
     ConfigPo updatedPo = new ConfigPo();
     updatedPo.setKey(key);
-    updatedPo.setValue(value);
+    updatedPo.setValue(updatedValue);
     repository.save(updatedPo);
     refreshCache();
     // response

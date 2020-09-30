@@ -561,7 +561,7 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     po.setThenUseUrlPath(thenUseUrlPath);
     // validate `setIfLogContentSatisfy`
-    po.setIfLogContentSatisfy(Condition.validateList(dto.getIfLogContentSatisfy()));
+    po.setIfLogContentSatisfy(Condition.validateJsonAsList(dto.getIfLogContentSatisfy()));
     // already validated
     po.setIfLogInstanceEqual(dto.getIfLogInstanceEqual());
     po.setIfLogCategoryEqual(dto.getIfLogCategoryEqual());
@@ -583,7 +583,7 @@ public class RuleJpaLocalDao implements RuleDao {
     po.setName(rule.getName());
     po.setIfLogInstanceEqual(rule.getIfLogInstanceEqual());
     po.setIfLogCategoryEqual(rule.getIfLogCategoryEqual());
-    po.setIfLogContentSatisfy(rule.getIfLogContentSatisfy().toString());
+    po.setIfLogContentSatisfy(Condition.listToJson(rule.getIfLogContentSatisfy()));
     po.setThenUseConnectorId(rule.getThenUseConnectorId());
     po.setThenUseUrlPath(rule.getThenUseUrlPath());
     po.setThenUseHeaderContentType(rule.getThenUseHeaderContentType());

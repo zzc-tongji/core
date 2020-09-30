@@ -20,7 +20,7 @@ public class Rule implements Comparable<Rule> {
     rule.name = po.getName();
     rule.ifLogInstanceEqual = po.getIfLogInstanceEqual();
     rule.ifLogCategoryEqual = po.getIfLogCategoryEqual();
-    rule.ifLogContentSatisfy = Condition.toList(po.getIfLogContentSatisfy());
+    rule.ifLogContentSatisfy = Condition.jsonToList(po.getIfLogContentSatisfy());
     rule.thenUseConnectorId = po.getThenUseConnectorId();
     rule.thenUseUrlPath = po.getThenUseUrlPath();
     rule.thenUseHeaderContentType = po.getThenUseHeaderContentType();

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 public class Condition {
-  public static String validateList(String json) {
+  public static String validateJsonAsList(String json) {
     JsonNode input;
     try {
       input = ObjectMapperSingleton.getInstance().readTree(json);
@@ -90,7 +90,7 @@ public class Condition {
     return output.toString();
   }
 
-  public static List<Condition> toList(String json) {
+  public static List<Condition> jsonToList(String json) {
     // Assume that `json` has been validated and normalized.
     JsonNode node;
     try {
@@ -104,6 +104,30 @@ public class Condition {
       result.add(helper(iterator.next()));
     }
     return result;
+  }
+
+  public static String listToJson(List<Condition> conditionList) {
+    JsonNode node = ObjectMapperSingleton.getInstance().convertValue(conditionList, JsonNode.class);
+    Iterator<JsonNode> iterator = node.elements();
+    //
+    JsonNode current;
+    Condition condition;
+    int index = 0;
+    while (iterator.hasNext()) {
+      current = iterator.next();
+      condition = conditionList.get(index);
+      if (condition.getOperator().suit(Type.DOUBLE)) {
+        ((ObjectNode) current).put("detail", condition.detailAsDouble());
+      } else if (condition.getOperator().suit(Type.STRING)) {
+        ((ObjectNode) current).put("detail", condition.detailAsString());
+      }
+      index += 1;
+    }
+    try {
+      return ObjectMapperSingleton.getInstance().writeValueAsString(node);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private static String operatorMessage(int index) {
