@@ -17,7 +17,7 @@ public class LogInsertJpaDao implements LogInsertDao {
   }
 
   @Override
-  public void insert(String instance, String level, String category, String content) {
+  public void insert(String instance, String category, String level, String content) {
     // database
     LogPo po = new LogPo();
     po.setId(IdGenerator.getInstance().generate());

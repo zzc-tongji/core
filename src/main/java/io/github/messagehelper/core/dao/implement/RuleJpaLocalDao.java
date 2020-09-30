@@ -116,8 +116,8 @@ public class RuleJpaLocalDao implements RuleDao {
           // log
           logInsertDao.insert(
               configDao.load("core.instance"),
-              Constant.LOG_LEVEL_INFO,
               "core.rule.hit",
+              Constant.LOG_LEVEL_INFO,
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
@@ -135,8 +135,8 @@ public class RuleJpaLocalDao implements RuleDao {
         case Rule.MISS_INSTANCE:
           logInsertDao.insert(
               configDao.load("core.instance"),
-              Constant.LOG_LEVEL_VERB,
               "core.rule.miss.instance",
+              Constant.LOG_LEVEL_VERB,
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
@@ -148,8 +148,8 @@ public class RuleJpaLocalDao implements RuleDao {
         case Rule.MISS_CATEGORY:
           logInsertDao.insert(
               configDao.load("core.instance"),
-              Constant.LOG_LEVEL_VERB,
               "core.rule.miss.category",
+              Constant.LOG_LEVEL_VERB,
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
@@ -162,8 +162,8 @@ public class RuleJpaLocalDao implements RuleDao {
           // log
           logInsertDao.insert(
               configDao.load("core.instance"),
-              Constant.LOG_LEVEL_WARN,
               "core.rule.miss.content.format",
+              Constant.LOG_LEVEL_WARN,
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
@@ -175,8 +175,8 @@ public class RuleJpaLocalDao implements RuleDao {
         default:
           logInsertDao.insert(
               configDao.load("core.instance"),
-              Constant.LOG_LEVEL_VERB,
               "core.rule.miss.content",
+              Constant.LOG_LEVEL_VERB,
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
@@ -212,7 +212,7 @@ public class RuleJpaLocalDao implements RuleDao {
       refreshCache();
       // log
       logInsertDao.insert(
-          configDao.load("core.instance"), Constant.LOG_LEVEL_WARN, "core.rule.auto-disable", "{}");
+          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_WARN, "{}");
     }
   }
 
@@ -248,7 +248,7 @@ public class RuleJpaLocalDao implements RuleDao {
       refreshCache();
       // log
       logInsertDao.insert(
-          configDao.load("core.instance"), Constant.LOG_LEVEL_INFO, "core.rule.auto-disable", "{}");
+          configDao.load("core.instance"), "core.rule.auto-disable", Constant.LOG_LEVEL_INFO, "{}");
     }
   }
 

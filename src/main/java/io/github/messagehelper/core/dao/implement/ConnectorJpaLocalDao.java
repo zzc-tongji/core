@@ -140,8 +140,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     if (po == null) {
       logInsertDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_LEVEL_WARN,
           "core.delegate.failure.connector-not-found",
+          Constant.LOG_LEVEL_WARN,
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
@@ -162,8 +162,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
-        Constant.LOG_LEVEL_INFO,
         "core.delegate",
+        Constant.LOG_LEVEL_INFO,
         ObjectMapperSingleton.getInstance()
             .getNodeFactory()
             .objectNode()
@@ -188,8 +188,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       // log
       logInsertDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_LEVEL_WARN,
           "core.delegate.failure.connector-not-found",
+          Constant.LOG_LEVEL_WARN,
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
@@ -211,8 +211,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
-        Constant.LOG_LEVEL_INFO,
         "core.delegate",
+        Constant.LOG_LEVEL_INFO,
         ObjectMapperSingleton.getInstance()
             .getNodeFactory()
             .objectNode()
@@ -439,8 +439,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
-        Constant.LOG_LEVEL_VERB,
         "core.executor",
+        Constant.LOG_LEVEL_VERB,
         ObjectMapperSingleton.getInstance()
             .getNodeFactory()
             .objectNode()
@@ -463,8 +463,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       // log
       logInsertDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_LEVEL_WARN,
           "core.executor.failure.invalid-url",
+          Constant.LOG_LEVEL_WARN,
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
@@ -490,8 +490,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     } catch (IOException e) {
       logInsertDao.insert(
           configDao.load("core.instance"),
-          Constant.LOG_LEVEL_WARN,
           "core.executor.failure.cannot-connect",
+          Constant.LOG_LEVEL_WARN,
           ObjectMapperSingleton.getInstance()
               .getNodeFactory()
               .objectNode()
@@ -538,8 +538,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
-        success ? Constant.LOG_LEVEL_INFO : Constant.LOG_LEVEL_WARN,
         success ? "core.executor" : "core.executor.failure.http-client-error",
+        success ? Constant.LOG_LEVEL_INFO : Constant.LOG_LEVEL_WARN,
         jsonString);
     // response
     if (responseBody.length() <= 0) {
@@ -622,7 +622,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .toString());
     // log
     logInsertDao.insert(
-        configDao.load("core.instance"), Constant.LOG_LEVEL_INFO, "core.executor.virtual", "{}");
+        configDao.load("core.instance"), "core.executor.virtual", Constant.LOG_LEVEL_INFO, "{}");
   }
 
   private String insertToken(String requestBody, String token) {

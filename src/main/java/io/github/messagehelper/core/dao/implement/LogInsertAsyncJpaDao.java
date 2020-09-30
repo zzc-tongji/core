@@ -18,8 +18,8 @@ public class LogInsertAsyncJpaDao implements LogInsertDao {
   }
 
   @Override
-  public void insert(String instance, String level, String category, String content) {
-    sync.insert(instance, level, category, content);
+  public void insert(String instance, String category, String level, String content) {
+    sync.insert(instance, category, level, content);
   }
 
   @Override
