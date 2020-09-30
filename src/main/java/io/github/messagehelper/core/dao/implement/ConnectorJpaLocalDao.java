@@ -17,7 +17,7 @@ import io.github.messagehelper.core.mysql.po.ConnectorPo;
 import io.github.messagehelper.core.mysql.repository.ConnectorJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.Rule;
-import io.github.messagehelper.core.processor.rule.then.RuleThen;
+import io.github.messagehelper.core.processor.rule.then.Body;
 import io.github.messagehelper.core.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -118,14 +118,14 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       executeWebhookHelper(
           rule.getThenUseUrlPath(),
           rule.getThenUseHeaderContentType(),
-          RuleThen.fill(rule.getThenUseBodyTemplate(), log));
+          Body.fill(rule.getThenUseBodyTemplate(), log));
     } else {
       // normal connector
       executeHelper(
           po,
           rule.getThenUseUrlPath(),
           rule.getThenUseHeaderContentType(),
-          RuleThen.fill(rule.getThenUseBodyTemplate(), log));
+          Body.fill(rule.getThenUseBodyTemplate(), log));
     }
     // If request header content-type" is an empty string, use GET method,
     // otherwise, use POST method.

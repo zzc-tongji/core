@@ -7,10 +7,10 @@ import io.github.messagehelper.core.processor.log.content.Unit;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class RuleThen {
+public class Body {
   private static final StringBuilder BUILDER = new StringBuilder();
   private static final String REGEX_PREFIX = "\\(\\(";
-  private static final String REGEX_CONTENT = "content\\.";
+  private static final String REGEX_CONTENT = "content";
   private static final String REGEX_POSTFIX = "\\)\\)?";
 
   public static String fill(String input, Log log) {

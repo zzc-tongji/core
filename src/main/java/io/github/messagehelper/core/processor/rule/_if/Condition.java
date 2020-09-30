@@ -136,7 +136,7 @@ public class Condition {
     String path = node.get("path").asText();
     Operator operator = Operator.valueOf(node.get("operator").asText());
     Object detail = null;
-    JsonNode temp = node.get("path");
+    JsonNode temp = node.get("detail");
     if (temp.isBoolean() && operator.suit(Type.BOOLEAN)) {
       detail = temp.asBoolean();
     } else if (temp.isDouble() && operator.suit(Type.DOUBLE)) {

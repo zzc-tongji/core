@@ -35,7 +35,7 @@ public class Unit {
       return;
     }
     if (node.isTextual()) {
-      result.put(path.toString(), new Unit(path.toString(), Type.DOUBLE, node.asText()));
+      result.put(path.toString(), new Unit(path.toString(), Type.STRING, node.asText()));
       return;
     }
     if (node.isNull()) {
