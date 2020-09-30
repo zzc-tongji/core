@@ -8,8 +8,8 @@ import java.net.http.HttpResponse;
 import java.util.Random;
 
 public class IdGenerator {
-  private static IdGenerator instance = new IdGenerator();
-  private Random random;
+  private static final IdGenerator instance = new IdGenerator();
+  private final Random random;
 
   public static IdGenerator getInstance() {
     return instance;

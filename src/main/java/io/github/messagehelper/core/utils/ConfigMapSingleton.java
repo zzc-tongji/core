@@ -5,7 +5,7 @@ import io.github.messagehelper.core.mysql.po.ConfigPo;
 import java.util.Map;
 
 public class ConfigMapSingleton {
-  private static ConfigMapSingleton instance = new ConfigMapSingleton();
+  private static final ConfigMapSingleton instance = new ConfigMapSingleton();
 
   private Map<String, ConfigPo> configMap;
   private Lock lock;

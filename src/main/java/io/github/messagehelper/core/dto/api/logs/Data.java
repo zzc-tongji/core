@@ -10,7 +10,7 @@ public class Data {
   private Long totalPage;
   private String previous;
   private String next;
-  private List<Item> logList;
+  private final List<Item> logList;
 
   public Long getPage() {
     return page;

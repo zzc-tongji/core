@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GetAllResponseDto {
-  private Collection<Item> data;
+  private final Collection<Item> data;
 
   public Collection<Item> getData() {
     return data;

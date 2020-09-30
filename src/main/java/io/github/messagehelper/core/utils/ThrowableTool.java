@@ -6,7 +6,7 @@ import java.io.Writer;
 
 public class ThrowableTool {
   private static final String TRIM_SUFFIX = " (...)";
-  private static ThrowableTool instance = new ThrowableTool();
+  private static final ThrowableTool instance = new ThrowableTool();
 
   public static ThrowableTool getInstance() {
     return instance;

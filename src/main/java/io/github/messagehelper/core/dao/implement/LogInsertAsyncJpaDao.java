@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Async
 @Service("LogInsertAsyncJpaDao")
 public class LogInsertAsyncJpaDao implements LogInsertDao {
-  private LogInsertDao sync;
+  private final LogInsertDao sync;
 
   @Autowired
   public LogInsertAsyncJpaDao(@Autowired @Qualifier("LogInsertJpaDao") LogInsertDao sync) {

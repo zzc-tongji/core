@@ -18,13 +18,13 @@ public class Controller {
   private static final String API_TOKEN_QUERY_STRING = "apiToken";
   private static final String API_TOKEN_HEADER = "api-token";
 
-  private ConfigDao configDao;
-  private ConnectorDao connectorDao;
-  private LogReadDao logReadDao;
-  private ProcessorDao processorDao;
-  private RuleDao ruleDao;
-  private ApiTokenDao apiTokenDao;
-  private RpcTokenDao rpcTokenDao;
+  private final ConfigDao configDao;
+  private final ConnectorDao connectorDao;
+  private final LogReadDao logReadDao;
+  private final ProcessorDao processorDao;
+  private final RuleDao ruleDao;
+  private final ApiTokenDao apiTokenDao;
+  private final RpcTokenDao rpcTokenDao;
 
   public Controller(
       @Autowired ConfigDao configDao,

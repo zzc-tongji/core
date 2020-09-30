@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RpcTokenImplementDao implements RpcTokenDao {
-  private ConfigDao configDao;
+  private final ConfigDao configDao;
 
   public RpcTokenImplementDao(@Autowired ConfigDao configDao) {
     this.configDao = configDao;

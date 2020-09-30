@@ -83,7 +83,7 @@ public class LogReadJpaDao implements LogReadDao {
     }
   }
 
-  private LogJpaRepository repository;
+  private final LogJpaRepository repository;
 
   @Autowired
   public LogReadJpaDao(LogJpaRepository repository) {

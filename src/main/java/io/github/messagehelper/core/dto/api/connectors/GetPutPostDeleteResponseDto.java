@@ -1,7 +1,7 @@
 package io.github.messagehelper.core.dto.api.connectors;
 
 public class GetPutPostDeleteResponseDto {
-  private Item data;
+  private final Item data;
 
   public Item getData() {
     return data;

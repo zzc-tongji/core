@@ -3,7 +3,7 @@ package io.github.messagehelper.core.utils;
 import org.springframework.http.HttpHeaders;
 
 public class DisableCacheHeader {
-  private static HttpHeaders instance;
+  private static final HttpHeaders instance;
 
   static {
     instance = new HttpHeaders();

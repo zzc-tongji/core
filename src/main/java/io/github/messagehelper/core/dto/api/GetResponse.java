@@ -3,8 +3,8 @@ package io.github.messagehelper.core.dto.api;
 import io.github.messagehelper.core.utils.ConfigMapSingleton;
 
 public class GetResponse {
-  private Boolean registered;
-  private String document;
+  private final Boolean registered;
+  private final String document;
 
   public Boolean getRegistered() {
     return registered;

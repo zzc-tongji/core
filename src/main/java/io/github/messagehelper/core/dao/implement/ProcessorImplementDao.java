@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProcessorImplementDao implements ProcessorDao {
-  private ConfigDao configDao;
-  private LogInsertDao logInsertDao;
-  private RuleDao ruleDao;
+  private final ConfigDao configDao;
+  private final LogInsertDao logInsertDao;
+  private final RuleDao ruleDao;
 
   public ProcessorImplementDao(
       @Autowired ConfigDao configDao,

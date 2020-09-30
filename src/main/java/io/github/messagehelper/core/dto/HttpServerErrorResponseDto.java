@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class HttpServerErrorResponseDto {
-  private String dateTime;
-  private String stackTrace;
+  private final String dateTime;
+  private final String stackTrace;
 
   public HttpServerErrorResponseDto(String stackTrace) {
     dateTime = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")).format(new Date());

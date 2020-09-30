@@ -22,8 +22,8 @@ import java.util.Map;
 
 @Service
 public class ConfigJpaLocalDao implements ConfigDao {
-  private ConfigJpaRepository repository;
-  private Map<String, ConfigPo> configMap;
+  private final ConfigJpaRepository repository;
+  private final Map<String, ConfigPo> configMap;
   private final Lock lock;
 
   public ConfigJpaLocalDao(@Autowired ConfigJpaRepository repository) {

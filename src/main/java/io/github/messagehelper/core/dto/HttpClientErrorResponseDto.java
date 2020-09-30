@@ -4,8 +4,8 @@ import io.github.messagehelper.core.utils.ConfigMapSingleton;
 import io.github.messagehelper.core.utils.ThrowableTool;
 
 public class HttpClientErrorResponseDto {
-  private String error;
-  private String document;
+  private final String error;
+  private final String document;
 
   public HttpClientErrorResponseDto(Throwable throwable) {
     this.error = ThrowableTool.getInstance().convertToString(throwable);

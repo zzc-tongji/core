@@ -1,7 +1,7 @@
 package io.github.messagehelper.core.dto.api.configs;
 
 public class GetPutResponseDto {
-  private Item data;
+  private final Item data;
 
   public Item getData() {
     return data;
