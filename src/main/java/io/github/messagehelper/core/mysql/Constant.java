@@ -27,11 +27,11 @@ public class Constant {
   public static final int LOG_CONTENT_LENGTH = 16000;
   // rule
   public static final int RULE_NAME_LENGTH = 256;
-  public static final int RULE_IF_LOG_CONTENT_SATISFY_LENGTH = 1024;
+  public static final int RULE_IF_LOG_CONTENT_SATISFY_LENGTH = 4096;
   public static final int RULE_THEN_USE_HEADER_CONTENT_TYPE_LENGTH = 64;
   public static final int RULE_THEN_USE_URL_PATH_LENGTH = 1024;
   public static final int RULE_THEN_USE_BODY_TEMPLATE_LENGTH = 4096;
   public static final int RULE_ANNOTATION_LENGTH = 1024;
   // token
-  public static final int TOKEN_LENGTH = 32;
+  public static final int TOKEN_LENGTH = 64;
 }

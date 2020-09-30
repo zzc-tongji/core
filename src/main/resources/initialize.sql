@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `rule`
     `name`                         varchar(256)  NOT NULL,
     `if_log_instance_equal`        varchar(64)   NOT NULL,
     `if_log_category_equal`        varchar(256)  NOT NULL,
-    `if_log_content_satisfy`       varchar(1024) NOT NULL,
+    `if_log_content_satisfy`       varchar(4096) NOT NULL,
     `then_use_connector_id`        bigint(20)    NOT NULL,
     `then_use_url_path`            varchar(1024) NOT NULL,
     `then_use_header_content_type` varchar(64)   NOT NULL,
@@ -96,8 +96,8 @@ CREATE TABLE IF NOT EXISTS `rule`
 -- [token]
 CREATE TABLE IF NOT EXISTS `token`
 (
-    `token`                char(32)   NOT NULL,
-    `expired_timestamp_ms` bigint(20) NOT NULL,
+    `token`                varchar(64) NOT NULL,
+    `expired_timestamp_ms` bigint(20)  NOT NULL,
     PRIMARY KEY (`token`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
