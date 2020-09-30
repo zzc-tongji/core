@@ -110,6 +110,9 @@ public class Rule implements Comparable<Rule> {
     if (!log.getCategory().equals(ifLogCategoryEqual)) {
       return MISS_CATEGORY;
     }
+    if (ifLogContentSatisfy.size() <= 0) {
+      return HIT;
+    }
     int index = 0;
     int skip = 0;
     Map<String, Unit> content = log.getContent();
