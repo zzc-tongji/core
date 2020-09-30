@@ -626,19 +626,24 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   }
 
   private String insertToken(String requestBody, String token) {
-    if (requestBody.length() <= 0
-        || requestBody.equals("{}")
-        || requestBody.equals("[]")
-        || requestBody.equals("null")
-        || requestBody.equals("undefined")) {
-      return String.format("{\"rpcToken\":\"%s\"}", token);
+    JsonNode node;
+    try {
+      node = ObjectMapperSingleton.getInstance().readTree(requestBody);
+    } catch (JsonProcessingException e) {
+      return ObjectMapperSingleton.getInstance()
+          .getNodeFactory()
+          .objectNode()
+          .put("rpcToken", token)
+          .toString();
     }
-    if (requestBody.contains("\"rpcToken\"")) {
-      return requestBody;
+    if (!node.isObject()) {
+      return ObjectMapperSingleton.getInstance()
+          .getNodeFactory()
+          .objectNode()
+          .put("rpcToken", token)
+          .toString();
     }
-    StringBuilder builder = new StringBuilder(requestBody);
-    builder.insert(builder.length() - 1, String.format(",\"rpcToken\":\"%s\"", token));
-    return builder.toString();
+    return ((ObjectNode) node).put("rpcToken", token).toString();
   }
 
   private void poToResponseDto(ConnectorPo po, GetPutPostDeleteResponseDto dto) {
