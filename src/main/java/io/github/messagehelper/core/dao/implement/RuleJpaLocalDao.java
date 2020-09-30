@@ -464,10 +464,11 @@ public class RuleJpaLocalDao implements RuleDao {
     }
     po.setThenUseConnectorId(thenUseConnectorId);
     po.setEnable(enable);
-    // validate `thenUseHeaderContentType`
+    // validate `thenUseHeaderContentType` and `thenUseHeaderJson`
     String thenUseHeaderContentType = dto.getThenUseHeaderContentType();
     try {
-      ContentType.parse(thenUseHeaderContentType);
+      po.setThenUseHeaderJson(
+          ContentType.parse(thenUseHeaderContentType).equals(ContentType.APPLICATION_JSON));
     } catch (ParseException | UnsupportedCharsetException e) {
       throw new RuleThenInvalidContentTypeException(
           PutPostRequestDto.EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE);
@@ -512,6 +513,7 @@ public class RuleJpaLocalDao implements RuleDao {
     po.setThenUseConnectorId(rule.getThenUseConnectorId());
     po.setThenUseUrlPath(rule.getThenUseUrlPath());
     po.setThenUseHeaderContentType(rule.getThenUseHeaderContentType());
+    po.setThenUseHeaderJson(rule.getThenUseHeaderJson());
     po.setThenUseBodyTemplate(rule.getThenUseBodyTemplate());
     po.setPriority(rule.getPriority());
     po.setTerminate(rule.getTerminate());

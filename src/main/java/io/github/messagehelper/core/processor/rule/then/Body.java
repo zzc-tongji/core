@@ -13,7 +13,7 @@ public class Body {
   private static final String REGEX_CONTENT = "content";
   private static final String REGEX_POSTFIX = "\\)\\)?";
 
-  public static String fill(String input, Log log) {
+  public static String fill(String input, Log log, boolean jsonEscape) {
     String output = input;
     // log
     for (Field field : Log.class.getDeclaredFields()) {
@@ -21,7 +21,8 @@ public class Body {
         field.setAccessible(true);
         try {
           output =
-              replaceHelper(output, generateLogRegex(field.getName()), field.get(log).toString());
+              replaceHelper(
+                  output, generateLogRegex(field.getName()), field.get(log).toString(), jsonEscape);
         } catch (IllegalAccessException ignored) {
         } finally {
           field.setAccessible(false);
@@ -31,7 +32,9 @@ public class Body {
     // log.content
     Map<String, Unit> content = log.getContent();
     for (Unit unit : content.values()) {
-      output = replaceHelper(output, generateContentRegex(unit.getPath()), unit.valueToString());
+      output =
+          replaceHelper(
+              output, generateContentRegex(unit.getPath()), unit.valueToString(), jsonEscape);
     }
     return output;
   }
@@ -51,10 +54,14 @@ public class Body {
         .toString();
   }
 
-  private static String replaceHelper(String input, String regex, String replacement) {
+  private static String replaceHelper(
+      String input, String regex, String replacement, boolean jsonEscape) {
     StringBuilder stringBuilder = new StringBuilder();
-    JsonStringEncoder.getInstance().quoteAsString(replacement, stringBuilder);
+    if (jsonEscape) {
+      JsonStringEncoder.getInstance().quoteAsString(replacement, stringBuilder);
+      replacement = stringBuilder.toString().replace("\\", "\\\\");
+    }
     // https://www.cnblogs.com/iyangyuan/p/4809582.html
-    return input.replaceAll(regex, stringBuilder.toString().replace("\\", "\\\\"));
+    return input.replaceAll(regex, replacement);
   }
 }

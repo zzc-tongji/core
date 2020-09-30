@@ -118,14 +118,14 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       executeWebhookHelper(
           rule.getThenUseUrlPath(),
           rule.getThenUseHeaderContentType(),
-          Body.fill(rule.getThenUseBodyTemplate(), log));
+          Body.fill(rule.getThenUseBodyTemplate(), log, rule.getThenUseHeaderJson()));
     } else {
       // normal connector
       executeHelper(
           po,
           rule.getThenUseUrlPath(),
           rule.getThenUseHeaderContentType(),
-          Body.fill(rule.getThenUseBodyTemplate(), log));
+          Body.fill(rule.getThenUseBodyTemplate(), log, rule.getThenUseHeaderJson()));
     }
     // If request header content-type" is an empty string, use GET method,
     // otherwise, use POST method.
