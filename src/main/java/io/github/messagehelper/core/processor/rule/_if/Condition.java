@@ -37,7 +37,6 @@ public class Condition {
     Operator operator;
     ObjectNode outputNode;
     int index = 0;
-    String tt;
     while (iterator.hasNext()) {
       // input
       inputNode = iterator.next();
@@ -60,7 +59,7 @@ public class Condition {
           throw new RuleIfInvalidContentException(operatorMessage(index));
         }
         outputNode.put("operator", string);
-        if (operator.needDetail()) {
+        if (operator.detailType() != null) {
           // .detail
           temp = inputNode.get("detail");
           if (temp == null) {
@@ -73,19 +72,25 @@ public class Condition {
             if (temp.isTextual()) {
               string = output.asText();
               try {
-                if (Type.valueOf(string).equals(Type.ALL)) {
-                  throw new RuleIfInvalidContentException(detailMessageForOperatorIs(index));
-                }
+                Type.valueOf(string);
               } catch (IllegalArgumentException e) {
-                throw new RuleIfInvalidContentException(detailMessageForOperatorIs(index));
+                throw new RuleIfInvalidContentException(
+                    String.format(
+                        "ifLogContentSatisfy[%d].detail: required, string in %s",
+                        index, Type.ENUM_NAME_COLLECTION));
               }
               outputNode.put("detail", output.asText());
             } else {
-              throw new RuleIfInvalidContentException(detailMessageForOperatorIs(index));
+              throw new RuleIfInvalidContentException(
+                  String.format(
+                      "ifLogContentSatisfy[%d].detail: required, string in %s",
+                      index, Type.ENUM_NAME_COLLECTION));
             }
-          } else if (operator.suit(Type.NUMBER) && temp.isDouble()) {
+          } else if (operator.detailType() == Boolean.class && temp.isBoolean()) {
+            outputNode.put("detail", output.asBoolean());
+          } else if (operator.detailType() == Double.class && temp.isDouble()) {
             outputNode.put("detail", output.asDouble());
-          } else if (operator.suit(Type.STRING) && temp.isTextual()) {
+          } else if (operator.detailType() == String.class && temp.isTextual()) {
             outputNode.put("detail", output.asText());
           } else {
             throw new RuleIfInvalidContentException(
@@ -130,9 +135,11 @@ public class Condition {
     while (iterator.hasNext()) {
       current = iterator.next();
       condition = conditionList.get(index);
-      if (condition.getOperator().suit(Type.NUMBER)) {
+      if (condition.getOperator().detailType() == Boolean.class) {
+        ((ObjectNode) current).put("detail", condition.detailAsBoolean());
+      } else if (condition.getOperator().detailType() == Double.class) {
         ((ObjectNode) current).put("detail", condition.detailAsDouble());
-      } else if (condition.getOperator().suit(Type.STRING)) {
+      } else { // condition.getOperator().detailType() == String.class
         ((ObjectNode) current).put("detail", condition.detailAsString());
       }
       index += 1;
@@ -155,28 +162,13 @@ public class Condition {
   }
 
   private static String detailMessage(Operator operator) {
-    if (operator.suit(Type.NUMBER)) {
+    if (operator.detailType() == Boolean.class) {
+      return "boolean";
+    } else if (operator.detailType() == Double.class) {
       return "number";
-    } else { // operator.suit(Type.STRING)
+    } else { // operator.detailType() == String.class
       return "string";
     }
-  }
-
-  private static String detailMessageForOperatorIs(int index) {
-    StringBuilder builder = new StringBuilder();
-    builder.append("ifLogContentSatisfy[");
-    builder.append(index);
-    builder.append("].detail: required, string in {");
-    for (Type t : Type.values()) {
-      if (t.equals(Type.ALL)) {
-        continue;
-      }
-      builder.append("\"");
-      builder.append(t);
-      builder.append("\", ");
-    }
-    builder.append("}");
-    return builder.toString();
   }
 
   private static Condition helper(JsonNode node) {
@@ -247,6 +239,13 @@ public class Condition {
       default: // IS
         return unit.getType().name().equals(detailAsString());
     }
+  }
+
+  private Boolean detailAsBoolean() {
+    if (!(detail instanceof Boolean)) {
+      throw new RuntimeException("`detail` should be `Boolean`.");
+    }
+    return (Boolean) detail;
   }
 
   private Double detailAsDouble() {
