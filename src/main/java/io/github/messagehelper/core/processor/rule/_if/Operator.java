@@ -22,16 +22,17 @@ public enum Operator {
   NOT_CONTAIN(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
   EMPTY(Type.STRING.getBitMap(), 0),
   NOT_EMPTY(Type.STRING.getBitMap(), 0),
-  ELEMENT_NUMBER_EQUAL_TO(
+  MEMBER_NUMBER_EQUAL_TO(Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
+  MEMBER_NUMBER_GREATER_THAN(
       Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
-  ELEMENT_NUMBER_GREATER_THAN(
+  MEMBER_NUMBER_GREATER_THAN_OR_EQUAL_TO(
       Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
-  ELEMENT_NUMBER_GREATER_THAN_OR_EQUAL_TO(
+  MEMBER_NUMBER_LESS_THAN(
       Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
-  ELEMENT_NUMBER_LESS_THAN(
+  MEMBER_NUMBER_LESS_THAN_OR_EQUAL_TO(
       Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
-  ELEMENT_NUMBER_LESS_THAN_OR_EQUAL_TO(
-      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
+  MEMBER_EXIST(Type.OBJECT.getBitMap(), Type.STRING.getBitMap()),
+  MEMBER_NOT_EXIST(Type.OBJECT.getBitMap(), Type.STRING.getBitMap()),
   IS(
       Type.BOOLEAN.getBitMap()
           | Type.NUMBER.getBitMap()

@@ -236,16 +236,20 @@ public class Condition {
         return unit.valueAsString().length() <= 0;
       case NOT_EMPTY:
         return unit.valueAsString().length() > 0;
-      case ELEMENT_NUMBER_EQUAL_TO:
+      case MEMBER_NUMBER_EQUAL_TO:
         return unit.valueAsObjectOrArray().size() == detailAsDouble();
-      case ELEMENT_NUMBER_GREATER_THAN:
+      case MEMBER_NUMBER_GREATER_THAN:
         return unit.valueAsObjectOrArray().size() > detailAsDouble();
-      case ELEMENT_NUMBER_GREATER_THAN_OR_EQUAL_TO:
+      case MEMBER_NUMBER_GREATER_THAN_OR_EQUAL_TO:
         return unit.valueAsObjectOrArray().size() >= detailAsDouble();
-      case ELEMENT_NUMBER_LESS_THAN:
+      case MEMBER_NUMBER_LESS_THAN:
         return unit.valueAsObjectOrArray().size() < detailAsDouble();
-      case ELEMENT_NUMBER_LESS_THAN_OR_EQUAL_TO:
+      case MEMBER_NUMBER_LESS_THAN_OR_EQUAL_TO:
         return unit.valueAsObjectOrArray().size() <= detailAsDouble();
+      case MEMBER_EXIST:
+        return unit.valueAsObject().has(detailAsString());
+      case MEMBER_NOT_EXIST:
+        return !unit.valueAsObject().has(detailAsString());
       default: // IS
         return unit.getType().name().equals(detailAsString());
     }
