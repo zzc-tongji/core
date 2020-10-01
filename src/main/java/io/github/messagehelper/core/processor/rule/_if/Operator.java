@@ -10,36 +10,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Operator {
-  TRUE(Type.BOOLEAN.getBitMap()),
-  FALSE(Type.BOOLEAN.getBitMap()),
-  EQUAL_TO(Type.NUMBER.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
-  GREATER_THAN(Type.NUMBER.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
-  GREATER_THAN_OR_EQUAL_TO(Type.NUMBER.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
-  LESS_THAN(Type.NUMBER.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
-  LESS_THAN_OR_EQUAL_TO(Type.NUMBER.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
-  MATCH_REGEX(Type.STRING.getBitMap() | Type.STRING.getBitMap() << Byte.SIZE),
-  CONTAIN(Type.STRING.getBitMap() | Type.STRING.getBitMap() << Byte.SIZE),
-  NOT_CONTAIN(Type.STRING.getBitMap() | Type.STRING.getBitMap() << Byte.SIZE),
-  EMPTY(Type.STRING.getBitMap()),
-  NOT_EMPTY(Type.STRING.getBitMap()),
+  TRUE(Type.BOOLEAN.getBitMap(), 0),
+  FALSE(Type.BOOLEAN.getBitMap(), 0),
+  EQUAL_TO(Type.NUMBER.getBitMap(), Type.NUMBER.getBitMap()),
+  GREATER_THAN(Type.NUMBER.getBitMap(), Type.NUMBER.getBitMap()),
+  GREATER_THAN_OR_EQUAL_TO(Type.NUMBER.getBitMap(), Type.NUMBER.getBitMap()),
+  LESS_THAN(Type.NUMBER.getBitMap(), Type.NUMBER.getBitMap()),
+  LESS_THAN_OR_EQUAL_TO(Type.NUMBER.getBitMap(), Type.NUMBER.getBitMap()),
+  MATCH_REGEX(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
+  CONTAIN(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
+  NOT_CONTAIN(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
+  EMPTY(Type.STRING.getBitMap(), 0),
+  NOT_EMPTY(Type.STRING.getBitMap(), 0),
   ELEMENT_NUMBER_EQUAL_TO(
-      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
   ELEMENT_NUMBER_GREATER_THAN(
-      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
   ELEMENT_NUMBER_GREATER_THAN_OR_EQUAL_TO(
-      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
   ELEMENT_NUMBER_LESS_THAN(
-      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
   ELEMENT_NUMBER_LESS_THAN_OR_EQUAL_TO(
-      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
   IS(
       Type.BOOLEAN.getBitMap()
           | Type.NUMBER.getBitMap()
           | Type.STRING.getBitMap()
           | Type.NULL.getBitMap()
           | Type.OBJECT.getBitMap()
-          | Type.ARRAY.getBitMap()
-          | Type.STRING.getBitMap() << Byte.SIZE);
+          | Type.ARRAY.getBitMap(),
+      Type.STRING.getBitMap());
 
   public static final String DTO;
 
@@ -85,36 +85,36 @@ public enum Operator {
     DTO = output.toString();
   }
 
-  // 1st byte (lowest) : applicable type(s) of content path value
-  // 2nd byte          : requirement of detail type
-  private final int operandDescription;
+  private final int bitMapOperand1; // applicable type(s) of content path value
+  private final int bitMapOperand2; // requirement of detail type
 
-  Operator(int operandDescription) {
-    this.operandDescription = operandDescription;
+  Operator(int bitMapOperand1, int bitMapOperand2) {
+    this.bitMapOperand1 = bitMapOperand1;
+    this.bitMapOperand2 = bitMapOperand2;
   }
 
   public boolean suit(Type type) {
-    return (this.operandDescription & type.getBitMap()) != 0;
+    return (this.bitMapOperand1 & type.getBitMap()) != 0;
   }
 
   public List<Type> LogContentPathValueType() {
     List<Type> result = new ArrayList<>();
-    if ((operandDescription & Type.BOOLEAN.getBitMap()) != 0) {
+    if ((bitMapOperand1 & Type.BOOLEAN.getBitMap()) != 0) {
       result.add(Type.BOOLEAN);
     }
-    if ((operandDescription & Type.NUMBER.getBitMap()) != 0) {
+    if ((bitMapOperand1 & Type.NUMBER.getBitMap()) != 0) {
       result.add(Type.NUMBER);
     }
-    if ((operandDescription & Type.STRING.getBitMap()) != 0) {
+    if ((bitMapOperand1 & Type.STRING.getBitMap()) != 0) {
       result.add(Type.STRING);
     }
-    if ((operandDescription & Type.NULL.getBitMap()) != 0) {
+    if ((bitMapOperand1 & Type.NULL.getBitMap()) != 0) {
       result.add(Type.NULL);
     }
-    if ((operandDescription & Type.OBJECT.getBitMap()) != 0) {
+    if ((bitMapOperand1 & Type.OBJECT.getBitMap()) != 0) {
       result.add(Type.OBJECT);
     }
-    if ((operandDescription & Type.ARRAY.getBitMap()) != 0) {
+    if ((bitMapOperand1 & Type.ARRAY.getBitMap()) != 0) {
       result.add(Type.ARRAY);
     }
     if (result.size() <= 0) {
@@ -126,11 +126,11 @@ public enum Operator {
 
   @SuppressWarnings("rawtypes")
   public Class detailType() {
-    if ((operandDescription >>> Byte.SIZE & Type.BOOLEAN.getBitMap()) != 0) {
+    if ((bitMapOperand2 & Type.BOOLEAN.getBitMap()) != 0) {
       return Boolean.class;
-    } else if ((operandDescription >>> Byte.SIZE & Type.NUMBER.getBitMap()) != 0) {
+    } else if ((bitMapOperand2 & Type.NUMBER.getBitMap()) != 0) {
       return Double.class;
-    } else if ((operandDescription >>> Byte.SIZE & Type.STRING.getBitMap()) != 0) {
+    } else if ((bitMapOperand2 & Type.STRING.getBitMap()) != 0) {
       return String.class;
     } else {
       return null;
