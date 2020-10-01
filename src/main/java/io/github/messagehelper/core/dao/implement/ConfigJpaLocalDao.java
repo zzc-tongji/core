@@ -40,6 +40,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     ConfigMapSingleton.getInstance().setConfigMap(configMap);
   }
 
+  @SuppressWarnings("BusyWait")
   @Override
   public void refreshCache() {
     // CHECK
@@ -144,6 +145,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     return responseDto;
   }
 
+  @SuppressWarnings("BusyWait")
   private ConfigPo find(String key) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -163,6 +165,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     return po;
   }
 
+  @SuppressWarnings("BusyWait")
   public Collection<ConfigPo> findAll() {
     // CHECK
     while (lock.isWriteLocked()) {

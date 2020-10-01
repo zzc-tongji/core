@@ -24,6 +24,7 @@ public class ConfigMapSingleton {
     this.lock = lock;
   }
 
+  @SuppressWarnings("BusyWait")
   public String load(String key) {
     if (configMap == null || lock == null) {
       return "";

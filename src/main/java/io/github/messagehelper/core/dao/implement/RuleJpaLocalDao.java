@@ -66,6 +66,7 @@ public class RuleJpaLocalDao implements RuleDao {
     fix();
   }
 
+  @SuppressWarnings("BusyWait")
   @Override
   public void refreshCache() {
     // CHECK
@@ -96,6 +97,7 @@ public class RuleJpaLocalDao implements RuleDao {
     }
   }
 
+  @SuppressWarnings("BusyWait")
   @Override
   public void process(Log log) {
     // CHECK
@@ -405,6 +407,7 @@ public class RuleJpaLocalDao implements RuleDao {
     return responseDto;
   }
 
+  @SuppressWarnings("BusyWait")
   private Rule find(Long id) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -430,6 +433,7 @@ public class RuleJpaLocalDao implements RuleDao {
     return rule;
   }
 
+  @SuppressWarnings("BusyWait")
   private Rule find(String name) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -455,6 +459,7 @@ public class RuleJpaLocalDao implements RuleDao {
     return rule;
   }
 
+  @SuppressWarnings("BusyWait")
   private Rule findOneByIfLogInstanceEqual(String ifLogInstanceEqual) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -480,6 +485,7 @@ public class RuleJpaLocalDao implements RuleDao {
     return rule;
   }
 
+  @SuppressWarnings("BusyWait")
   private List<Rule> findAll() {
     // CHECK
     while (lock.isWriteLocked()) {

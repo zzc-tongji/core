@@ -32,6 +32,7 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
   private final Long lifetimeMs;
   private final MessageDigest messageDigest;
 
+  @SuppressWarnings("BusyWait")
   public ApiTokenJpaLocalDao(
       @Autowired TokenJpaRepository repository, @Autowired ConfigDao configDao) {
     this.repository = repository;
@@ -85,6 +86,7 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
         .start();
   }
 
+  @SuppressWarnings("BusyWait")
   @Override
   public void refreshCache() {
     // CHECK
@@ -152,6 +154,7 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
     configDao.save("core.api-password-salt", salt);
   }
 
+  @SuppressWarnings("BusyWait")
   private TokenPo find(String key) {
     // CHECK
     while (lock.isWriteLocked()) {

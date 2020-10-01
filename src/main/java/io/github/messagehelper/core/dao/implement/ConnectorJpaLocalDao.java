@@ -80,6 +80,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     refreshCache();
   }
 
+  @SuppressWarnings("BusyWait")
   @Override
   public void refreshCache() {
     // CHECK
@@ -375,7 +376,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     return responseDto;
   }
 
-  @SuppressWarnings("Duplicates")
+  @SuppressWarnings({"Duplicates", "BusyWait"})
   private ConnectorPo find(Long id) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -395,7 +396,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     return po;
   }
 
-  @SuppressWarnings("Duplicates")
+  @SuppressWarnings({"Duplicates", "BusyWait"})
   private ConnectorPo find(String instance) {
     // CHECK
     while (lock.isWriteLocked()) {
@@ -415,6 +416,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     return po;
   }
 
+  @SuppressWarnings("BusyWait")
   private Collection<ConnectorPo> findAll() {
     // CHECK
     while (lock.isWriteLocked()) {
