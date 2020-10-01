@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.processor.log.content.Type;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum Operator {
   TRUE(Type.BOOLEAN.getBitMap()),
   FALSE(Type.BOOLEAN.getBitMap()),
@@ -19,7 +22,24 @@ public enum Operator {
   NOT_CONTAIN(Type.STRING.getBitMap() | Type.STRING.getBitMap() << Byte.SIZE),
   EMPTY(Type.STRING.getBitMap()),
   NOT_EMPTY(Type.STRING.getBitMap()),
-  IS(Type.STRING.getBitMap() << Byte.SIZE);
+  ELEMENT_NUMBER_EQUAL_TO(
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+  ELEMENT_NUMBER_GREATER_THAN(
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+  ELEMENT_NUMBER_GREATER_THAN_OR_EQUAL_TO(
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+  ELEMENT_NUMBER_LESS_THAN(
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+  ELEMENT_NUMBER_LESS_THAN_OR_EQUAL_TO(
+      Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap() | Type.NUMBER.getBitMap() << Byte.SIZE),
+  IS(
+      Type.BOOLEAN.getBitMap()
+          | Type.NUMBER.getBitMap()
+          | Type.STRING.getBitMap()
+          | Type.NULL.getBitMap()
+          | Type.OBJECT.getBitMap()
+          | Type.ARRAY.getBitMap()
+          | Type.STRING.getBitMap() << Byte.SIZE);
 
   public static final String DTO;
 
@@ -28,22 +48,21 @@ public enum Operator {
     ArrayNode data = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
     //
     ObjectNode item;
+    List<Type> typeList;
+    StringBuilder builder;
     ArrayNode rangeOfDetail;
     for (Operator operator : Operator.values()) {
       item = ObjectMapperSingleton.getInstance().getNodeFactory().objectNode();
       item.put("operator", operator.name());
-      if (operator.equals(Operator.IS)) {
-        item.put("logContentPathValueType", "boolean | number | string | null | object | array");
-        item.put("detailType", "string");
-        rangeOfDetail = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
-        for (Type t : Type.values()) {
-          rangeOfDetail.add(t.name());
+      typeList = operator.LogContentPathValueType();
+      builder = new StringBuilder();
+      for (int i = 0; i < typeList.size(); i++) {
+        builder.append(typeList.get(i).name().toLowerCase());
+        if (i != typeList.size() - 1) {
+          builder.append(" | ");
         }
-        item.set("detailRange", rangeOfDetail);
-        data.add(item);
-        continue;
       }
-      item.put("logContentPathValueType", operator.LogContentPathValueType().name().toLowerCase());
+      item.put("logContentPathValueType", builder.toString());
       if (operator.detailType() == Boolean.class) {
         item.put("detailType", "boolean");
       } else if (operator.detailType() == Double.class) {
@@ -52,6 +71,13 @@ public enum Operator {
         item.put("detailType", "string");
       } else { // operator.detailType() == null
         item.set("detailType", NullNode.getInstance());
+      }
+      if (operator.equals(Operator.IS)) {
+        rangeOfDetail = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
+        for (Type t : Type.values()) {
+          rangeOfDetail.add(t.name());
+        }
+        item.set("detailRange", rangeOfDetail);
       }
       data.add(item);
     }
@@ -71,23 +97,31 @@ public enum Operator {
     return (this.operandDescription & type.getBitMap()) != 0;
   }
 
-  public Type LogContentPathValueType() {
+  public List<Type> LogContentPathValueType() {
+    List<Type> result = new ArrayList<>();
     if ((operandDescription & Type.BOOLEAN.getBitMap()) != 0) {
-      return Type.BOOLEAN;
-    } else if ((operandDescription & Type.NUMBER.getBitMap()) != 0) {
-      return Type.NUMBER;
-    } else if ((operandDescription & Type.STRING.getBitMap()) != 0) {
-      return Type.STRING;
-    } else if ((operandDescription & Type.NULL.getBitMap()) != 0) {
-      return Type.NULL;
-    } else if ((operandDescription & Type.OBJECT.getBitMap()) != 0) {
-      return Type.OBJECT;
-    } else if ((operandDescription & Type.ARRAY.getBitMap()) != 0) {
-      return Type.ARRAY;
-    } else {
+      result.add(Type.BOOLEAN);
+    }
+    if ((operandDescription & Type.NUMBER.getBitMap()) != 0) {
+      result.add(Type.NUMBER);
+    }
+    if ((operandDescription & Type.STRING.getBitMap()) != 0) {
+      result.add(Type.STRING);
+    }
+    if ((operandDescription & Type.NULL.getBitMap()) != 0) {
+      result.add(Type.NULL);
+    }
+    if ((operandDescription & Type.OBJECT.getBitMap()) != 0) {
+      result.add(Type.OBJECT);
+    }
+    if ((operandDescription & Type.ARRAY.getBitMap()) != 0) {
+      result.add(Type.ARRAY);
+    }
+    if (result.size() <= 0) {
       throw new RuntimeException(
           String.format("`Operator.%s` should suit an enum of `Type`.", this.name()));
     }
+    return result;
   }
 
   @SuppressWarnings("rawtypes")
