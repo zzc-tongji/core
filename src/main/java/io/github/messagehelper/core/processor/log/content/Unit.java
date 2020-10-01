@@ -2,7 +2,9 @@ package io.github.messagehelper.core.processor.log.content;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;
 import io.github.messagehelper.core.exception.LogContentInvalidException;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
@@ -138,6 +140,27 @@ public class Unit {
       throw new RuntimeException(message(Type.STRING));
     }
     return (String) value;
+  }
+
+  public JsonNode valueAsObjectOrArray() {
+    if (!type.equals(Type.OBJECT) && !type.equals(Type.ARRAY)) {
+      throw new RuntimeException(message(Type.OBJECT));
+    }
+    return (JsonNode) value;
+  }
+
+  public ObjectNode valueAsObject() {
+    if (!type.equals(Type.OBJECT)) {
+      throw new RuntimeException(message(Type.OBJECT));
+    }
+    return (ObjectNode) value;
+  }
+
+  public ArrayNode valueAsArray() {
+    if (!type.equals(Type.ARRAY)) {
+      throw new RuntimeException(message(Type.ARRAY));
+    }
+    return (ArrayNode) value;
   }
 
   public String valueToString() {
