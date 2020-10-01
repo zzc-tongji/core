@@ -612,7 +612,7 @@ public class RuleJpaLocalDao implements RuleDao {
     item.setName(rule.getName());
     item.setIfLogInstanceEqual(rule.getIfLogInstanceEqual());
     item.setIfLogCategoryEqual(rule.getIfLogCategoryEqual());
-    item.setIfLogContentSatisfy(rule.getIfLogContentSatisfy().toString());
+    item.setIfLogContentSatisfy(Condition.listToJson(rule.getIfLogContentSatisfy()));
     item.setThenUseConnectorId(rule.getThenUseConnectorId());
     item.setThenUseUrlPath(rule.getThenUseUrlPath());
     item.setThenUseHeaderContentType(rule.getThenUseHeaderContentType());
