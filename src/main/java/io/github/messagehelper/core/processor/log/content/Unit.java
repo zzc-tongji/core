@@ -164,6 +164,18 @@ public class Unit {
   }
 
   public String valueToString() {
+    if (value == null) {
+      return "";
+    }
+    if (value instanceof JsonNode) {
+      try {
+        return ObjectMapperSingleton.getInstance()
+            .writerWithDefaultPrettyPrinter()
+            .writeValueAsString(value);
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+    }
     return value.toString();
   }
 
