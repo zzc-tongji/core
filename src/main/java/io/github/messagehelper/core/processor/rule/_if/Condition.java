@@ -241,6 +241,10 @@ public class Condition {
         return unit.valueAsString().contains(detailAsString());
       case NOT_CONTAIN:
         return !unit.valueAsString().contains(detailAsString());
+      case EXACT:
+        return unit.valueAsString().equals(detailAsString());
+      case NOT_EXACT:
+        return !unit.valueAsString().equals(detailAsString());
       case EMPTY:
         return unit.valueAsString().length() <= 0;
       case NOT_EMPTY:

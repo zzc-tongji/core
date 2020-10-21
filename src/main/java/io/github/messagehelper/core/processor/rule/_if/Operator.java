@@ -20,6 +20,8 @@ public enum Operator {
   MATCH_REGEX(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
   CONTAIN(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
   NOT_CONTAIN(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
+  EXACT(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
+  NOT_EXACT(Type.STRING.getBitMap(), Type.STRING.getBitMap()),
   EMPTY(Type.STRING.getBitMap(), 0),
   NOT_EMPTY(Type.STRING.getBitMap(), 0),
   MEMBER_NUMBER_EQUAL_TO(Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
