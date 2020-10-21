@@ -156,13 +156,6 @@ public class Unit {
     return (ObjectNode) value;
   }
 
-  public ArrayNode valueAsArray() {
-    if (!type.equals(Type.ARRAY)) {
-      throw new RuntimeException(message(Type.ARRAY));
-    }
-    return (ArrayNode) value;
-  }
-
   public String valueToString() {
     if (value == null) {
       return "";
