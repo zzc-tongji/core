@@ -190,7 +190,7 @@ public class RuleJpaLocalDao implements RuleDao {
                   .put("ruleName", rule.getName())
                   .put("ruleId", rule.getId())
                   .put("logId", log.getId())
-                  .put("conditionNumber", match)
+                  .put("conditionIndex", match)
                   .toString());
           break;
       }

@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Rule implements Comparable<Rule> {
-  public static final int HIT = 0;
-  public static final int MISS_INSTANCE = -1;
-  public static final int MISS_CATEGORY = -2;
-  public static final int MISS_CONTENT_FORMAT = Integer.MAX_VALUE;
+  public static final int HIT = -1;
+  public static final int MISS_INSTANCE = -2;
+  public static final int MISS_CATEGORY = -3;
+  public static final int MISS_CONTENT_FORMAT = -4;
 
   public static Rule parse(RulePo po) {
     Rule rule = new Rule();
@@ -144,7 +144,8 @@ public class Rule implements Comparable<Rule> {
         continue;
       }
       if (!condition.meet(unit)) {
-        return index + 1;
+        // Return the index of the condition which the value does not meet.
+        return index;
       }
       index += 1;
     }
