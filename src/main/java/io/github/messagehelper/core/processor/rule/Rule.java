@@ -149,7 +149,7 @@ public class Rule implements Comparable<Rule> {
       }
       index += 1;
     }
-    if (skip >= content.size()) {
+    if (skip >= ifLogContentSatisfy.size()) {
       // If `log.content` skips all conditions, `log` will not satisfy the rule.
       return MISS_CONTENT_FORMAT;
     }
