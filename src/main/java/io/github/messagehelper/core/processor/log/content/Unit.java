@@ -21,9 +21,9 @@ public class Unit {
     } catch (JsonProcessingException e) {
       throw new LogContentInvalidException(PostRequestDto.EXCEPTION_MESSAGE_CONTENT);
     }
-    StringBuilder builder = new StringBuilder();
+    StringBuilder path = new StringBuilder("content");
     Map<String, Unit> result = new HashMap<>();
-    helper(node, builder, result);
+    helper(node, path, result);
     return result;
   }
 

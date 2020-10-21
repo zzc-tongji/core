@@ -10,7 +10,6 @@ import java.util.Map;
 public class Body {
   private static final StringBuilder BUILDER = new StringBuilder();
   private static final String REGEX_PREFIX = "\\(\\(";
-  private static final String REGEX_CONTENT = "content";
   private static final String REGEX_POSTFIX = "\\)\\)?";
 
   public static String fill(String input, Log log, boolean jsonEscape) {
@@ -22,7 +21,7 @@ public class Body {
         try {
           output =
               replaceHelper(
-                  output, generateLogRegex(field.getName()), field.get(log).toString(), jsonEscape);
+                  output, generateRegex(field.getName()), field.get(log).toString(), jsonEscape);
         } catch (IllegalAccessException ignored) {
         } finally {
           field.setAccessible(false);
@@ -33,25 +32,14 @@ public class Body {
     Map<String, Unit> content = log.getContent();
     for (Unit unit : content.values()) {
       output =
-          replaceHelper(
-              output, generateContentRegex(unit.getPath()), unit.valueToString(), jsonEscape);
+          replaceHelper(output, generateRegex(unit.getPath()), unit.valueToString(), jsonEscape);
     }
     return output;
   }
 
-  private static String generateLogRegex(String memberName) {
+  private static String generateRegex(String memberName) {
     BUILDER.delete(0, BUILDER.length());
     return BUILDER.append(REGEX_PREFIX).append(memberName).append(REGEX_POSTFIX).toString();
-  }
-
-  private static String generateContentRegex(String memberName) {
-    BUILDER.delete(0, BUILDER.length());
-    return BUILDER
-        .append(REGEX_PREFIX)
-        .append(REGEX_CONTENT)
-        .append(memberName)
-        .append(REGEX_POSTFIX)
-        .toString();
   }
 
   private static String replaceHelper(

@@ -44,10 +44,19 @@ public class Condition {
       // .path
       temp = inputNode.get("path");
       if (temp != null && temp.isTextual()) {
-        outputNode.put("path", temp.asText());
+        string = temp.asText();
+        if (!string.startsWith("content")) {
+          throw new RuleIfInvalidContentException(
+              String.format(
+                  "ifLogContentSatisfy[%d].path: required, string which starts with \"content\"",
+                  index));
+        }
+        outputNode.put("path", string);
       } else {
         throw new RuleIfInvalidContentException(
-            String.format("ifLogContentSatisfy[%d].path: required, string", index));
+            String.format(
+                "ifLogContentSatisfy[%d].path: required, string which starts with \"content\"",
+                index));
       }
       // .operator
       temp = inputNode.get("operator");
