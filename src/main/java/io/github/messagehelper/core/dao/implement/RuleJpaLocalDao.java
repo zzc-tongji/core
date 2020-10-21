@@ -111,13 +111,15 @@ public class RuleJpaLocalDao implements RuleDao {
     // LOCK
     lock.readIncrease();
     // DO
+    boolean breakFor;
+    int match;
     for (Rule rule : ruleList) {
       if (!rule.getEnable()) {
         continue;
       }
       // match rule
-      boolean breakFor = false;
-      int match = rule.satisfy(log);
+      breakFor = false;
+      match = rule.satisfy(log);
       switch (match) {
         case Rule.HIT:
           // log
