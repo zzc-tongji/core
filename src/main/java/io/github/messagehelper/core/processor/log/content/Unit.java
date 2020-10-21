@@ -77,7 +77,7 @@ public class Unit {
       int index = 0;
       while (iterator.hasNext()) {
         // append
-        path.append(".[");
+        path.append("[");
         path.append(index);
         path.append("]");
         // recursive
