@@ -2,7 +2,6 @@ package io.github.messagehelper.core.processor.log.content;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.messagehelper.core.dto.rpc.log.PostRequestDto;

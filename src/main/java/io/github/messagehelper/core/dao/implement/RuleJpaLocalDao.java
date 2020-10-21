@@ -15,6 +15,7 @@ import io.github.messagehelper.core.mysql.repository.RuleJpaRepository;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.rule.Rule;
 import io.github.messagehelper.core.processor.rule._if.Condition;
+import io.github.messagehelper.core.processor.rule._if.Result;
 import io.github.messagehelper.core.utils.IdGenerator;
 import io.github.messagehelper.core.utils.Lock;
 import io.github.messagehelper.core.utils.ObjectMapperSingleton;
@@ -111,93 +112,46 @@ public class RuleJpaLocalDao implements RuleDao {
     // LOCK
     lock.readIncrease();
     // DO
-    boolean breakFor;
-    int match;
+    Result match;
     for (Rule rule : ruleList) {
       if (!rule.getEnable()) {
         continue;
       }
       // match rule
-      breakFor = false;
       match = rule.satisfy(log);
-      switch (match) {
-        case Rule.HIT:
-          // log
-          logInsertDao.insert(
-              configDao.load("core.instance"),
-              "core.rule.hit",
-              Constant.LOG_LEVEL_INFO,
-              ObjectMapperSingleton.getInstance()
-                  .getNodeFactory()
-                  .objectNode()
-                  .put("ruleName", rule.getName())
-                  .put("ruleId", rule.getId())
-                  .put("logId", log.getId())
-                  .toString());
-          // execute rule
-          connectorDao.executeRule(rule, log);
-          // terminate or not
-          if (rule.getTerminate()) {
-            breakFor = true;
-          }
+      if (match.isSatisfied()) {
+        // log
+        logInsertDao.insert(
+            configDao.load("core.instance"),
+            "core.rule.hit",
+            Constant.LOG_LEVEL_INFO,
+            ObjectMapperSingleton.getInstance()
+                .getNodeFactory()
+                .objectNode()
+                .put("ruleName", rule.getName())
+                .put("ruleId", rule.getId())
+                .put("logId", log.getId())
+                .toString());
+        // execute rule
+        connectorDao.executeRule(rule, log);
+        // terminate or not
+        if (rule.getTerminate()) {
           break;
-        case Rule.MISS_INSTANCE:
-          logInsertDao.insert(
-              configDao.load("core.instance"),
-              "core.rule.miss.instance",
-              Constant.LOG_LEVEL_VERB,
-              ObjectMapperSingleton.getInstance()
-                  .getNodeFactory()
-                  .objectNode()
-                  .put("ruleName", rule.getName())
-                  .put("ruleId", rule.getId())
-                  .put("logId", log.getId())
-                  .toString());
-          break;
-        case Rule.MISS_CATEGORY:
-          logInsertDao.insert(
-              configDao.load("core.instance"),
-              "core.rule.miss.category",
-              Constant.LOG_LEVEL_VERB,
-              ObjectMapperSingleton.getInstance()
-                  .getNodeFactory()
-                  .objectNode()
-                  .put("ruleName", rule.getName())
-                  .put("ruleId", rule.getId())
-                  .put("logId", log.getId())
-                  .toString());
-          break;
-        case Rule.MISS_CONTENT_FORMAT:
-          // log
-          logInsertDao.insert(
-              configDao.load("core.instance"),
-              "core.rule.miss.content.format",
-              Constant.LOG_LEVEL_WARN,
-              ObjectMapperSingleton.getInstance()
-                  .getNodeFactory()
-                  .objectNode()
-                  .put("ruleName", rule.getName())
-                  .put("ruleId", rule.getId())
-                  .put("logId", log.getId())
-                  .toString());
-          break;
-        default:
-          logInsertDao.insert(
-              configDao.load("core.instance"),
-              "core.rule.miss.content",
-              Constant.LOG_LEVEL_VERB,
-              ObjectMapperSingleton.getInstance()
-                  .getNodeFactory()
-                  .objectNode()
-                  .put("ruleName", rule.getName())
-                  .put("ruleId", rule.getId())
-                  .put("logId", log.getId())
-                  .put("conditionIndex", match)
-                  .toString());
-          break;
-      }
-      if (breakFor) {
-        break;
+        }
+      } else {
+        // log
+        logInsertDao.insert(
+            configDao.load("core.instance"),
+            "core.rule.miss" + match.getCategorySuffix(),
+            Constant.LOG_LEVEL_VERB,
+            ObjectMapperSingleton.getInstance()
+                .getNodeFactory()
+                .objectNode()
+                .put("ruleName", rule.getName())
+                .put("ruleId", rule.getId())
+                .put("logId", log.getId())
+                .put("message", match.getMessage())
+                .toString());
       }
     }
     // UNLOCK

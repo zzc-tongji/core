@@ -4,6 +4,7 @@ import io.github.messagehelper.core.mysql.po.RulePo;
 import io.github.messagehelper.core.processor.log.Log;
 import io.github.messagehelper.core.processor.log.content.Unit;
 import io.github.messagehelper.core.processor.rule._if.Condition;
+import io.github.messagehelper.core.processor.rule._if.Result;
 
 import java.util.List;
 import java.util.Map;
@@ -109,27 +110,25 @@ public class Rule implements Comparable<Rule> {
     return this.priority - o.priority;
   }
 
-  public int satisfy(Log log) {
+  public Result satisfy(Log log) {
     if (!log.getInstance().equals(ifLogInstanceEqual)) {
-      return MISS_INSTANCE;
+      return Result.no(".instance", "instance not matched");
     }
     if (!log.getCategory().equals(ifLogCategoryEqual)) {
-      return MISS_CATEGORY;
+      return Result.no(".category", "category not matched");
     }
     if (ifLogContentSatisfy.size() <= 0) {
-      return HIT;
+      return Result.yes();
     }
     int index = 0;
-    int skip = 0;
     Map<String, Unit> content = log.getContent();
     Unit unit;
+    String path;
     for (Condition condition : ifLogContentSatisfy) {
-      if (content.get(condition.getPath()) == null) {
+      path = condition.getPath();
+      if (content.get(path) == null) {
         // `condition.path` is undefined in `log.content`.
-        //
-        // => skip (not consider)
-        skip += 1;
-        continue;
+        return Result.no(".content.undefined", String.format("path \"%s\" undefined", path));
       }
       unit = content.get(condition.getPath());
       if (!condition.getOperator().suit(unit.getType())) {
@@ -138,22 +137,20 @@ public class Rule implements Comparable<Rule> {
         //
         // For example, the type of the value of `log.content.path.example` is string,
         // but `condition.operator` is `GREATER_THAN` (which is only suitable for number).
-        //
-        // => skip (not consider)
-        skip += 1;
-        continue;
+        return Result.no(
+            ".content.mismatched",
+            String.format("path \"%s\" mismatched condition [%d]", path, index));
       }
       if (!condition.meet(unit)) {
-        // Return the index of the condition which the value does not meet.
-        return index;
+        // The value of the corresponding path in `log.content`
+        // does not meet the condition.
+        return Result.no(
+            ".content.conflicted",
+            String.format("path \"%s\" conflicted condition [%d]", path, index));
       }
       index += 1;
     }
-    if (skip >= ifLogContentSatisfy.size()) {
-      // If `log.content` skips all conditions, `log` will not satisfy the rule.
-      return MISS_CONTENT_FORMAT;
-    }
-    return HIT;
+    return Result.yes();
   }
 
   private Rule() {}
