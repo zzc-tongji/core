@@ -13,6 +13,7 @@ import io.github.messagehelper.core.utils.ObjectMapperSingleton;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class Condition {
@@ -79,7 +80,7 @@ public class Condition {
           }
           if (operator.equals(Operator.IS)) {
             if (temp.isTextual()) {
-              string = output.asText();
+              string = temp.asText();
               try {
                 Type.valueOf(string);
               } catch (IllegalArgumentException e) {
@@ -88,19 +89,33 @@ public class Condition {
                         "ifLogContentSatisfy[%d].detail: required, string in %s",
                         index, Type.ENUM_NAME_COLLECTION));
               }
-              outputNode.put("detail", output.asText());
+              outputNode.put("detail", temp.asText());
             } else {
               throw new RuleIfInvalidContentException(
                   String.format(
                       "ifLogContentSatisfy[%d].detail: required, string in %s",
                       index, Type.ENUM_NAME_COLLECTION));
             }
+          } else if (operator.equals(Operator.MATCH_REGEX)) {
+            if (temp.isTextual()) {
+              string = temp.asText();
+              try {
+                Pattern.compile(string);
+              } catch (PatternSyntaxException e) {
+                throw new RuleIfInvalidContentException(
+                    "ifLogContentSatisfy[%d].detail: required, string as regex");
+              }
+              outputNode.put("detail", temp.asText());
+            } else {
+              throw new RuleIfInvalidContentException(
+                  "ifLogContentSatisfy[%d].detail: required, string as regex");
+            }
           } else if (operator.detailType() == Boolean.class && temp.isBoolean()) {
-            outputNode.put("detail", output.asBoolean());
+            outputNode.put("detail", temp.asBoolean());
           } else if (operator.detailType() == Double.class && temp.isDouble()) {
-            outputNode.put("detail", output.asDouble());
+            outputNode.put("detail", temp.asDouble());
           } else if (operator.detailType() == String.class && temp.isTextual()) {
-            outputNode.put("detail", output.asText());
+            outputNode.put("detail", temp.asText());
           } else {
             throw new RuleIfInvalidContentException(
                 String.format(
@@ -231,12 +246,7 @@ public class Condition {
       case LESS_THAN_OR_EQUAL_TO:
         return unit.valueAsDouble() <= detailAsDouble();
       case MATCH_REGEX:
-        try {
-          return unit.valueAsString().matches(detailAsString());
-        } catch (PatternSyntaxException e) {
-          // If regex is invalid, treat it as "^.*$" (match everything).
-          return true;
-        }
+        return unit.valueAsString().matches(detailAsString());
       case CONTAIN:
         return unit.valueAsString().contains(detailAsString());
       case NOT_CONTAIN:
