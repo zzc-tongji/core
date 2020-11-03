@@ -150,7 +150,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     if (load("core.api-document").length() <= 0) {
       save(
           "core.api-document",
-          "https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fmessage-helper%2fcore%2fmaster%2fdoc%2fapi.yaml");
+          "https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdoc%2fapi.yaml");
     }
     if (load("core.frontend-config").length() <= 0) {
       save("core.frontend-config", "{}");
