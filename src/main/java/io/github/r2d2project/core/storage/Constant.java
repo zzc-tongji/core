@@ -1,4 +1,4 @@
-package io.github.r2d2project.core.mysql;
+package io.github.r2d2project.core.storage;
 
 public class Constant {
   // general

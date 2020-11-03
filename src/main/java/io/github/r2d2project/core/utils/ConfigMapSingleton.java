@@ -1,6 +1,6 @@
 package io.github.r2d2project.core.utils;
 
-import io.github.r2d2project.core.mysql.po.ConfigPo;
+import io.github.r2d2project.core.storage.po.ConfigPo;
 
 import java.util.Map;
 

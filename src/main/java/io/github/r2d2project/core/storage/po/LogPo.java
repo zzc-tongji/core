@@ -1,6 +1,6 @@
-package io.github.r2d2project.core.mysql.po;
+package io.github.r2d2project.core.storage.po;
 
-import io.github.r2d2project.core.mysql.Constant;
+import io.github.r2d2project.core.storage.Constant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

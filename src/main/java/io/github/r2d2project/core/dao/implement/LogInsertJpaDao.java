@@ -2,8 +2,8 @@ package io.github.r2d2project.core.dao.implement;
 
 import io.github.r2d2project.core.dao.LogInsertDao;
 import io.github.r2d2project.core.dto.rpc.log.PostRequestDto;
-import io.github.r2d2project.core.mysql.po.LogPo;
-import io.github.r2d2project.core.mysql.repository.LogJpaRepository;
+import io.github.r2d2project.core.storage.po.LogPo;
+import io.github.r2d2project.core.storage.repository.LogJpaRepository;
 import io.github.r2d2project.core.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

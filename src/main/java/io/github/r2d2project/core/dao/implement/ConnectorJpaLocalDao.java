@@ -9,12 +9,12 @@ import io.github.r2d2project.core.dto.api.connectors.GetPutPostDeleteResponseDto
 import io.github.r2d2project.core.dto.api.connectors.Item;
 import io.github.r2d2project.core.dto.api.connectors.PutPostRequestDto;
 import io.github.r2d2project.core.exception.*;
-import io.github.r2d2project.core.mysql.Constant;
-import io.github.r2d2project.core.mysql.po.ConnectorPo;
-import io.github.r2d2project.core.mysql.repository.ConnectorJpaRepository;
 import io.github.r2d2project.core.processor.log.Log;
 import io.github.r2d2project.core.processor.rule.Rule;
 import io.github.r2d2project.core.processor.rule.then.Body;
+import io.github.r2d2project.core.storage.Constant;
+import io.github.r2d2project.core.storage.po.ConnectorPo;
+import io.github.r2d2project.core.storage.repository.ConnectorJpaRepository;
 import io.github.r2d2project.core.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

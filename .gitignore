@@ -32,7 +32,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -174,7 +175,6 @@ hs_err_pid*
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/
 .idea/**/dataSources.xml
 config/
 data/database.sqlite3

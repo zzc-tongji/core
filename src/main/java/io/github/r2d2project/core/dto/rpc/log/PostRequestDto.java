@@ -1,7 +1,7 @@
 package io.github.r2d2project.core.dto.rpc.log;
 
 import io.github.r2d2project.core.dto.rpc.RpcTokenRequestDto;
-import io.github.r2d2project.core.mysql.Constant;
+import io.github.r2d2project.core.storage.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
