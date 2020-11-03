@@ -36,6 +36,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     lock = new Lock();
     //
     refreshCache();
+    initialize();
     ConfigMapSingleton.getInstance().setLock(lock);
     ConfigMapSingleton.getInstance().setConfigMap(configMap);
   }
@@ -143,6 +144,26 @@ public class ConfigJpaLocalDao implements ConfigDao {
     GetPutResponseDto responseDto = new GetPutResponseDto();
     poToResponseDto(updatedPo, responseDto);
     return responseDto;
+  }
+
+  private void initialize() {
+    if (load("core.api-document").length() <= 0) {
+      save(
+          "core.api-document",
+          "https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fmessage-helper%2fcore%2fmaster%2fdoc%2fapi.yaml");
+    }
+    if (load("core.frontend-config").length() <= 0) {
+      save("core.frontend-config", "{}");
+    }
+    if (load("core.id-generator").length() <= 0) {
+      save("core.id-generator", "https://id.zzc.icu/");
+    }
+    if (load("core.instance").length() <= 0) {
+      save("core.instance", "core");
+    }
+    if (load("core.rpc-token").length() <= 0) {
+      save("core.rpc-token", "core8r3ufurm9tqomosuul0s5s9ts6ko8g85pijxudbvpm2jtb2w01od1z69h5vi");
+    }
   }
 
   @SuppressWarnings("BusyWait")
