@@ -15,10 +15,10 @@ server.port=8003
 # BEGIN
 #
 # setting.debug
-# => Set as `true` to show all exceptions in local log (console).
+# => Set as `true` to show all exceptions in local log (console), otherwise set as `false`.
 setting.debug=
 # setting.global-cors
-# => Set as `true` to enable CORS for all APIs.
+# => Set as `true` to enable CORS for all APIs, otherwise set as `false`.
 setting.global-cors=
 # spring.datasource.url
 # => The format is `jdbc:mysql://<ip-or-domain>:<port>/<database-name>`.

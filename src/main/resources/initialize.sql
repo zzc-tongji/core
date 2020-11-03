@@ -26,9 +26,9 @@ VALUES ('core.frontend-config', '{}');
 -- requirement:
 --
 -- - Requests of `GET` method without any authorization should be accepted.
--- - Responses' headers should be `application/json:charset;charset=UTF-8`.
+    -- - Responses' headers should be `application/json:charset;charset=UTF-8`.
 -- - Responses' body should be a valid JSON string like `{"id":3075681472512}`.
-INSERT IGNORE INTO config (item_key, item_value)
+    INSERT IGNORE INTO config (item_key, item_value)
 VALUES ('core.id-generator', 'https://id.zzc.icu/');
 
 -- [config] instance
