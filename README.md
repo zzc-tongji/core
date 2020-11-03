@@ -2,7 +2,7 @@
 
 ### Prerequisite
 
-- A database of **MySQL 5.7+** is required.
+- A database of **MySQL 5.7.x** or **MariaDB 10.2.x** is required. (Other versions are not fully test.)
 
 - Create application properties.
   - Place the following content in file `<jar-location>/config/application.properties`.
