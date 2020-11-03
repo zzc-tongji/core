@@ -30,6 +30,7 @@ services:
     restart: always
     volumes:
       - './mount/config/:/home/app/config/'
+      - './mount/data/:/home/app/data/'
 ```
 
 ``` sh
