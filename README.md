@@ -55,9 +55,9 @@ java -jar ./target/id.jar
 Execute following commands to pull and run:
 
 ```sh
-docker pull messagehelper/core
+docker pull r2d2project/core
 
-docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ messagehelper/core
+docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ r2d2project/core
 ```
 
 Path `/home/app/` in docker container acts as `<jar-location>`.

@@ -174,8 +174,7 @@ hs_err_pid*
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+!**/src/main/**/
 .idea/**/dataSources.xml
 config/
 data/database.sqlite3

@@ -4,7 +4,7 @@
 
 ``` sh
 git clean -xfd
-docker build -t messagehelper/core .
+docker build -t r2d2project/core .
 ```
 
 ### Run
@@ -14,7 +14,7 @@ docker build -t messagehelper/core .
 #### Script
 
 ``` sh
-docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ messagehelper/core
+docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ r2d2project/core
 ```
 
 #### Compose
@@ -24,7 +24,7 @@ version: '3.3'
 services:
   core:
     container_name: core
-    image: messagehelper/core
+    image: r2d2project/core
     ports:
       - '8003:8003'
     restart: always
