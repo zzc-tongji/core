@@ -177,4 +177,4 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 .idea/**/dataSources.xml
 config/
-data/database.sqlite3
+data/
