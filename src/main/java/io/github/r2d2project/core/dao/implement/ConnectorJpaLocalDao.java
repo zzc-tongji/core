@@ -9,12 +9,12 @@ import io.github.r2d2project.core.dto.api.connectors.GetPutPostDeleteResponseDto
 import io.github.r2d2project.core.dto.api.connectors.Item;
 import io.github.r2d2project.core.dto.api.connectors.PutPostRequestDto;
 import io.github.r2d2project.core.exception.type.*;
-import io.github.r2d2project.core.processor.log.Log;
-import io.github.r2d2project.core.processor.rule.Rule;
-import io.github.r2d2project.core.processor.rule.then.Body;
 import io.github.r2d2project.core.persistence.Constant;
 import io.github.r2d2project.core.persistence.po.ConnectorPo;
 import io.github.r2d2project.core.persistence.repository.ConnectorJpaRepository;
+import io.github.r2d2project.core.processor.log.Log;
+import io.github.r2d2project.core.processor.rule.Rule;
+import io.github.r2d2project.core.processor.rule.then.Body;
 import io.github.r2d2project.core.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -133,7 +133,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           rule.getThenUseBodyJson(),
           Body.fill(rule.getThenUseBodyTemplate(), log, rule.getThenUseBodyJson()));
     }
-    // If request header content-type" is an empty string, use GET method,
+    // If request header "Content-Type" is an empty string, use GET method,
     // otherwise, use POST method.
   }
 
@@ -157,7 +157,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .put("requestBody", body)
               .toString());
       return ResponseEntity.status(400)
-          .header("content-type", "application/json;charset=utf-8")
+          .header("Content-Type", "application/json;charset=utf-8")
           .body(
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
@@ -207,7 +207,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .toString());
       // response
       return ResponseEntity.status(400)
-          .header("content-type", "application/json;charset=utf-8")
+          .header("Content-Type", "application/json;charset=utf-8")
           .body(
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
@@ -464,7 +464,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           contentType.length() > 0
               ? HttpRequest.newBuilder()
                   .uri(new URI(url))
-                  .headers("content-type", contentType)
+                  .headers("Content-Type", contentType)
                   .POST(HttpRequest.BodyPublishers.ofString(bodyWithToken))
                   .build()
               : HttpRequest.newBuilder().uri(new URI(url)).GET().build();
@@ -484,7 +484,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .toString());
       // response
       return ResponseEntity.status(400)
-          .header("content-type", "application/json;charset=utf-8")
+          .header("Content-Type", "application/json;charset=utf-8")
           .body(
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
@@ -511,7 +511,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               .toString());
       // response
       return ResponseEntity.status(400)
-          .header("content-type", "application/json;charset=utf-8")
+          .header("Content-Type", "application/json;charset=utf-8")
           .body(
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
@@ -553,12 +553,12 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
     // response
     if (responseBody.length() <= 0) {
       return ResponseEntity.status(204)
-          .header("delegate-status", String.valueOf(statusCode))
+          .header("Delegate-Status", String.valueOf(statusCode))
           .body(responseBody);
     }
     return ResponseEntity.status(200)
-        .header("content-type", response.headers().allValues("content-type").get(0))
-        .header("delegate-status", String.valueOf(statusCode))
+        .header("Content-Type", response.headers().allValues("Content-Type").get(0))
+        .header("Delegate-Status", String.valueOf(statusCode))
         .body(response.body());
   }
 
@@ -571,7 +571,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
           contentType.length() > 0
               ? HttpRequest.newBuilder()
                   .uri(new URI(url))
-                  .headers("content-type", contentType)
+                  .headers("Content-Type", contentType)
                   .POST(HttpRequest.BodyPublishers.ofString(body))
                   .build()
               : HttpRequest.newBuilder().uri(new URI(url)).GET().build();
@@ -686,7 +686,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
       request =
           HttpRequest.newBuilder()
               .uri(new URI(urlWithPath))
-              .headers("content-type", "application/json;charset=utf-8")
+              .headers("Content-Type", "application/json;charset=utf-8")
               .POST(
                   HttpRequest.BodyPublishers.ofString(
                       ObjectMapperSingleton.getInstance()

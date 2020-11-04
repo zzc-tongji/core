@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class Controller {
   private static final String API_TOKEN_QUERY_STRING = "apiToken";
-  private static final String API_TOKEN_HEADER = "api-token";
+  private static final String API_TOKEN_HEADER = "Api-Token";
 
   private final ConfigDao configDao;
   private final ConnectorDao connectorDao;
@@ -179,7 +179,7 @@ public class Controller {
 
   // "/api/connectors/{idOrInstance}/delegate?path={path}"
 
-  @CrossOrigin(exposedHeaders = "delegate-status")
+  @CrossOrigin(exposedHeaders = "Delegate-Status")
   @GetMapping(value = "/api/connectors/{idOrInstance}/delegate")
   public ResponseEntity<String> apiConnectorsDelegateGet(
       @PathVariable("idOrInstance") String idOrInstance,
@@ -194,13 +194,13 @@ public class Controller {
     }
   }
 
-  @CrossOrigin(exposedHeaders = "delegate-status")
+  @CrossOrigin(exposedHeaders = "Delegate-Status")
   @PostMapping(value = "/api/connectors/{idOrInstance}/delegate")
   public ResponseEntity<String> apiConnectorsDelegatePost(
       @PathVariable("idOrInstance") String idOrInstance,
       @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
       @RequestParam(name = "path", defaultValue = "") String path,
-      @RequestHeader(name = "content-type") String headerContentType,
+      @RequestHeader(name = "Content-Type") String headerContentType,
       @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
       @RequestBody(required = false) String request) {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});

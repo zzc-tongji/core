@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
   }
 
-  // header `token` not found (GET request only)
+  // required header not found (missing header "Api-Token" in GET request of "/api/*")
   @ExceptionHandler(value = MissingRequestHeaderException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
