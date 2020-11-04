@@ -18,6 +18,7 @@ import io.github.r2d2project.core.storage.repository.ConnectorJpaRepository;
 import io.github.r2d2project.core.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -56,13 +57,16 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   public ConnectorJpaLocalDao(
       @Autowired ConnectorJpaRepository repository,
       @Autowired ConfigDao configDao,
-      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao,
+      @Autowired @Qualifier("LogInsertJpaDao") LogInsertDao LogInsertJpaDao,
+      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao LogInsertAsyncJpaDao,
       @Autowired @Lazy RuleDao ruleDao,
-      @Autowired @Lazy ProcessorDao processorDao) {
+      @Autowired @Lazy ProcessorDao processorDao,
+      @Value("${spring.datasource.driver-class-name}") String driverClassName) {
     // initialize
     this.repository = repository;
     this.configDao = configDao;
-    this.logInsertDao = logInsertDao;
+    this.logInsertDao =
+        driverClassName.equals("org.sqlite.JDBC") ? LogInsertJpaDao : LogInsertAsyncJpaDao;
     this.ruleDao = ruleDao;
     this.processorDao = processorDao;
     connectorMapById = new HashMap<>();

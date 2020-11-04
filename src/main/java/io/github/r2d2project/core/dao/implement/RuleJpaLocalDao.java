@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -54,11 +55,14 @@ public class RuleJpaLocalDao implements RuleDao {
       @Autowired RuleJpaRepository repository,
       @Autowired ConfigDao configDao,
       @Autowired ConnectorDao connectorDao,
-      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao) {
+      @Autowired @Qualifier("LogInsertJpaDao") LogInsertDao LogInsertJpaDao,
+      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao LogInsertAsyncJpaDao,
+      @Value("${spring.datasource.driver-class-name}") String driverClassName) {
     this.repository = repository;
     this.configDao = configDao;
     this.connectorDao = connectorDao;
-    this.logInsertDao = logInsertDao;
+    this.logInsertDao =
+        driverClassName.equals("org.sqlite.JDBC") ? LogInsertJpaDao : LogInsertAsyncJpaDao;
     ruleList = new ArrayList<>();
     lock = new Lock();
     logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);

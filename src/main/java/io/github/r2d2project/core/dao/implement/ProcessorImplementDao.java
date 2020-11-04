@@ -9,6 +9,7 @@ import io.github.r2d2project.core.processor.log.Log;
 import io.github.r2d2project.core.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,10 +20,13 @@ public class ProcessorImplementDao implements ProcessorDao {
 
   public ProcessorImplementDao(
       @Autowired ConfigDao configDao,
-      @Qualifier("LogInsertAsyncJpaDao") LogInsertDao logInsertDao,
-      @Autowired RuleDao ruleDao) {
+      @Autowired @Qualifier("LogInsertJpaDao") LogInsertDao LogInsertJpaDao,
+      @Autowired @Qualifier("LogInsertAsyncJpaDao") LogInsertDao LogInsertAsyncJpaDao,
+      @Autowired RuleDao ruleDao,
+      @Value("${spring.datasource.driver-class-name}") String driverClassName) {
     this.configDao = configDao;
-    this.logInsertDao = logInsertDao;
+    this.logInsertDao =
+        driverClassName.equals("org.sqlite.JDBC") ? LogInsertJpaDao : LogInsertAsyncJpaDao;
     this.ruleDao = ruleDao;
   }
 
