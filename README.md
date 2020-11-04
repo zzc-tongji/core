@@ -155,6 +155,17 @@ create table log
 );
 ```
 
+#### Preview
+
+``` sql
+select count(id) FROM log;
+select * from log where level = "INFO" OR level = "WARN" OR level = "ERR" order by timestamp_ms desc limit 100;
+select * from config;
+select * from connector;
+select * from rule order by priority asc;
+select * from token;
+```
+
 ### Develop
 
 #### Git
@@ -167,7 +178,7 @@ git config --local core.safecrlf true
 git config --local core.eol lf
 ```
 
-#### Setting
+#### application.properties
 
 Add the following content to `<work-directory>/config/application.properties`.
 
@@ -179,17 +190,12 @@ setting.debug=true
 setting.global-cors=true
 # Set as `true` to enable CORS for all APIs.
 # Set as `false` to enable CORS for only `/rpc/log` and `/rpc/status`.
-```
 
-#### Database Review
+logging.level.org.hibernate.SQL=DEBUG
+# Show SQL operations.
 
-``` sql
-select count(id) FROM log;
-select * from log where level = "INFO" OR level = "WARN" OR level = "ERR" order by timestamp_ms desc limit 100;
-select * from config;
-select * from connector;
-select * from rule order by priority asc;
-select * from token;
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+# Show parameters of SQL operations.
 ```
 
 ### Others
