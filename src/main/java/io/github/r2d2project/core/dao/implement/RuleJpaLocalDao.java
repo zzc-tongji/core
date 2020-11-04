@@ -503,8 +503,8 @@ public class RuleJpaLocalDao implements RuleDao {
     // validate `thenUseHeaderContentType` and `thenUseBodyJson`
     String thenUseHeaderContentType = dto.getThenUseHeaderContentType();
     try {
-      po.setThenUseBodyJson(
-          ContentType.parse(thenUseHeaderContentType).equals(ContentType.APPLICATION_JSON));
+      ContentType.parse(thenUseHeaderContentType);
+      po.setThenUseBodyJson(thenUseHeaderContentType.contains("application/json"));
     } catch (ParseException | UnsupportedCharsetException e) {
       throw new RuleThenInvalidContentTypeException(
           PutPostRequestDto.EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE);

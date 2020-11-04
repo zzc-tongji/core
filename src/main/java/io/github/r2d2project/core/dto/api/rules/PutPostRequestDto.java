@@ -29,7 +29,7 @@ public class PutPostRequestDto extends ApiTokenRequestDto {
           + Constant.RULE_THEN_USE_URL_PATH_LENGTH
           + "]";
   public static final String EXCEPTION_MESSAGE_THEN_USE_HEADER_CONTENT_TYPE =
-      "thenUseHeaderContentType: required, value of header \"content-type\" as string with length in [0, "
+      "thenUseHeaderContentType: required, MIME type string with length in [0, "
           + Constant.RULE_THEN_USE_HEADER_CONTENT_TYPE_LENGTH
           + "]";
   private static final String EXCEPTION_MESSAGE_THEN_USE_BODY_TEMPLATE =
