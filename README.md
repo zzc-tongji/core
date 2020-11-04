@@ -47,7 +47,7 @@ Using MySQL 5.7 or MariaDB 10.2 instead is a better choice. (Other versions are 
 Create file `<work-directory>/config/application.properties` and fill out the following content.
 
 ``` properties
-spring.jpa.database-platform=io.github.r2d2project.core.configuration.MySQL57Dialect
+spring.jpa.database-platform=io.github.r2d2project.core.storage.dialect.MySQL57Dialect
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.url=jdbc:mysql://<ip-or-domain>:<port>/<database-name>
 spring.datasource.username=<username>
@@ -63,7 +63,7 @@ If the database is empty, the program will create tables and items by the defaul
 #### MariaDB 10.2
 
 ``` properties
-spring.jpa.database-platform=io.github.r2d2project.core.configuration.MariaDB102Dialect
+spring.jpa.database-platform=io.github.r2d2project.core.storage.dialect.MariaDB102Dialect
 spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
 spring.datasource.url=jdbc:mariadb://<ip-or-domain>:<port>/<database-name>
 spring.datasource.username=<username>

@@ -1,4 +1,4 @@
-package io.github.r2d2project.core.configuration;
+package io.github.r2d2project.core.storage.dialect;
 
 public class MariaDB102Dialect extends org.hibernate.dialect.MariaDB102Dialect {
   @Override

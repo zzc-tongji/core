@@ -1,4 +1,4 @@
-package io.github.r2d2project.core.configuration;
+package io.github.r2d2project.core.storage.dialect;
 
 public class MySQL57Dialect extends org.hibernate.dialect.MySQL57Dialect {
   @Override
