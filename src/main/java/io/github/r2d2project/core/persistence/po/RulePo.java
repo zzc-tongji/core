@@ -1,6 +1,6 @@
-package io.github.r2d2project.core.storage.po;
+package io.github.r2d2project.core.persistence.po;
 
-import io.github.r2d2project.core.storage.Constant;
+import io.github.r2d2project.core.persistence.Constant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

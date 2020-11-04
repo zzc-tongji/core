@@ -1,7 +1,7 @@
 package io.github.r2d2project.core.dto.api.rules;
 
 import io.github.r2d2project.core.dto.api.ApiTokenRequestDto;
-import io.github.r2d2project.core.storage.Constant;
+import io.github.r2d2project.core.persistence.Constant;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;

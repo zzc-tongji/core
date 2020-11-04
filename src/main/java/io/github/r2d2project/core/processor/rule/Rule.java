@@ -4,7 +4,7 @@ import io.github.r2d2project.core.processor.log.Log;
 import io.github.r2d2project.core.processor.log.content.Unit;
 import io.github.r2d2project.core.processor.rule._if.Condition;
 import io.github.r2d2project.core.processor.rule._if.Result;
-import io.github.r2d2project.core.storage.po.RulePo;
+import io.github.r2d2project.core.persistence.po.RulePo;
 
 import java.util.List;
 import java.util.Map;

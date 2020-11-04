@@ -1,4 +1,4 @@
-package io.github.r2d2project.core.storage;
+package io.github.r2d2project.core.persistence;
 
 public class Constant {
   // general
