@@ -16,10 +16,10 @@ public class RulePo implements Serializable {
   @Column(length = Constant.RULE_NAME_LENGTH, nullable = false, unique = true)
   private String name;
 
-  @Column(name = "if_log_instance_equal", nullable = false)
+  @Column(length = Constant.INSTANCE_LENGTH, name = "if_log_instance_equal", nullable = false)
   private String ifLogInstanceEqual;
 
-  @Column(name = "if_log_category_equal", nullable = false)
+  @Column(length = Constant.CATEGORY_LENGTH, name = "if_log_category_equal", nullable = false)
   private String ifLogCategoryEqual;
 
   @Column(
@@ -61,7 +61,7 @@ public class RulePo implements Serializable {
   @Column(nullable = false)
   private Boolean enable;
 
-  @Column(nullable = false)
+  @Column(length = Constant.RULE_ANNOTATION_LENGTH, nullable = false)
   private String annotation;
 
   public Long getId() {
