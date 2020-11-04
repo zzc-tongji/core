@@ -3,12 +3,17 @@
     {
       "name": "setting.debug",
       "type": "java.lang.Boolean",
-      "description": "Set as `true` to show all exceptions in local log (console)."
+      "description": "Set as `true` to show all exceptions in console. Set as `false` to show just `RuntimeException` in console."
     },
     {
       "name": "setting.global-cors",
       "type": "java.lang.Boolean",
-      "description": "Set as `true` to enable CORS for all APIs."
+      "description": "Set as `true` to enable CORS for all APIs. Set as `false` to enable CORS for only `/rpc/log` and `/rpc/status`."
+    },
+    {
+      "name": "spring.datasource.max-active",
+      "type": "java.lang.String",
+      "description": "Search Google for more details."
     }
   ]
 }
