@@ -351,17 +351,6 @@ public class Controller {
     }
   }
 
-  @CrossOrigin(origins = "*", allowedHeaders = "*")
-  @PostMapping(value = "/api/webhooks")
-  @ResponseStatus(HttpStatus.ACCEPTED)
-  public void apiWebhooksPost(
-      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
-      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken,
-      @RequestBody @Validated io.github.r2d2project.core.dto.api.webhooks.PostRequestDto dto) {
-    apiTokenDao.authenticate(new String[] {dto.getApiToken(), headerApiToken, queryStringApiToken});
-    processorDao.startWithWebhook(dto);
-  }
-
   // "/rpc"
 
   @CrossOrigin(origins = "*", allowedHeaders = "*")
