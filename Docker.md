@@ -14,7 +14,7 @@ docker build -t r2d2project/core .
 #### Script
 
 ``` sh
-docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ r2d2project/core
+docker run --detach --name core --publish 8003:8003 --restart always --volume ./mount/config/:/home/app/config/ --volume ./mount/data/:/home/app/data/ r2d2project/core
 ```
 
 #### Compose
