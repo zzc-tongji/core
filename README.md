@@ -10,8 +10,8 @@ git clean -xfd
 ./mvnw clean && ./mvnw package # macOS and Linux only
 .\mvnw.cmd clean && .\mvnw.cmd package # Windows only
 
-mkdir config/
-mkdir data/
+mkdir ./config/
+mkdir ./data/
 
 java -jar ./target/id.jar
 
