@@ -47,15 +47,6 @@ public class GlobalExceptionHandler {
         Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
   }
 
-  // required header not found (missing header "Api-Token" in GET request of "/api/*")
-  @ExceptionHandler(value = MissingRequestHeaderException.class)
-  @ResponseBody
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public HttpClientErrorResponseDto handle(MissingRequestHeaderException e) {
-    log(e);
-    return new HttpClientErrorResponseDto(e);
-  }
-
   @ExceptionHandler(value = ApiTokenInvalidException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)
