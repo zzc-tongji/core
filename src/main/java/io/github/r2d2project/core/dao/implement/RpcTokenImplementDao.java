@@ -2,7 +2,7 @@ package io.github.r2d2project.core.dao.implement;
 
 import io.github.r2d2project.core.dao.ConfigDao;
 import io.github.r2d2project.core.dao.RpcTokenDao;
-import io.github.r2d2project.core.exception.RpcTokenInvalidException;
+import io.github.r2d2project.core.exception.type.RpcTokenInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

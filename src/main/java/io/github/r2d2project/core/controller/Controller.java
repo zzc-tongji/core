@@ -11,7 +11,7 @@ import io.github.r2d2project.core.dto.api.logs.Constant;
 import io.github.r2d2project.core.dto.api.logs.GetRequest;
 import io.github.r2d2project.core.dto.api.logs.GetResponse;
 import io.github.r2d2project.core.dto.api.register.PostRequestDto;
-import io.github.r2d2project.core.exception.IdNotNumericalException;
+import io.github.r2d2project.core.exception.type.IdNotNumericalException;
 import io.github.r2d2project.core.processor.rule._if.Operator;
 import io.github.r2d2project.core.utils.DisableCacheHeader;
 import io.github.r2d2project.core.utils.ObjectMapperSingleton;

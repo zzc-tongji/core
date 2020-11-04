@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.r2d2project.core.dto.api.rules.PutPostRequestDto;
-import io.github.r2d2project.core.exception.RuleIfInvalidContentException;
+import io.github.r2d2project.core.exception.type.RuleIfInvalidContentException;
 import io.github.r2d2project.core.processor.log.content.Type;
 import io.github.r2d2project.core.processor.log.content.Unit;
 import io.github.r2d2project.core.utils.ObjectMapperSingleton;

@@ -2,6 +2,7 @@ package io.github.r2d2project.core.exception;
 
 import io.github.r2d2project.core.dto.HttpClientErrorResponseDto;
 import io.github.r2d2project.core.dto.HttpServerErrorResponseDto;
+import io.github.r2d2project.core.exception.type.*;
 import io.github.r2d2project.core.utils.ThrowableTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

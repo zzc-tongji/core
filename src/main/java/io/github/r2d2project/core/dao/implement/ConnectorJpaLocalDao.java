@@ -8,7 +8,7 @@ import io.github.r2d2project.core.dto.api.connectors.GetAllResponseDto;
 import io.github.r2d2project.core.dto.api.connectors.GetPutPostDeleteResponseDto;
 import io.github.r2d2project.core.dto.api.connectors.Item;
 import io.github.r2d2project.core.dto.api.connectors.PutPostRequestDto;
-import io.github.r2d2project.core.exception.*;
+import io.github.r2d2project.core.exception.type.*;
 import io.github.r2d2project.core.processor.log.Log;
 import io.github.r2d2project.core.processor.rule.Rule;
 import io.github.r2d2project.core.processor.rule.then.Body;

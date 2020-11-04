@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.r2d2project.core.dto.rpc.log.PostRequestDto;
-import io.github.r2d2project.core.exception.LogContentInvalidException;
+import io.github.r2d2project.core.exception.type.LogContentInvalidException;
 import io.github.r2d2project.core.utils.ObjectMapperSingleton;
 
 import java.util.HashMap;
