@@ -1,0 +1,1577 @@
+openapi: 3.0.1
+info:
+  title: API
+  description: 'The document is a part of [core](https://github.com/r2-d2-project/core).'
+  version: 1.0.0
+tags:
+  - name: 'Authorization'
+  - name: 'Configuration'
+  - name: 'Connector'
+  - name: 'Delegate'
+  - name: 'Rule'
+  - name: 'Log'
+  - name: 'Others'
+  - name: 'API'
+  - name: 'RPC'
+paths:
+  '/api':
+    get:
+      tags:
+        - 'Others'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApi'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              example:
+                registered: false
+                document: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+              schema:
+                type: 'object'
+                required:
+                  - 'registered'
+                  - 'document'
+                properties:
+                  registered:
+                    type: 'boolean'
+                    description: 'It shows whether there exists a registed user.'
+                  document:
+                    type: 'string'
+                    description: 'It is the URL of the API document.'
+  '/api/cache':
+    post:
+      tags:
+        - 'Others'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiCache'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'apiToken'
+              properties:
+                apiToken:
+                  $ref: '#/components/schemas/ApiTokenInRequestBody'
+      responses:
+        204:
+          description: '(TODO)'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/configs':
+    get:
+      tags:
+        - 'Configuration'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiConfigs'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                required:
+                  - 'data'
+                properties:
+                  data:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/ConfigResponse'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/configs/{key}':
+    get:
+      tags:
+        - 'Configuration'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiConfigsKey'
+      parameters:
+        - in: 'path'
+          name: 'key'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: true
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-config'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      tags:
+        - 'Configuration'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'putApiConfigsKey'
+      parameters:
+        - in: 'path'
+          name: 'key'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: true
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'value'
+                - 'apiToken'
+              properties:
+                value:
+                  type: 'string'
+                  maxLength: 1024
+                  minLength: 1
+                  example: 'core'
+                  description: 'It is the value of the configuration.'
+                apiTiken:
+                  $ref: '#/components/schemas/ApiTokenInRequestBody'
+      responses:
+        200:
+          $ref: '#/components/responses/200-config'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/connectors':
+    get:
+      tags:
+        - 'Connector'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiConnectors'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                required:
+                  - 'data'
+                properties:
+                  data:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/ConnectorResponse'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      tags:
+        - 'Connector'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiConnectors'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorRequest'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-connector'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/connectors/{id}':
+    get:
+      tags:
+        - 'Connector'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiConnectorsId'
+      parameters:
+        - $ref: '#/components/parameters/ConnectorIdInUrlPath'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-connector'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      tags:
+        - 'Connector'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'putApiConnectorsId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorRequest'
+      parameters:
+        - $ref: '#/components/parameters/ConnectorIdInUrlPath'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-connector'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    delete:
+      tags:
+        - 'Connector'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'deleteApiConnectorsId'
+      parameters:
+        - $ref: '#/components/parameters/ConnectorIdInUrlPath'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-connector'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/connectors/{instance}':
+    get:
+      tags:
+        - 'Connector'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiConnectorsInstance'
+      parameters:
+        - $ref: '#/components/parameters/InstanceInUrlPath'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-connector'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/connectors/{id}/delegate':
+    post:
+      tags:
+        - 'Delegate'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiConnectorsIdDelegate'
+      parameters:
+        - $ref: '#/components/parameters/ConnectorIdInUrlPath'
+        - $ref: '#/components/parameters/PathInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      requestBody:
+        $ref: '#/components/requestBodies/Delegate'
+      responses:
+        200:
+          $ref: '#/components/responses/200-delegate'
+        400:
+          $ref: '#/components/responses/400-delegate'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/connectors/{instance}/delegate':
+    post:
+      tags:
+        - 'Delegate'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiConnectorsInstanceDelegate'
+      parameters:
+        - $ref: '#/components/parameters/InstanceInUrlPath'
+        - $ref: '#/components/parameters/PathInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      requestBody:
+        $ref: '#/components/requestBodies/Delegate'
+      responses:
+        200:
+          $ref: '#/components/responses/200-delegate'
+        400:
+          $ref: '#/components/responses/400-delegate'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/login':
+    post:
+      tags:
+        - 'Authorization'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiLogin'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'password'
+              properties:
+                password:
+                  type: 'string'
+                  minLength: 1
+                  example: 'password'
+                  description: 'It is the password.'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                required:
+                  - 'apiToken'
+                  - 'expiredTimestampMs'
+                properties:
+                  apiToken:
+                    type: 'string'
+                    example: 'token-1923489590182321061'
+                    description: 'It is a valid API token.'
+                  expiredTimestampMs:
+                    type: 'integer'
+                    example: 1604647151943
+                    description: 'It is a UNIX timestamp in milliseconds, which indicates the expiration time of the aforementioned API token.'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          description: 'The password is invalid.'
+          content:
+            application/json:
+              example:
+                error: 'password: not valid'
+                document: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+              schema:
+                type: 'object'
+                required:
+                  - 'error'
+                  - 'document'
+                properties:
+                  error:
+                    type: 'string'
+                    description: 'It shows the reason of the error.'
+                  document:
+                    type: 'string'
+                    description: 'It is the URL of the API document.'
+        418:
+          description: 'There is no registed user. **Please execute "POST /api/register" to register first.**'
+          content:
+            application/json:
+              example:
+                error: 'not registered, please register first'
+                document: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+              schema:
+                type: 'object'
+                required:
+                  - 'error'
+                  - 'document'
+                properties:
+                  error:
+                    type: 'string'
+                    description: 'It shows the reason of the error.'
+                  document:
+                    type: 'string'
+                    description: 'It is the URL of the API document.'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/login/permanent':
+    post:
+      tags:
+        - 'Authorization'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiLoginPermanent'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'password'
+              properties:
+                password:
+                  type: 'string'
+                  minLength: 1
+                  example: 'password'
+                  description: 'It is the password.'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                required:
+                  - 'apiToken'
+                  - 'expiredTimestampMs'
+                properties:
+                  apiToken:
+                    type: 'string'
+                    example: 'token-1427526393655000360'
+                    description: 'It is a valid API token.'
+                  expiredTimestampMs:
+                    type: 'integer'
+                    example: 0
+                    description: 'It is a UNIX timestamp in milliseconds. It is always 0 which means the aforementioned API token will never expire.'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          description: 'The password is invalid.'
+          content:
+            application/json:
+              example:
+                error: 'password: not valid'
+                document: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+              schema:
+                type: 'object'
+                required:
+                  - 'error'
+                  - 'document'
+                properties:
+                  error:
+                    type: 'string'
+                    description: 'It shows the reason of the error.'
+                  document:
+                    type: 'string'
+                    description: 'It is the URL of the API document.'
+        418:
+          description: 'There is no registed user. **Please execute "POST /api/register" to register first.**'
+          content:
+            application/json:
+              example:
+                error: 'not registered, please register first'
+                document: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+              schema:
+                type: 'object'
+                required:
+                  - 'error'
+                  - 'document'
+                properties:
+                  error:
+                    type: 'string'
+                    description: 'It shows the reason of the error.'
+                  document:
+                    type: 'string'
+                    description: 'It is the URL of the API document.'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/logout':
+    delete:
+      tags:
+        - 'Authorization'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiLogout'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        204:
+          description: 'Valid API tokens in both request header and query string have been revoked.'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/logs':
+    get:
+      tags:
+        - 'Log'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiLogs'
+      parameters:
+        - in: 'query'
+          name: 'idGreaterThan'
+          description: '(TODO)'
+          schema:
+            type: 'integer'
+          required: false
+        - in: 'query'
+          name: 'idLessThan'
+          description: '(TODO)'
+          schema:
+            type: 'integer'
+          required: false
+        - in: 'query'
+          name: 'instanceContain'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: false
+        - in: 'query'
+          name: 'levelContain'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: false
+        - in: 'query'
+          name: 'categoryContain'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: false
+        - in: 'query'
+          name: 'timestampMsGreaterThan'
+          description: '(TODO)'
+          schema:
+            type: 'integer'
+          required: false
+        - in: 'query'
+          name: 'timestampMsLessThan'
+          description: '(TODO)'
+          schema:
+            type: 'integer'
+          required: false
+        - in: 'query'
+          name: 'contentContain'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: false
+        - in: 'query'
+          name: 'order'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: false
+        - in: 'query'
+          name: 'ascending'
+          description: '(TODO)'
+          schema:
+            type: 'string'
+          required: false
+        - in: 'query'
+          name: 'page'
+          description: '(TODO)'
+          schema:
+            type: 'integer'
+          required: false
+        - in: 'query'
+          name: 'size'
+          description: '(TODO)'
+          schema:
+            type: 'integer'
+          required: false
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                required:
+                  - 'data'
+                properties:
+                  data:
+                    type: 'object'
+                    required:
+                      - 'page'
+                      - 'size'
+                      - 'total'
+                      - 'totalPage'
+                      - 'previous'
+                      - 'next'
+                      - 'logList'
+                    properties:
+                      page:
+                        type: 'integer'
+                        example: 1
+                        description: '(TODO)'
+                      size:
+                        type: 'integer'
+                        example: 100
+                        description: '(TODO)'
+                      total:
+                        type: 'integer'
+                        example: 23113
+                        description: '(TODO)'
+                      totalPage:
+                        type: 'integer'
+                        example: 232
+                        description: '(TODO)'
+                      previous:
+                        type: 'string'
+                        example: ''
+                        description: '(TODO)'
+                      next:
+                        type: 'string'
+                        example: 'https://r2-d2.zzc.icu/api/logs?page=2&size=100&order=id&ascending=false'
+                        description: ''
+                      logList:
+                        type: 'array'
+                        items:
+                          type: 'object'
+                          required:
+                            - 'id'
+                            - 'instance'
+                            - 'category'
+                            - 'level'
+                            - 'timestampMs'
+                            - 'content'
+                            - 'rpcToken'
+                          properties:
+                            id:
+                              type: 'integer'
+                              example: 33880488488960
+                              description: '(TODO)'
+                            instance:
+                              maxLength: 64
+                              type: 'string'
+                              example: 'ifttt-com'
+                              description: '(TODO)'
+                            category:
+                              maxLength: 256
+                              type: 'string'
+                              example: 'json-http-connector.receive'
+                              description: '(TODO)'
+                            level:
+                              type: 'string'
+                              enum:
+                                - 'ERR'
+                                - 'WARN'
+                                - 'INFO'
+                                - 'VERB'
+                                - 'SILL'
+                              example: 'INFO'
+                              description: '(TODO)'
+                            timestampMs:
+                              type: 'integer'
+                              example: 1604511603665
+                              description: '(TODO)'
+                            content:
+                              maxLength: 16000
+                              type: 'string'
+                              example: '{"ips":["34.227.83.27","172.69.63.192"],"originalUrl":"/","query":{},"headers":{"host":"ifttt-com.zzc.icu","x-real-ip":"172.69.63.192","x-forwarded-for":"34.227.83.27, 172.69.63.192","connection":"close","content-length":"50","accept-encoding":"gzip","cf-ipcountry":"US","cf-ray":"5ed01e2f7af47439-IAD","x-forwarded-proto":"https","cf-visitor":"{\"scheme\":\"https\"}","content-type":"application/json","x-newrelic-id":"VwAOU1RRGwAFUFZUAwQE","x-newrelic-transaction":"PxQDV1FUXVFTVVEDU1JRVFIGFB8EBw8RVU4aVg4PA1dRBghRUAVQBFYAAENKQQkGUQZSBAcIFTs=","cf-request-id":"0635f131a900007439a9a86000000001","cf-connecting-ip":"34.227.83.27","cdn-loop":"cloudflare"},"body":{"OccurredAt":"November 04, 2020 at 12:39PM"}}'
+                              description: '(TODO)'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/operators':
+    get:
+      tags:
+        - 'Others'
+        - 'API'
+      summary: '(TODO) linked to operator description on GitHub'
+      operationId: 'getApiOperators'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              example:
+                data:
+                  - operator: 'TRUE'
+                    logContentPathValueType:
+                      - 'boolean'
+                  - operator: 'FALSE'
+                    logContentPathValueType:
+                      - 'boolean'
+                  - operator: 'EQUAL_TO'
+                    logContentPathValueType:
+                      - 'number'
+                    detailType: 'number'
+                  - operator: 'GREATER_THAN'
+                    logContentPathValueType:
+                      - 'number'
+                    detailType: 'number'
+                  - operator: 'GREATER_THAN_OR_EQUAL_TO'
+                    logContentPathValueType:
+                      - 'number'
+                    detailType: 'number'
+                  - operator: 'LESS_THAN'
+                    logContentPathValueType:
+                      - 'number'
+                    detailType: 'number'
+                  - operator: 'LESS_THAN_OR_EQUAL_TO'
+                    logContentPathValueType:
+                      - 'number'
+                    detailType: 'number'
+                  - operator: 'MATCH_REGEX'
+                    logContentPathValueType:
+                      - 'string'
+                    detailType: 'string'
+                  - operator: 'CONTAIN'
+                    logContentPathValueType:
+                      - 'string'
+                    detailType: 'string'
+                  - operator: 'NOT_CONTAIN'
+                    logContentPathValueType:
+                      - 'string'
+                    detailType: 'string'
+                  - operator: 'EXACT'
+                    logContentPathValueType:
+                      - 'string'
+                    detailType: 'string'
+                  - operator: 'NOT_EXACT'
+                    logContentPathValueType:
+                      - 'string'
+                    detailType: 'string'
+                  - operator: 'EMPTY'
+                    logContentPathValueType:
+                      - 'string'
+                  - operator: 'NOT_EMPTY'
+                    logContentPathValueType: 'string'
+                  - operator: 'MEMBER_NUMBER_EQUAL_TO'
+                    logContentPathValueType:
+                      - 'object'
+                      - 'array'
+                    detailType: 'number'
+                  - operator: 'MEMBER_NUMBER_GREATER_THAN'
+                    logContentPathValueType:
+                      - 'object'
+                      - 'array'
+                    detailType: 'number'
+                  - operator: 'MEMBER_NUMBER_GREATER_THAN_OR_EQUAL_TO'
+                    logContentPathValueType:
+                      - 'object'
+                      - 'array'
+                    detailType: 'number'
+                  - operator: 'MEMBER_NUMBER_LESS_THAN'
+                    logContentPathValueType:
+                      - 'object'
+                      - 'array'
+                    detailType: 'number'
+                  - operator: 'MEMBER_NUMBER_LESS_THAN_OR_EQUAL_TO'
+                    logContentPathValueType:
+                      - 'object'
+                      - 'array'
+                    detailType: 'number'
+                  - operator: 'CONTAIN_MEMBER_WITH_KEY'
+                    logContentPathValueType:
+                      - 'object'
+                    detailType: 'string'
+                  - operator: 'NOT_CONTAIN_MEMBER_WITH_KEY'
+                    logContentPathValueType:
+                      - 'object'
+                    detailType: 'string'
+                  - operator: 'IS'
+                    logContentPathValueType:
+                      - 'boolean'
+                      - 'number'
+                      - 'string'
+                      - 'null'
+                      - 'object'
+                      - 'array'
+                    detailType: 'string'
+                    detailRange:
+                      - 'BOOLEAN'
+                      - 'NUMBER'
+                      - 'STRING'
+                      - 'NULL'
+                      - 'OBJECT'
+                      - 'ARRAY'
+              schema:
+                type: 'object'
+                required:
+                  - 'data'
+                properties:
+                  data:
+                    type: 'array'
+                    items:
+                      type: 'object'
+                      required:
+                        - 'operator'
+                        - 'logContentPathValueType'
+                      properties:
+                        operator:
+                          type: 'string'
+                        logContentPathValueType:
+                          type: 'array'
+                          items:
+                            type: 'string'
+                        detailType:
+                          type: 'string'
+                        detailRange:
+                          type: 'array'
+                          items:
+                            type: 'string'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/register':
+    post:
+      tags:
+        - 'Authorization'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiRegister'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'password'
+              properties:
+                password:
+                  type: 'string'
+                  minLength: 1
+                  example: 'password'
+                  description: 'It is the password.'
+      responses:
+        204:
+          description: '(TODO)'
+        400:
+          $ref: '#/components/responses/400'
+        418:
+          description: 'User has registered. **Please execute "POST /api/login" to login.**'
+          content:
+            application/json:
+              example:
+                error: 'already registered, please login instead'
+                document: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+              schema:
+                type: 'object'
+                required:
+                  - 'error'
+                  - 'document'
+                properties:
+                  error:
+                    type: 'string'
+                    description: 'It shows the reason of the error.'
+                  document:
+                    type: 'string'
+                    description: 'It is the URL of the API document.'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/rules':
+    get:
+      tags:
+        - 'Rule'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiRules'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                required:
+                  - 'data'
+                properties:
+                  data:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/RuleResponse'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      tags:
+        - 'Rule'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'postApiRules'
+      parameters:
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/200-rule'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/rules/{id}':
+    get:
+      tags:
+        - 'Rule'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiRulesId'
+      parameters:
+        - $ref: '#/components/parameters/RuleIdInUrlPath'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-rule'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      tags:
+        - 'Rule'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'putApiRulesId'
+      parameters:
+        - $ref: '#/components/parameters/RuleIdInUrlPath'
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/200-rule'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    delete:
+      tags:
+        - 'Rule'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'deleteApiRulesId'
+      parameters:
+        - $ref: '#/components/parameters/RuleIdInUrlPath'
+      responses:
+        200:
+          $ref: '#/components/responses/200-rule'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/api/rules/{name}':
+    get:
+      tags:
+        - 'Rule'
+        - 'API'
+      summary: '(TODO)'
+      operationId: 'getApiRulesName'
+      parameters:
+        - in: 'path'
+          name: 'name'
+          description: 'It is the name of the rule.'
+          example: 'webhook from ifttt.com'
+          schema:
+            type: 'string'
+          required: true
+        - $ref: '#/components/parameters/ApiTokenInQueryString'
+        - $ref: '#/components/parameters/ApiTokenInHeader'
+      responses:
+        200:
+          $ref: '#/components/responses/200-rule'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  '/rpc/log':
+    post:
+      tags:
+        - 'Others'
+        - 'RPC'
+      summary: '(TODO)'
+      operationId: 'postRpclog'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'id'
+                - 'instance'
+                - 'category'
+                - 'level'
+                - 'timestampMs'
+                - 'content'
+                - 'rpcToken'
+              properties:
+                id:
+                  type: 'integer'
+                  example: 33880488488960
+                  description: '(TODO)'
+                instance:
+                  maxLength: 64
+                  type: 'string'
+                  example: 'ifttt-com'
+                  description: '(TODO)'
+                category:
+                  maxLength: 256
+                  type: 'string'
+                  example: 'json-http-connector.receive'
+                  description: '(TODO)'
+                level:
+                  type: 'string'
+                  enum:
+                    - 'ERR'
+                    - 'WARN'
+                    - 'INFO'
+                    - 'VERB'
+                    - 'SILL'
+                  example: 'INFO'
+                  description: '(TODO)'
+                timestampMs:
+                  type: 'integer'
+                  example: 1604511603665
+                  description: '(TODO)'
+                content:
+                  maxLength: 16000
+                  type: 'string'
+                  example: '{"ips":["34.227.83.27","172.69.63.192"],"originalUrl":"/","query":{},"headers":{"host":"ifttt-com.zzc.icu","x-real-ip":"172.69.63.192","x-forwarded-for":"34.227.83.27, 172.69.63.192","connection":"close","content-length":"50","accept-encoding":"gzip","cf-ipcountry":"US","cf-ray":"5ed01e2f7af47439-IAD","x-forwarded-proto":"https","cf-visitor":"{\"scheme\":\"https\"}","content-type":"application/json","x-newrelic-id":"VwAOU1RRGwAFUFZUAwQE","x-newrelic-transaction":"PxQDV1FUXVFTVVEDU1JRVFIGFB8EBw8RVU4aVg4PA1dRBghRUAVQBFYAAENKQQkGUQZSBAcIFTs=","cf-request-id":"0635f131a900007439a9a86000000001","cf-connecting-ip":"34.227.83.27","cdn-loop":"cloudflare"},"body":{"OccurredAt":"November 04, 2020 at 12:39PM"}}'
+                  description: '(TODO)'
+                rpcToken:
+                  $ref: '#/components/schemas/RpcTokenInRequestBody'
+      responses:
+        202:
+          description: 'The log has been received and is now been processing.'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403-rpc'
+        500:
+          $ref: '#/components/responses/500'
+  '/rpc/status':
+    post:
+      tags:
+        - 'Others'
+        - 'RPC'
+      summary: '(TODO)'
+      operationId: 'postRpcStatus'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'rpcToken'
+              properties:
+                rpcToken:
+                  $ref: '#/components/schemas/RpcTokenInRequestBody'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                required:
+                  - 'instance'
+                  - 'category'
+                  - 'status'
+                properties:
+                  instance:
+                    type: 'string'
+                    example: 'core'
+                    description: 'It is the instance name.'
+                  category:
+                    type: 'string'
+                    example: 'core'
+                    description: 'The value is always "core".'
+                  status:
+                    type: 'string'
+                    example: 'ready'
+                    description: 'The value is always "ready".'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403-rpc'
+        500:
+          $ref: '#/components/responses/500'
+components:
+  parameters:
+    ApiTokenInHeader:
+      in: 'header'
+      name: 'Api-Token'
+      description: '**API token should be provided through EITHER ONE of the following: (1) query string (2) request header (3) request body**.'
+      example:
+        'token-4271611034269670790'
+      schema:
+        type: 'string'
+        maxLength: 64
+        minLength: 1
+      required: true
+    ApiTokenInQueryString:
+      in: 'query'
+      name: 'apiToken'
+      description: '**API token should be provided through EITHER ONE of the following: (1) query string (2) request header (3) request body**.'
+      example:
+        'token-4271611034269670790'
+      schema:
+        type: 'string'
+      required: true
+    ConnectorIdInUrlPath:
+      in: 'path'
+      name: 'id'
+      description: 'It is the identifier of the connector.'
+      example: 33705336635392
+      schema:
+        type: 'integer'
+      required: true
+    InstanceInUrlPath:
+      in: 'path'
+      name: 'instance'
+      description: 'It is the instance name of the connector.'
+      example: 'wechat-connector'
+      schema:
+        type: 'string'
+      required: true
+    PathInQueryString:
+      in: 'query'
+      name: 'path'
+      description: '(TODO)'
+      example:
+        '/rpc/send'
+      schema:
+        type: 'string'
+      required: false
+    RuleIdInUrlPath:
+      in: 'path'
+      name: 'id'
+      description: 'It is the identifier of the rule.'
+      example: 33708499652608
+      schema:
+        type: 'integer'
+      required: true
+  requestBodies:
+    Delegate:
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            description: '**The request header of "Content-Type" must be "application/json".** The request body indicates a JSON that should be delivered to the aforementioned connector. **An empty request body is also accepted** and there is no restriction of the JSON structure. **DO NOT add item with key "rpcToken"** since it will be automatically attached. **DO NOT add item with key "apiToken"** unless it has to be delivered to the connector. **ONLY API token in (1) query string OR (2) request header can be used to authenticate.**'
+          example:
+            message: Hello world!
+            receiver:
+              name: Master
+              isAlias: true
+              category: friend
+  responses:
+    200-config:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            required:
+              - 'data'
+            properties:
+              data:
+                $ref: '#/components/schemas/ConfigResponse'
+    200-connector:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            required:
+              - 'data'
+            properties:
+              data:
+                $ref: '#/components/schemas/ConnectorResponse'
+    200-delegate:
+      headers:
+        Content-Type:
+          schema:
+            type: 'string'
+            example: 'application/json;charset=utf-8'
+          description: 'It is the value of HTTP header "Content-Type" of which the connector responses.'
+        Delegate-Status:
+          schema:
+            type: 'integer'
+            example: 202
+          description: 'It is the HTTP status code of which the connector responses.'
+      description: 'It the body of which the connector responses, which might be empty.'
+    200-rule:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            required:
+              - 'data'
+            properties:
+              data:
+                $ref: '#/components/schemas/RuleResponse'
+    400:
+      description: 'The HTTP request is invalid.'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            required:
+              - 'reason'
+              - 'document'
+            properties:
+              reason:
+                type: 'string'
+                example: 'Required request body is missing'
+                description: 'It shows the reason of the error.'
+              document:
+                type: 'string'
+                example: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+                description: 'It is the URL of the API document.'
+    400-delegate:
+      description: 'The HTTP request is invalid.'
+      content:
+        application/json:
+          examples:
+            0:
+              summary: 'The request header "Content-Type" is missing.'
+              value:
+                timestamp: '2020-11-05T19:52:16.637+00:00'
+                status: 400
+                reason: Bad Request
+                message: ''
+                path: /api/connectors/wechat-5322/delegate
+            1:
+              summary: 'The request header "Content-Type" does not contain "application/json".'
+              value:
+                reason: 'header "Content-Type": required, string which must contain "application/json"'
+                document: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+    403:
+      description: 'The HTTP request does not contain a valid API token.'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            required:
+              - 'reason'
+              - 'document'
+            properties:
+              reason:
+                type: 'string'
+                example: 'api token: not valid'
+                description: 'It shows the reason of the error.'
+              document:
+                type: 'string'
+                example: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+                description: 'It is the URL of the API document.'
+    403-rpc:
+      description: 'The HTTP request does not contain a valid RPC token.'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            required:
+              - 'reason'
+              - 'document'
+            properties:
+              reason:
+                type: 'string'
+                example: 'rpc token: not valid'
+                description: 'It shows the reason of the error.'
+              document:
+                type: 'string'
+                example: 'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml'
+                description: 'It is the URL of the API document.'
+    500:
+      description: 'An unhandled RuntimeExcaption is thrown, which means there exists some bugs.'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            required:
+              - 'dateTime'
+              - 'stackTrace'
+            properties:
+              dateTime:
+                type: 'string'
+                example: '2020-11-05T20:01:45Z'
+                description: 'It is the current time.'
+              stackTrace:
+                type: 'string'
+                example: 'java.lang.RuntimeException'
+                description: 'It is the stack trace of a Java exception.'
+  schemas:
+    ApiTokenInRequestBody:
+      type: 'string'
+      maxLength: 64
+      minLength: 1
+      example: 'token-4271611034269670790'
+      description: 'API token should be provided through EITHER ONE of the following: (1) query string (2) request header (3) request body.'
+    RpcTokenInRequestBody:
+      type: 'string'
+      maxLength: 64
+      minLength: 1
+      example: 'gcjebnbb6xgh0r3yihq228ft5648p0q3iixl782qgu5m70tlmq6jn2cgq7put9hv'
+      description: 'It is the RPC token.'
+    ConfigResponse:
+      type: 'object'
+      required:
+        - 'key'
+        - 'value'
+      properties:
+        key:
+          type: 'string'
+          example: 'core.instance'
+          description: 'It is the key of the configuration.'
+        value:
+          type: 'string'
+          example: 'core'
+          description: 'It is the value of the configuration.'
+    ConnectorRequest:
+      type: 'object'
+      required:
+        - 'url'
+        - 'rpcToken'
+        - 'apiToken'
+      properties:
+        url:
+          type: 'string'
+          maxLength: 1024
+          minLength: 1
+          example: 'https://wechat-5322.zzc.icu/'
+          description: '(TODO)'
+        rpcToken:
+          $ref: '#/components/schemas/RpcTokenInRequestBody'
+        apiToken:
+          $ref: '#/components/schemas/ApiTokenInRequestBody'
+    ConnectorResponse:
+      type: 'object'
+      required:
+        - 'id'
+        - 'instance'
+        - 'category'
+        - 'url'
+        - 'rpcToken'
+      properties:
+        id:
+          type: 'integer'
+          example: 33705336635392
+        instance:
+          type: 'string'
+          example: 'wechat-5322'
+        category:
+          type: 'string'
+          example: 'wechat-connector'
+        url:
+          type: 'string'
+          example: 'https://wechat-5322.zzc.icu/'
+        rpcToken:
+          $ref: '#/components/schemas/RpcTokenInRequestBody'
+    RuleRequest:
+      type: 'object'
+      required:
+        - 'id'
+        - 'name'
+        - 'ifLogInstanceEqual'
+        - 'ifLogCategoryEqual'
+        - 'ifLogContentSatisfy'
+        - 'thenUseConnectorId'
+        - 'thenUseUrlPath'
+        - 'thenUseHeaderContentType'
+        - 'thenUseBodyTemplate'
+        - 'priority'
+        - 'terminate'
+        - 'enable'
+        - 'annotation'
+        - 'apiToken'
+      properties:
+        name:
+          type: 'string'
+          maxLength: 256
+          minLength: 1
+          example: 'webhook from ifttt.com'
+          description: '(TODO)'
+        ifLogInstanceEqual:
+          type: 'string'
+          maxLength: 64
+          minLength: 1
+          example: 'ifttt-com'
+          description: '(TODO)'
+        ifLogCategoryEqual:
+          type: 'string'
+          maxLength: 256
+          minLength: 1
+          example: 'json-http-connector.receive'
+          description: '(TODO)'
+        ifLogContentSatisfy:
+          type: 'string'
+          maxLength: 4096
+          minLength: 1
+          example: '[{"path":"content.OccurredAt","operator":"IS","detail":"STRING"}]'
+          description: '(TODO)'
+        thenUseConnectorId:
+          type: 'integer'
+          example: 33705336635392
+          description: '(TODO)'
+        thenUseUrlPath:
+          type: 'string'
+          maxLength: 1024
+          minLength: 1
+          example: '/rpc/send'
+          description: '(TODO)'
+        thenUseHeaderContentType:
+          type: 'string'
+          maxLength: 64
+          minLength: 1
+          example: 'application/json;charset=utf-8'
+          description: '(TODO)'
+        thenUseBodyTemplate:
+          type: 'string'
+          maxLength: 4096
+          minLength: 1
+          example: '{"message":"IFTTT says:\n\n((content.body))","receiver":{"name":"Master","isAlias":true,"category":"friend"}}'
+          description: '(TODO)'
+        priority:
+          type: 'integer'
+          minimum: 1
+          example: 100
+          description: '(TODO)'
+        terminate:
+          type: 'boolean'
+          example: true
+          description: '(TODO)'
+        enable:
+          type: 'boolean'
+          example: true
+          description: '(TODO)'
+        annotation:
+          type: 'string'
+          maxLength: 1024
+          example: ''
+          description: '(TODO)'
+        apiToken:
+          $ref: '#/components/schemas/ApiTokenInRequestBody'
+    RuleResponse:
+      type: 'object'
+      required:
+        - 'id'
+        - 'name'
+        - 'ifLogInstanceEqual'
+        - 'ifLogCategoryEqual'
+        - 'ifLogContentSatisfy'
+        - 'thenUseConnectorId'
+        - 'thenUseUrlPath'
+        - 'thenUseHeaderContentType'
+        - 'thenUseBodyTemplate'
+        - 'priority'
+        - 'terminate'
+        - 'enable'
+        - 'annotation'
+      properties:
+        id:
+          type: 'integer'
+          example: 33708499652608
+          description: '(TODO)'
+        name:
+          type: 'string'
+          example: 'webhook from ifttt.com'
+          description: '(TODO)'
+        ifLogInstanceEqual:
+          type: 'string'
+          example: 'ifttt-com'
+          description: '(TODO)'
+        ifLogCategoryEqual:
+          type: 'string'
+          example: 'json-http-connector.receive'
+          description: '(TODO)'
+        ifLogContentSatisfy:
+          type: 'string'
+          example: '[{"path":"content.OccurredAt","operator":"IS","detail":"STRING"}]'
+          description: '(TODO)'
+        thenUseConnectorId:
+          type: 'integer'
+          example: 33705336635392
+          description: '(TODO)'
+        thenUseUrlPath:
+          type: 'string'
+          example: '/rpc/send'
+          description: '(TODO)'
+        thenUseHeaderContentType:
+          type: 'string'
+          example: 'application/json;charset=utf-8'
+          description: '(TODO)'
+        thenUseBodyTemplate:
+          type: 'string'
+          example: '{"message":"IFTTT says:\n\n((content.body))","receiver":{"name":"Master","isAlias":true,"category":"friend"}}'
+          description: '(TODO)'
+        priority:
+          type: 'integer'
+          example: 100
+          description: '(TODO)'
+        terminate:
+          type: 'boolean'
+          example: true
+          description: '(TODO)'
+        enable:
+          type: 'boolean'
+          example: true
+          description: '(TODO)'
+        annotation:
+          type: 'string'
+          example: ''
+          description: '(TODO)'
