@@ -164,7 +164,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
-                  .put("error", String.format("connector with id [%d]: not found", id))
+                  .put("reason", String.format("connector with id [%d]: not found", id))
+                  .put("document", configDao.load("core.api-document"))
                   .toString());
     }
     boolean bodyJson = contentType.contains("application/json");
@@ -175,7 +176,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
-                  .put("error", EXCEPTION_MESSAGE_DELEGATE)
+                  .put("reason", EXCEPTION_MESSAGE_DELEGATE)
+                  .put("document", configDao.load("core.api-document"))
                   .toString());
     }
     // log
@@ -224,7 +226,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
-                  .put("error", String.format("connector with instance [%s]: not found", instance))
+                  .put("reason", String.format("connector with instance [%s]: not found", instance))
+                  .put("document", configDao.load("core.api-document"))
                   .toString());
     }
     boolean bodyJson = contentType.contains("application/json");
@@ -235,7 +238,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
-                  .put("error", EXCEPTION_MESSAGE_DELEGATE)
+                  .put("reason", EXCEPTION_MESSAGE_DELEGATE)
+                  .put("document", configDao.load("core.api-document"))
                   .toString());
     }
     // log
@@ -511,7 +515,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
-                  .put("error", String.format("url [%s]: invalid format", url))
+                  .put("reason", String.format("url [%s]: invalid format", url))
+                  .put("document", configDao.load("core.api-document"))
                   .toString());
     }
     HttpResponse<String> response;
@@ -538,7 +543,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
               ObjectMapperSingleton.getInstance()
                   .getNodeFactory()
                   .objectNode()
-                  .put("error", String.format("url [%s]: cannot connect", url))
+                  .put("reason", String.format("url [%s]: cannot connect", url))
+                  .put("document", configDao.load("core.api-document"))
                   .toString());
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
