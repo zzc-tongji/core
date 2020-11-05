@@ -233,7 +233,7 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
     // response
     PostResponseDto responseDto = new PostResponseDto();
     Item data = responseDto.getData();
-    data.setToken(token);
+    data.setApiToken(token);
     data.setExpiredTimestampMs(expiredTimestampMs);
     return responseDto;
   }

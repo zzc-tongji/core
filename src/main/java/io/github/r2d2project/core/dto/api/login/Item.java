@@ -1,15 +1,15 @@
 package io.github.r2d2project.core.dto.api.login;
 
 public class Item {
-  private String token;
+  private String apiToken;
   private Long expiredTimestampMs;
 
-  public String getToken() {
-    return token;
+  public String getApiToken() {
+    return apiToken;
   }
 
-  public void setToken(String token) {
-    this.token = token;
+  public void setApiToken(String apiToken) {
+    this.apiToken = apiToken;
   }
 
   public Long getExpiredTimestampMs() {
