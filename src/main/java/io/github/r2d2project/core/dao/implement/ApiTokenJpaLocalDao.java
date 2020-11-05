@@ -222,7 +222,7 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
     String token;
     do {
       token = String.format("token%d", IdGenerator.getInstance().generateNegative());
-    } while (find(token) == null);
+    } while (find(token) != null);
     Long expiredTimestampMs = permanent ? 0 : System.currentTimeMillis() + lifetimeMs;
     // database
     TokenPo po = new TokenPo();
