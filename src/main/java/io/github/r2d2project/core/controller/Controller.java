@@ -180,21 +180,6 @@ public class Controller {
   // "/api/connectors/{idOrInstance}/delegate?path={path}"
 
   @CrossOrigin(exposedHeaders = "Delegate-Status")
-  @GetMapping(value = "/api/connectors/{idOrInstance}/delegate")
-  public ResponseEntity<String> apiConnectorsDelegateGet(
-      @PathVariable("idOrInstance") String idOrInstance,
-      @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "") String queryStringApiToken,
-      @RequestParam(name = "path", defaultValue = "") String path,
-      @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
-    apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
-    try {
-      return connectorDao.executeDelegate(Long.parseLong(idOrInstance), path, "", "");
-    } catch (NumberFormatException e) {
-      return connectorDao.executeDelegate(idOrInstance, path, "", "");
-    }
-  }
-
-  @CrossOrigin(exposedHeaders = "Delegate-Status")
   @PostMapping(value = "/api/connectors/{idOrInstance}/delegate")
   public ResponseEntity<String> apiConnectorsDelegatePost(
       @PathVariable("idOrInstance") String idOrInstance,
@@ -206,10 +191,10 @@ public class Controller {
     apiTokenDao.authenticate(new String[] {headerApiToken, queryStringApiToken});
     try {
       return connectorDao.executeDelegate(
-          Long.parseLong(idOrInstance), path, headerContentType, request == null ? "" : request);
+          Long.parseLong(idOrInstance), path, headerContentType, request == null ? "{}" : request);
     } catch (NumberFormatException e) {
       return connectorDao.executeDelegate(
-          idOrInstance, path, headerContentType, request == null ? "" : request);
+          idOrInstance, path, headerContentType, request == null ? "{}" : request);
     }
   }
 

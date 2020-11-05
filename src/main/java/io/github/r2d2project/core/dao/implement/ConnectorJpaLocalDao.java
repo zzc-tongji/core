@@ -44,6 +44,8 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
   public static final String EXCEPTION_MESSAGE_CATEGORY =
       String.format(
           "fetch => category: required, string with length in [1, %d]", Constant.CATEGORY_LENGTH);
+  public static final String EXCEPTION_MESSAGE_DELEGATE =
+      "header \"Content-Type\": required, string which must contain \"application/json\"";
 
   private final ConnectorJpaRepository repository;
   private final ConfigDao configDao;
@@ -165,6 +167,17 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
                   .put("error", String.format("connector with id [%d]: not found", id))
                   .toString());
     }
+    boolean bodyJson = contentType.contains("application/json");
+    if (!bodyJson) {
+      return ResponseEntity.status(400)
+          .header("Content-Type", "application/json;charset=utf-8")
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("error", EXCEPTION_MESSAGE_DELEGATE)
+                  .toString());
+    }
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
@@ -181,8 +194,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .put("requestBody", body)
             .toString());
     // response
-    return executeHelper(
-        po, path, contentType, contentType.toLowerCase().contains("application/json"), body);
+    return executeHelper(po, path, contentType, true, body);
   }
 
   @Override
@@ -215,6 +227,17 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
                   .put("error", String.format("connector with instance [%s]: not found", instance))
                   .toString());
     }
+    boolean bodyJson = contentType.contains("application/json");
+    if (!bodyJson) {
+      return ResponseEntity.status(400)
+          .header("Content-Type", "application/json;charset=utf-8")
+          .body(
+              ObjectMapperSingleton.getInstance()
+                  .getNodeFactory()
+                  .objectNode()
+                  .put("error", EXCEPTION_MESSAGE_DELEGATE)
+                  .toString());
+    }
     // log
     logInsertDao.insert(
         configDao.load("core.instance"),
@@ -231,8 +254,7 @@ public class ConnectorJpaLocalDao implements ConnectorDao {
             .put("requestBody", body)
             .toString());
     // response
-    return executeHelper(
-        po, path, contentType, contentType.toLowerCase().contains("application/json"), body);
+    return executeHelper(po, path, contentType, true, body);
   }
 
   @Override
