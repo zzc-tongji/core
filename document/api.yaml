@@ -1157,7 +1157,7 @@ components:
       name: 'Api-Token'
       description: '**API token should be provided through EITHER ONE of the following: (1) query string (2) request header (3) request body**.'
       example:
-        'token-4271611034269670790'
+        'token-to9t8b85wqwcapnm7pcn5xr7trqrehmfjnap1aer2vw9eqjqodo9vhmzkl'
       schema:
         type: 'string'
         maxLength: 64
@@ -1168,7 +1168,7 @@ components:
       name: 'apiToken'
       description: '**API token should be provided through EITHER ONE of the following: (1) query string (2) request header (3) request body**.'
       example:
-        'token-4271611034269670790'
+        'token-to9t8b85wqwcapnm7pcn5xr7trqrehmfjnap1aer2vw9eqjqodo9vhmzkl'
       schema:
         type: 'string'
       required: true
@@ -1360,7 +1360,7 @@ components:
       type: 'string'
       maxLength: 64
       minLength: 1
-      example: 'token-4271611034269670790'
+      example: 'token-to9t8b85wqwcapnm7pcn5xr7trqrehmfjnap1aer2vw9eqjqodo9vhmzkl'
       description: 'API token should be provided through EITHER ONE of the following: (1) query string (2) request header (3) request body.'
     RpcTokenInRequestBody:
       type: 'string'
