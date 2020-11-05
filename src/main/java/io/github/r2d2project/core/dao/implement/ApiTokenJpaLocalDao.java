@@ -212,7 +212,7 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
     return true;
   }
 
-  public PostResponseDto loginHelper(PostRequestDto dto, boolean permanent) {
+  private PostResponseDto loginHelper(PostRequestDto dto, boolean permanent) {
     // cache
     if (configDao.load("core.api-password-hash").length() <= 0
         || configDao.load("core.api-password-salt").length() <= 0) {

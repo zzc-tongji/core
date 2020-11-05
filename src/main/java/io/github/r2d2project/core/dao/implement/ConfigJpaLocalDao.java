@@ -8,10 +8,14 @@ import io.github.r2d2project.core.dto.api.configs.Item;
 import io.github.r2d2project.core.dto.api.configs.PutRequestDto;
 import io.github.r2d2project.core.exception.type.ConfigCoreInstanceException;
 import io.github.r2d2project.core.exception.type.ConfigNotFoundException;
+import io.github.r2d2project.core.persistence.Constant;
 import io.github.r2d2project.core.persistence.po.ConfigPo;
 import io.github.r2d2project.core.persistence.repository.ConfigJpaRepository;
 import io.github.r2d2project.core.utils.ConfigMapSingleton;
 import io.github.r2d2project.core.utils.Lock;
+import io.github.r2d2project.core.utils.RandomStringBuilderGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
   private final RuleDao ruleDao;
   private final Map<String, ConfigPo> configMap;
   private final Lock lock;
+  private final Logger logger;
 
   public ConfigJpaLocalDao(
       @Autowired ConfigJpaRepository repository, @Autowired @Lazy RuleDao ruleDao) {
@@ -34,6 +39,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     this.ruleDao = ruleDao;
     configMap = new HashMap<>();
     lock = new Lock();
+    logger = LoggerFactory.getLogger(ConfigJpaLocalDao.class);
     //
     refreshCache();
     initialize();
@@ -162,7 +168,12 @@ public class ConfigJpaLocalDao implements ConfigDao {
       save("core.instance", "core");
     }
     if (load("core.rpc-token").length() <= 0) {
-      save("core.rpc-token", "core8r3ufurm9tqomosuul0s5s9ts6ko8g85pijxudbvpm2jtb2w01od1z69h5vi");
+      String rpcToken =
+          RandomStringBuilderGenerator.getInstance()
+              .generateNumberAndLowerCase(Constant.CONNECTOR_RPC_TOKEN_LENGTH)
+              .toString();
+      save("core.rpc-token", rpcToken);
+      logger.info("ATTENTION: core.rpc-token == {}", rpcToken);
     }
   }
 
