@@ -7,7 +7,6 @@ tags:
   - name: 'Authorization'
   - name: 'Configuration'
   - name: 'Connector'
-  - name: 'Delegate'
   - name: 'Rule'
   - name: 'Log'
   - name: 'Others'
@@ -305,7 +304,7 @@ paths:
   '/api/connectors/{id}/delegate':
     post:
       tags:
-        - 'Delegate'
+        - 'Connector'
         - 'API'
       summary: '(TODO)'
       operationId: 'postApiConnectorsIdDelegate'
@@ -328,7 +327,7 @@ paths:
   '/api/connectors/{instance}/delegate':
     post:
       tags:
-        - 'Delegate'
+        - 'Connector'
         - 'API'
       summary: '(TODO)'
       operationId: 'postApiConnectorsInstanceDelegate'
