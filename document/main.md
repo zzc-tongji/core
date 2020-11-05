@@ -18,6 +18,9 @@ java -jar ./target/core.jar
 #         listening port => tcp/8003
 # optional configuration => ./config/application.properties
 #       default database => ./data/database.sqlite3
+
+# The newly generated config `core.rpc-token` will be shown in console log 
+# with context `ATTENTION: core.rpc-token ==`.
 ```
 
 #### Docker
@@ -30,6 +33,9 @@ docker run --detach --name core --publish 8003:8003 --restart always --volume ./
 #         listening port => tcp/8003
 # optional configuration => ./mount/config/application.properties
 #       default database => ./mount/data/database.sqlite3
+
+# The newly generated config `core.rpc-token` will be shown in docker log 
+# with context `ATTENTION: core.rpc-token ==`.
 ```
 
 See [Docker.md](./Docker.md) for more details.
@@ -38,7 +44,9 @@ See [Docker.md](./Docker.md) for more details.
 
 #### SQLite 3
 
-SQLite 3 is used to persist data by default. Data are is stored in file `<work-directory>/data/database.sqlite3`. If not existent, it will be created by the default DDL.
+SQLite 3 is used to persist data by default. Data are is stored in file `<work-directory>/data/database.sqlite3`.
+
+If the database file does not exist, it will be created by the default DDL. For safety reason, A random string will be assigned to config `core.rpc-token` at the first-run, which will be shown in log with context `ATTENTION: core.rpc-token ==`.
 
 It is easy to quickly deploy the program and migrate the data by using such file-based database. However, there are still some disadvantages.
 
@@ -63,7 +71,7 @@ Replace all contents between `<>` with your own value. **DO NOT MODIFY OTHERS.**
 
 Restart the program. It should run normally if every things is OK.
 
-If the database is empty, the program will create tables and items by the default DDL.
+If the database is empty, the program will create tables and items by the default DDL. For safety reason, A random string will be assigned to config `core.rpc-token` at the first-run, which will be shown in log with context `ATTENTION: core.rpc-token ==`.
 
 #### MariaDB 10.2
 
@@ -100,7 +108,7 @@ INSERT INTO config (item_key, item_value)
 VALUES ('core.instance', 'core');
 
 INSERT INTO config (item_key, item_value)
-VALUES ('core.rpc-token', 'core8r3ufurm9tqomosuul0s5s9ts6ko8g85pijxudbvpm2jtb2w01od1z69h5vi');
+VALUES ('core.rpc-token', 'RANDOMLY_GENERATED_STRING');
 
 -- connector
 
