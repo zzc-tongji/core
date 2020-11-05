@@ -13,7 +13,7 @@ git clean -xfd
 mkdir ./config/
 mkdir ./data/
 
-java -jar ./target/id.jar
+java -jar ./target/core.jar
 
 #         listening port => tcp/8003
 # optional configuration => ./config/application.properties
@@ -88,7 +88,7 @@ create table config
 
 INSERT INTO config (item_key, item_value)
 VALUES ('core.api-document',
-        'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdoc%2fapi.yaml');
+        'https://editor.swagger.io/?url=https%3a%2f%2fraw.githubusercontent.com%2fr2-d2-project%2fcore%2fmaster%2fdocument%2fapi.yaml');
 
 INSERT INTO config (item_key, item_value)
 VALUES ('core.frontend-config', '{}');

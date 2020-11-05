@@ -2,8 +2,8 @@
 
 ### Docoment
 
-- **[English](https://github.com/r2-d2-project/core/tree/master/readme/main.md)**
-- **[简体中文](https://github.com/r2-d2-project/core/tree/master/readme/main.zh-Hans.md)**
+- **[English](https://github.com/r2-d2-project/core/tree/master/document/main.md)**
+- **[简体中文](https://github.com/r2-d2-project/core/tree/master/document/main.zh-Hans.md)**
 
 ### Others
 
