@@ -107,12 +107,7 @@ paths:
       summary: '(TODO)'
       operationId: 'getApiConfigsKey'
       parameters:
-        - in: 'path'
-          name: 'key'
-          description: '(TODO)'
-          schema:
-            type: 'string'
-          required: true
+        - $ref: '#/components/parameters/KeyInUrlPath'
         - $ref: '#/components/parameters/ApiTokenInQueryString'
         - $ref: '#/components/parameters/ApiTokenInHeader'
       responses:
@@ -131,12 +126,7 @@ paths:
       summary: '(TODO)'
       operationId: 'putApiConfigsKey'
       parameters:
-        - in: 'path'
-          name: 'key'
-          description: '(TODO)'
-          schema:
-            type: 'string'
-          required: true
+        - $ref: '#/components/parameters/KeyInUrlPath'
         - $ref: '#/components/parameters/ApiTokenInQueryString'
         - $ref: '#/components/parameters/ApiTokenInHeader'
       requestBody:
@@ -873,11 +863,11 @@ paths:
                   description: 'It is the password.'
       responses:
         204:
-          description: '(TODO)'
+          description: 'User has been registered and is now able to login.'
         400:
           $ref: '#/components/responses/400'
         418:
-          description: 'User has registered. **Please execute "POST /api/login" to login.**'
+          description: 'User has already been registered. **Please execute "POST /api/login" to login.**'
           content:
             application/json:
               example:
@@ -1168,6 +1158,14 @@ components:
       description: '**API token should be provided through EITHER ONE of the following: (1) query string (2) request header (3) request body**.'
       example:
         'token-to9t8b85wqwcapnm7pcn5xr7trqrehmfjnap1aer2vw9eqjqodo9vhmzkl'
+      schema:
+        type: 'string'
+      required: true
+    KeyInUrlPath:
+      in: 'path'
+      name: 'key'
+      description: 'It is the key of the configuration.'
+      example: 'core.instance'
       schema:
         type: 'string'
       required: true
