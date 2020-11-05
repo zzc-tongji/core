@@ -1,7 +1,6 @@
 package io.github.r2d2project.core.processor.rule._if;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.r2d2project.core.processor.log.content.Type;
 import io.github.r2d2project.core.utils.ObjectMapperSingleton;
@@ -33,8 +32,8 @@ public enum Operator {
       Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
   MEMBER_NUMBER_LESS_THAN_OR_EQUAL_TO(
       Type.OBJECT.getBitMap() | Type.ARRAY.getBitMap(), Type.NUMBER.getBitMap()),
-  MEMBER_EXIST(Type.OBJECT.getBitMap(), Type.STRING.getBitMap()),
-  MEMBER_NOT_EXIST(Type.OBJECT.getBitMap(), Type.STRING.getBitMap()),
+  CONTAIN_MEMBER_WITH_KEY(Type.OBJECT.getBitMap(), Type.STRING.getBitMap()),
+  NOT_CONTAIN_MEMBER_WITH_KEY(Type.OBJECT.getBitMap(), Type.STRING.getBitMap()),
   IS(
       Type.BOOLEAN.getBitMap()
           | Type.NUMBER.getBitMap()
@@ -51,36 +50,29 @@ public enum Operator {
     ArrayNode data = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
     //
     ObjectNode item;
-    List<Type> typeList;
-    StringBuilder builder;
-    ArrayNode rangeOfDetail;
+    ArrayNode logContentPathValueType;
+    ArrayNode detailRange;
     for (Operator operator : Operator.values()) {
       item = ObjectMapperSingleton.getInstance().getNodeFactory().objectNode();
       item.put("operator", operator.name());
-      typeList = operator.LogContentPathValueType();
-      builder = new StringBuilder();
-      for (int i = 0; i < typeList.size(); i++) {
-        builder.append(typeList.get(i).name().toLowerCase());
-        if (i != typeList.size() - 1) {
-          builder.append(" | ");
-        }
+      logContentPathValueType = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
+      for (Type t : operator.LogContentPathValueType()) {
+        logContentPathValueType.add(t.name().toLowerCase());
       }
-      item.put("logContentPathValueType", builder.toString());
+      item.set("logContentPathValueType", logContentPathValueType);
       if (operator.detailType() == Boolean.class) {
         item.put("detailType", "boolean");
       } else if (operator.detailType() == Double.class) {
         item.put("detailType", "number");
       } else if (operator.detailType() == String.class) {
         item.put("detailType", "string");
-      } else { // operator.detailType() == null
-        item.set("detailType", NullNode.getInstance());
       }
       if (operator.equals(Operator.IS)) {
-        rangeOfDetail = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
+        detailRange = ObjectMapperSingleton.getInstance().getNodeFactory().arrayNode();
         for (Type t : Type.values()) {
-          rangeOfDetail.add(t.name());
+          detailRange.add(t.name());
         }
-        item.set("detailRange", rangeOfDetail);
+        item.set("detailRange", detailRange);
       }
       data.add(item);
     }

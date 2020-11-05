@@ -269,9 +269,9 @@ public class Condition {
         return unit.valueAsObjectOrArray().size() < detailAsDouble();
       case MEMBER_NUMBER_LESS_THAN_OR_EQUAL_TO:
         return unit.valueAsObjectOrArray().size() <= detailAsDouble();
-      case MEMBER_EXIST:
+      case CONTAIN_MEMBER_WITH_KEY:
         return unit.valueAsObject().has(detailAsString());
-      case MEMBER_NOT_EXIST:
+      case NOT_CONTAIN_MEMBER_WITH_KEY:
         return !unit.valueAsObject().has(detailAsString());
       default: // IS
         return unit.getType().name().equals(detailAsString());
