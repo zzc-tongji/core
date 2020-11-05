@@ -9,10 +9,12 @@ import io.github.r2d2project.core.exception.type.ApiTokenInvalidException;
 import io.github.r2d2project.core.exception.type.PasswordAlreadySetException;
 import io.github.r2d2project.core.exception.type.PasswordInvalidException;
 import io.github.r2d2project.core.exception.type.PasswordNotSetException;
+import io.github.r2d2project.core.persistence.Constant;
 import io.github.r2d2project.core.persistence.po.TokenPo;
 import io.github.r2d2project.core.persistence.repository.TokenJpaRepository;
 import io.github.r2d2project.core.utils.IdGenerator;
 import io.github.r2d2project.core.utils.Lock;
+import io.github.r2d2project.core.utils.RandomStringBuilderGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ import java.util.Map;
 
 @Service
 public class ApiTokenJpaLocalDao implements ApiTokenDao {
+  private static final String TOKEN_PREFIX = "token-";
   private final TokenJpaRepository repository;
   private final ConfigDao configDao;
   private final Map<String, TokenPo> tokenMap;
@@ -221,7 +224,11 @@ public class ApiTokenJpaLocalDao implements ApiTokenDao {
     }
     String token;
     do {
-      token = String.format("token%d", IdGenerator.getInstance().generateNegative());
+      token =
+          RandomStringBuilderGenerator.getInstance()
+              .generateNumberAndLowerCase(Constant.TOKEN_LENGTH - TOKEN_PREFIX.length())
+              .insert(0, TOKEN_PREFIX)
+              .toString();
     } while (find(token) != null);
     Long expiredTimestampMs = permanent ? 0 : System.currentTimeMillis() + lifetimeMs;
     // database
