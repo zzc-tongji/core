@@ -39,7 +39,7 @@ public class ConfigJpaLocalDao implements ConfigDao {
     this.ruleDao = ruleDao;
     configMap = new HashMap<>();
     lock = new Lock();
-    logger = LoggerFactory.getLogger(ConfigJpaLocalDao.class);
+    logger = LoggerFactory.getLogger(this.getClass());
     //
     refreshCache();
     initialize();

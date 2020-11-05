@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
   private final Boolean debug;
 
   public GlobalExceptionHandler(@Value("${setting.debug}") Boolean debug) {
-    logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    logger = LoggerFactory.getLogger(this.getClass());
     this.debug = debug;
   }
 

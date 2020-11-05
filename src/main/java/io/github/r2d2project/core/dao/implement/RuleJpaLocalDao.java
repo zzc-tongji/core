@@ -65,7 +65,7 @@ public class RuleJpaLocalDao implements RuleDao {
         driverClassName.equals("org.sqlite.JDBC") ? LogInsertJpaDao : LogInsertAsyncJpaDao;
     ruleList = new ArrayList<>();
     lock = new Lock();
-    logger = LoggerFactory.getLogger(RuleJpaLocalDao.class);
+    logger = LoggerFactory.getLogger(this.getClass());
     //
     refreshCache();
     fix();
