@@ -24,8 +24,6 @@ public interface RuleDao {
 
   GetPutPostDeleteResponseDto readById(Long id);
 
-  GetPutPostDeleteResponseDto readByName(String name);
-
   GetAllResponseDto readAll();
 
   GetPutPostDeleteResponseDto update(Long id, PutPostRequestDto dto);

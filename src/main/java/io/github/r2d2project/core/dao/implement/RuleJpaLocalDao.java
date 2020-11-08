@@ -308,19 +308,6 @@ public class RuleJpaLocalDao implements RuleDao {
   }
 
   @Override
-  public GetPutPostDeleteResponseDto readByName(String name) {
-    // cache
-    Rule rule = find(name);
-    if (rule == null) {
-      throw new RuleNotFoundException(String.format("rule with name [%s]: not found", name));
-    }
-    // response
-    GetPutPostDeleteResponseDto responseDto = new GetPutPostDeleteResponseDto();
-    ruleToResponseDto(rule, responseDto);
-    return responseDto;
-  }
-
-  @Override
   public GetAllResponseDto readAll() {
     // cache
     List<Rule> list = findAll();

@@ -281,10 +281,10 @@ public class Controller {
         .body(ruleDao.readAll());
   }
 
-  @GetMapping(value = "/api/rules/{idOrName}")
+  @GetMapping(value = "/api/rules/{id}")
   public ResponseEntity<io.github.r2d2project.core.dto.api.rules.GetPutPostDeleteResponseDto>
       apiRulesGet(
-          @PathVariable("idOrName") String idOrName,
+          @PathVariable("id") String id,
           @RequestParam(name = API_TOKEN_QUERY_STRING, defaultValue = "")
               String queryStringApiToken,
           @RequestHeader(name = API_TOKEN_HEADER, defaultValue = "") String headerApiToken) {
@@ -292,11 +292,9 @@ public class Controller {
     try {
       return ResponseEntity.status(HttpStatus.OK)
           .headers(DisableCacheHeader.getInstance())
-          .body(ruleDao.readById(Long.parseLong(idOrName)));
+          .body(ruleDao.readById(Long.parseLong(id)));
     } catch (NumberFormatException e) {
-      return ResponseEntity.status(HttpStatus.OK)
-          .headers(DisableCacheHeader.getInstance())
-          .body(ruleDao.readByName(idOrName));
+      throw new IdNotNumericalException("path {id}: required, long");
     }
   }
 
